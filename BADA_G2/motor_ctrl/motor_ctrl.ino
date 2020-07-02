@@ -26,10 +26,10 @@
  
 #include <EveryTimerB.h>
 #define WHEEL_D    84      //Wheel Size
-#define PPR        1608    // Pulse Per Round 804 x 2 
+#define PPR        1612    // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
 
 // PID Gain Value
-#define MotorR_KP  0
+#define MotorR_KP  2
 #define MotorR_KI  0
 #define MotorR_KD  0
 
@@ -40,8 +40,13 @@
 // Motor Pin Number
 const byte  RIGHT_ENC_CHA  = 12;
 const byte  RIGHT_ENC_CHB  = 11;
-const byte  LEFT_ENC_CHA   = 100;
-const byte  LEFT_ENC_CHB   = 101;
+const byte  RIGHT_PWM      = 10;
+const byte  RIGHT_DIR      = 9;
+
+const byte  LEFT_ENC_CHA  = 120;
+const byte  LEFT_ENC_CHB  = 110;
+const byte  LEFT_PWM      = 100;
+const byte  LEFT_DIR      = 90;
 
 // Motor EncoderCallBack
 void EncoderR_A_CB();
@@ -50,8 +55,8 @@ void EncoderL_A_CB();
 void EncoderL_B_CB();
 
 // Motor Speed Control
-void Motor_R_Spd_Ctrl();
-void Motor_L_Spd_Ctrl();
+void MotorR_Spd_Ctrl();
+void MotorL_Spd_Ctrl();
 
 //interrupt service routin
 void TimerB2_ISR();     
@@ -83,6 +88,7 @@ float RPM_L = 0;
 
 int ctrl_period = 20; // ms
 
+
 void setup() {
   Serial.begin(115200);
 
@@ -100,6 +106,7 @@ void setup() {
   pinMode(RIGHT_ENC_CHB, INPUT_PULLUP);
 
   //////// TEST CODE
+  Serial.println("Start UART test");  // PC의 시리얼 모니터에 표시합니다.
 
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -116,7 +123,7 @@ void loop() {
         t10ms_index = 1;
         
         digitalWrite(LED_BUILTIN, LED_TESTER=!LED_TESTER);   // System Check
-        //Serial.println(encoder_R);
+        Serial.println(encoder_R);
         
         break;
 
@@ -150,10 +157,12 @@ void loop() {
 
       case 4:
         t10ms_index = 5;
+        //analogWrite(RIGHT_PWM, 255);
         break;
 
       case 5:
         t10ms_index = 6;
+        MotorR_Spd_Ctrl(10, RPM_R);
         break;
 
       case 6:
@@ -199,33 +208,24 @@ void TimerB2_ISR() {
   +---------+         +---------+         +-----
 
 */
-
 void EncoderR_A_CB() {
-  if (digitalRead(RIGHT_ENC_CHA) == digitalRead(RIGHT_ENC_CHB))
-    encoder_R++;
-  else
-    encoder_R--;
+  if (digitalRead(RIGHT_ENC_CHA) == digitalRead(RIGHT_ENC_CHB)) encoder_R++;
+  else encoder_R--;
 }
 
 void EncoderR_B_CB() {
-  if (digitalRead(RIGHT_ENC_CHA) == digitalRead(RIGHT_ENC_CHB))
-    encoder_R--;
-  else
-    encoder_R++;
+  if (digitalRead(RIGHT_ENC_CHA) == digitalRead(RIGHT_ENC_CHB)) encoder_R--;
+  else encoder_R++;
 }
 
 void EncoderL_A_CB() {
-  if (digitalRead(LEFT_ENC_CHA) == digitalRead(LEFT_ENC_CHB))
-    encoder_L++;
-  else
-    encoder_L--;
+  if (digitalRead(LEFT_ENC_CHA) == digitalRead(LEFT_ENC_CHB))   encoder_L++;
+  else encoder_L--;
 }
 
 void EncoderL_B_CB() {
-  if (digitalRead(LEFT_ENC_CHA) == digitalRead(LEFT_ENC_CHB))
-    encoder_L--;
-  else
-    encoder_L++;
+  if (digitalRead(LEFT_ENC_CHA) == digitalRead(LEFT_ENC_CHB))   encoder_L--;
+  else encoder_L++;
 }
 
 float RPM_cnt(long pre_Pulse, long Pulse){
@@ -233,9 +233,40 @@ float RPM_cnt(long pre_Pulse, long Pulse){
   return RPM_R =(d_pulse_R / float(PPR)) / ctrl_period * 60000.0f ;
 }
 
-void Motor_R_Spd_Ctrl(){
-  
+void MotorR_Spd_Ctrl(int spd_target, int spd_now){  
+  float err = 0;
+  float up = 0, ui = 0, ud = 0;
+  float input_u = 0;
+  int   u_val = 0;
+  bool  m_dir = 0;
+  static float  err_k_1 = 0;
+  static float  err_sum = 0;
+
+  err = spd_target - spd_now;
+  err_sum += err;
+
+  up = MotorR_KP * err;
+  ui = MotorR_KI * err_sum;
+  ud = MotorR_KD * (err - err_k_1);
+
+  err_k_1 = err;
+  input_u = up + ui + ud;
+
+  if (input_u < 0) {
+    m_dir = 1;
+    input_u *= -1;
+  }
+  else {
+    m_dir = 0;
+  }
+
+  if (input_u > 255) u_val = 255;
+  else u_val = input_u;
+
+  digitalWrite(RIGHT_DIR, m_dir);
+  analogWrite(RIGHT_PWM, u_val);
 }
+
 void Motor_L_Spd_Ctrl(){
   
 }
