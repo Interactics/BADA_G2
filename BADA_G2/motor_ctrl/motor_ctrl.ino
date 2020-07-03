@@ -6,31 +6,29 @@
     2020. 06. 30.
     Created by Interactics.
 
+    ----- Specification------ 
     Controller        : Arduino NANO Every 
     Control Frequnecy : 50HZ (20ms)
     Motor Channel     : 4Ch
+    MAX RPM           : 190 RPM
+    DIR = 1           : CCW (+)
 
 */
 
 
 /*TODO LIST
- 1. Motor PID Control
- 
- 2. [done] 4CH or 2CH which is better? <<- Calculate this!
-   ||
-   ||--Now, It is 4CH system
-   
- 3. Arduino <-----> Raspberry Pi UART (or Jetson NANO) 
- 
+   1. [done] Motor PID Control
+   2. [done] 4CH or 2CH which is better? <<- Calculate this!
+   3. [done] Arduino <-----> Raspberry Pi UART (or Jetson NANO) 
  */
  
-#include <EveryTimerB.h>
+#include "EveryTimerB.h"
 #define WHEEL_D    84      //Wheel Size
 #define PPR        1612    // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
 
 // PID Gain Value
-#define MotorR_KP  2
-#define MotorR_KI  0
+#define MotorR_KP  1.4
+#define MotorR_KI  0.15
 #define MotorR_KD  0
 
 #define MotorL_KP  0
@@ -90,7 +88,7 @@ int ctrl_period = 20; // ms
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial1.begin(115200);
 
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENC_CHA), EncoderR_A_CB, CHANGE);
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENC_CHB), EncoderR_B_CB, CHANGE);
@@ -106,7 +104,7 @@ void setup() {
   pinMode(RIGHT_ENC_CHB, INPUT_PULLUP);
 
   //////// TEST CODE
-  Serial.println("Start UART test");  // PC의 시리얼 모니터에 표시합니다.
+  Serial1.println("Start UART test");  // PC의 시리얼 모니터에 표시합니다.
 
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -123,7 +121,6 @@ void loop() {
         t10ms_index = 1;
         
         digitalWrite(LED_BUILTIN, LED_TESTER=!LED_TESTER);   // System Check
-        Serial.println(encoder_R);
         
         break;
 
@@ -149,20 +146,20 @@ void loop() {
         RPM_R = RPM_cnt(pre_pulse_R , pulse_R);
         RPM_L = RPM_cnt(pre_pulse_L , pulse_L);
 
-        Serial.print("RPM_R : " );
-        Serial.println(RPM_R);
+        //Serial1.println(encoder_R);
+
+        Serial1.println(RPM_R);
 
         t10ms_index = 4;
         break;
 
       case 4:
         t10ms_index = 5;
-        //analogWrite(RIGHT_PWM, 255);
         break;
 
       case 5:
         t10ms_index = 6;
-        MotorR_Spd_Ctrl(10, RPM_R);
+        MotorR_Spd_Ctrl(-150, RPM_R);
         break;
 
       case 6:
@@ -253,15 +250,17 @@ void MotorR_Spd_Ctrl(int spd_target, int spd_now){
   input_u = up + ui + ud;
 
   if (input_u < 0) {
-    m_dir = 1;
+    m_dir = 0;
     input_u *= -1;
   }
   else {
-    m_dir = 0;
+    m_dir = 1;
   }
+ 
 
   if (input_u > 255) u_val = 255;
   else u_val = input_u;
+  //Serial1.println(input_u);
 
   digitalWrite(RIGHT_DIR, m_dir);
   analogWrite(RIGHT_PWM, u_val);
