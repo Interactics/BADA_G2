@@ -1,13 +1,13 @@
 /*
     motor_ctrl.ino
-    
+
     Motor PID Control System using Arduino NANO Every.
-    
+
     2020. 06. 30.
     Created by Interactics.
 
-    ----- Specification------ 
-    Controller        : Arduino NANO Every 
+    ----- Specification------
+    Controller        : Arduino NANO Every
     Control Frequnecy : 50HZ (20ms)
     Motor Channel     : 4Ch
     MAX RPM           : 190 RPM
@@ -15,13 +15,17 @@
 
 */
 
+/*
+   TODO LIST
+   1. [Done] Motor PID Control
+   2. [Done] 4CH
+   3. [Done] Arduino <----->  Jetson NANO UART
+   4. [Done] Left Motor, Right Motor control
+   5. UART speed cmd
+   6. From RPM to Speed
+   7. Refectoring
+*/
 
-/*TODO LIST
-   1. [done] Motor PID Control
-   2. [done] 4CH or 2CH which is better? <<- Calculate this!
-   3. [done] Arduino <-----> Raspberry Pi UART (or Jetson NANO) 
- */
- 
 #include "EveryTimerB.h"
 #define WHEEL_D    84      //Wheel Size
 #define PPR        1612    // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
@@ -31,33 +35,34 @@
 #define MotorR_KI  0.15
 #define MotorR_KD  0
 
-#define MotorL_KP  0
-#define MotorL_KI  0
+#define MotorL_KP  1.4
+#define MotorL_KI  0.15
 #define MotorL_KD  0
 
 // Motor Pin Number
 const byte  RIGHT_ENC_CHA  = 12;
 const byte  RIGHT_ENC_CHB  = 11;
-const byte  RIGHT_PWM      = 10;
-const byte  RIGHT_DIR      = 9;
+const byte  RIGHT_PWM      = 6;
+const byte  RIGHT_DIR      = 8;
 
-const byte  LEFT_ENC_CHA  = 120;
-const byte  LEFT_ENC_CHB  = 110;
-const byte  LEFT_PWM      = 100;
-const byte  LEFT_DIR      = 90;
+const byte  LEFT_ENC_CHA  = 10;
+const byte  LEFT_ENC_CHB  = 9;
+const byte  LEFT_PWM      = 5;
+const byte  LEFT_DIR      = 3;
 
 // Motor EncoderCallBack
 void EncoderR_A_CB();
 void EncoderR_B_CB();
+
 void EncoderL_A_CB();
 void EncoderL_B_CB();
 
 // Motor Speed Control
-void MotorR_Spd_Ctrl();
-void MotorL_Spd_Ctrl();
+void MotorR_Spd_Ctrl(int spd_target, int spd_now);
+void MotorL_Spd_Ctrl(int spd_target, int spd_now);
 
 //interrupt service routin
-void TimerB2_ISR();     
+void TimerB2_ISR();
 
 // Encoder Value of Motor
 long encoder_R = 0;
@@ -78,17 +83,27 @@ bool LED_TESTER = false;
 long pre_pulse_R = 0;
 long pulse_R = 0;
 long pre_pulse_L = 0;
+
 long pulse_L = 0;
 long d_pulse_R = 0;
 long d_pulse_L = 0;
+
 float RPM_R = 0;
 float RPM_L = 0;
 
-int ctrl_period = 20; // ms
+int ctrl_period = 100; // ms
 
 
 void setup() {
   Serial1.begin(115200);
+  Serial1.begin(115200);
+
+
+  pinMode(RIGHT_ENC_CHA, INPUT_PULLUP);
+  pinMode(RIGHT_ENC_CHB, INPUT_PULLUP);
+
+  pinMode(LEFT_ENC_CHA, INPUT_PULLUP);
+  pinMode(LEFT_ENC_CHB, INPUT_PULLUP);
 
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENC_CHA), EncoderR_A_CB, CHANGE);
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENC_CHB), EncoderR_B_CB, CHANGE);
@@ -99,9 +114,6 @@ void setup() {
   TimerB2.initialize();                // Timer Init
   TimerB2.attachInterrupt(TimerB2_ISR);
   TimerB2.setPeriod(10000);            // f : 100HZ, T : 10ms
-
-  pinMode(RIGHT_ENC_CHA, INPUT_PULLUP);
-  pinMode(RIGHT_ENC_CHB, INPUT_PULLUP);
 
   //////// TEST CODE
   Serial1.println("Start UART test");  // PC의 시리얼 모니터에 표시합니다.
@@ -119,19 +131,18 @@ void loop() {
     switch (t10ms_index) {
       case 0:
         t10ms_index = 1;
-        
-        digitalWrite(LED_BUILTIN, LED_TESTER=!LED_TESTER);   // System Check
-        
+        digitalWrite(LED_BUILTIN, LED_TESTER = !LED_TESTER); // System Check
+
         break;
 
       case 1:
         t10ms_index = 2;
-        
+
         pre_pulse_R = encoder_R;
         pre_pulse_L = encoder_L;
 
         break;
- 
+
       case 2:
         t10ms_index = 3;
         break;
@@ -144,12 +155,13 @@ void loop() {
         d_pulse_L = pulse_L - pre_pulse_L;
 
         RPM_R = RPM_cnt(pre_pulse_R , pulse_R);
-        RPM_L = RPM_cnt(pre_pulse_L , pulse_L);
+        RPM_L = RPM_cntL(pre_pulse_L , pulse_L);
 
         //Serial1.println(encoder_R);
-
-        Serial1.println(RPM_R);
-
+        Serial1.print("RPM_R :");
+        Serial1.print(RPM_R);
+        Serial1.print(", RPM_L :");
+        Serial1.println(RPM_L);
         t10ms_index = 4;
         break;
 
@@ -159,7 +171,11 @@ void loop() {
 
       case 5:
         t10ms_index = 6;
-        MotorR_Spd_Ctrl(-150, RPM_R);
+        MotorR_Spd_Ctrl(150, RPM_R);
+        MotorL_Spd_Ctrl(-150, RPM_L);
+        //analogWrite(LEFT_PWM,150);
+        //digitalWrite(LEFT_DIR,0);
+
         break;
 
       case 6:
@@ -209,7 +225,6 @@ void EncoderR_A_CB() {
   if (digitalRead(RIGHT_ENC_CHA) == digitalRead(RIGHT_ENC_CHB)) encoder_R++;
   else encoder_R--;
 }
-
 void EncoderR_B_CB() {
   if (digitalRead(RIGHT_ENC_CHA) == digitalRead(RIGHT_ENC_CHB)) encoder_R--;
   else encoder_R++;
@@ -219,18 +234,22 @@ void EncoderL_A_CB() {
   if (digitalRead(LEFT_ENC_CHA) == digitalRead(LEFT_ENC_CHB))   encoder_L++;
   else encoder_L--;
 }
-
 void EncoderL_B_CB() {
   if (digitalRead(LEFT_ENC_CHA) == digitalRead(LEFT_ENC_CHB))   encoder_L--;
   else encoder_L++;
 }
 
-float RPM_cnt(long pre_Pulse, long Pulse){
+float RPM_cnt(long pre_Pulse, long Pulse) {
   // RPM_R  = (d_pulse_R / float(PPR)) / ctrl_period * 1000 / 1.0 * 60 / 1 ; // RPM
-  return RPM_R =(d_pulse_R / float(PPR)) / ctrl_period * 60000.0f ;
+  return RPM_R = (d_pulse_R / float(PPR)) / ctrl_period * 60000.0f ;
 }
 
-void MotorR_Spd_Ctrl(int spd_target, int spd_now){  
+float RPM_cntL(long pre_Pulse, long Pulse) {
+  // RPM_R  = (d_pulse_R / float(PPR)) / ctrl_period * 1000 / 1.0 * 60 / 1 ; // RPM
+  return RPM_L = (d_pulse_L / float(PPR)) / ctrl_period * 60000.0f ;
+}
+
+void MotorR_Spd_Ctrl(int spd_target, int spd_now) {
   float err = 0;
   float up = 0, ui = 0, ud = 0;
   float input_u = 0;
@@ -256,7 +275,6 @@ void MotorR_Spd_Ctrl(int spd_target, int spd_now){
   else {
     m_dir = 1;
   }
- 
 
   if (input_u > 255) u_val = 255;
   else u_val = input_u;
@@ -266,6 +284,36 @@ void MotorR_Spd_Ctrl(int spd_target, int spd_now){
   analogWrite(RIGHT_PWM, u_val);
 }
 
-void Motor_L_Spd_Ctrl(){
-  
+void MotorL_Spd_Ctrl(int spd_target, int spd_now) {
+  float err = 0;
+  float up = 0, ui = 0, ud = 0;
+  float input_u = 0;
+  int   u_val = 0;
+  bool  m_dir = 0;
+  static float  err_k_1 = 0;
+  static float  err_sum = 0;
+
+  err = spd_target - spd_now;
+  err_sum += err;
+
+  up = MotorL_KP * err;
+  ui = MotorL_KI * err_sum;
+  ud = MotorL_KD * (err - err_k_1);
+
+  err_k_1 = err;
+  input_u = up + ui + ud;
+
+  if (input_u < 0) {
+    m_dir = 1;
+    input_u *= -1;
+  }
+  else {
+    m_dir = 0;
+  }
+
+  if (input_u > 255) u_val = 255;
+  else               u_val = input_u;
+
+  digitalWrite(LEFT_DIR, m_dir);
+  analogWrite(LEFT_PWM, u_val);
 }
