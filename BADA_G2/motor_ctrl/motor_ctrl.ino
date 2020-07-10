@@ -1,4 +1,4 @@
-/*
+s/*
     motor_ctrl.ino
 
     Motor PID Control System using Arduino NANO Every.
@@ -96,7 +96,7 @@ int ctrl_period = 100; // ms
 
 void setup() {
   Serial1.begin(115200);
-  Serial1.begin(115200);
+  pinMode(A2, OUTPUT);
 
 
   pinMode(RIGHT_ENC_CHA, INPUT_PULLUP);
@@ -117,7 +117,7 @@ void setup() {
 
   //////// TEST CODE
   Serial1.println("Start UART test");  // PC의 시리얼 모니터에 표시합니다.
-
+  Serial1.read();
   pinMode(LED_BUILTIN, OUTPUT);
 
 }
@@ -154,7 +154,7 @@ void loop() {
         d_pulse_R = pulse_R - pre_pulse_R;
         d_pulse_L = pulse_L - pre_pulse_L;
 
-        RPM_R = RPM_cnt(pre_pulse_R , pulse_R);
+        RPM_R = RPM_cntR(pre_pulse_R , pulse_R);
         RPM_L = RPM_cntL(pre_pulse_L , pulse_L);
 
         //Serial1.println(encoder_R);
@@ -179,6 +179,14 @@ void loop() {
         break;
 
       case 6:
+        if(Serial1.available()>0){
+          Serial1.println(Serial1.read());
+
+          analogWrite(A2,int(Serial1.read()));
+        }
+
+
+
         t10ms_index = 7;
         break;
 
@@ -239,7 +247,7 @@ void EncoderL_B_CB() {
   else encoder_L++;
 }
 
-float RPM_cnt(long pre_Pulse, long Pulse) {
+float RPM_cntR(long pre_Pulse, long Pulse) {
   // RPM_R  = (d_pulse_R / float(PPR)) / ctrl_period * 1000 / 1.0 * 60 / 1 ; // RPM
   return RPM_R = (d_pulse_R / float(PPR)) / ctrl_period * 60000.0f ;
 }
@@ -316,4 +324,13 @@ void MotorL_Spd_Ctrl(int spd_target, int spd_now) {
 
   digitalWrite(LEFT_DIR, m_dir);
   analogWrite(LEFT_PWM, u_val);
+}
+
+void SerialToNum(){
+  char wait = Serial1.read()
+}
+
+void targetSpd(float &Lspd, float & Rspd){
+  Lspd  /*INPUT From Serial*/;
+  Rspd  /*INPUT Frin Serial*/;
 }
