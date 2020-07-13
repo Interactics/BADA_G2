@@ -1,28 +1,32 @@
 #!/usr/bin/env python
 
-"""
+
+""" TODOLIST
   Motor Ctrl Node for ROS python
+  [1] ROSPY - 10ms interruption 
+  [2] SPD ctrl NODE 
 """
 
 import serial
 import time
 ## Open Serial
 
-ser = serial.Serial('/dev/ttyTHS1',115200)
+ser = serial.Serial('/dev/ttyTHS1',115200,xonxoff=False,rtscts=False,dsrdtr=False,timeout=0)
+ser.flush()
 
 ser.close()
 ser.open()
 
 while True:
-    LinearVel = 123
-    AngVel = 567
+    LinearVel = 0
+    AngVel = 0
     
-    Trans = "L" + str(LinearVel) + "A" + str(AngVel)
-    Trans.encode('utf-8')
-    print(Trans)
-    #L123 A567
+    Trans = str(LinearVel) + "," + str(AngVel) + "." + "\n" 
+    ser.write(Trans.encode('utf-8'))
+    #print(Trans)
+    #123, 567 \n
     
     ser.write(Trans)
+    
     print ser.readline()
-
-    time.sleep(0.001)
+    time.sleep(0.2)

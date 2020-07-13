@@ -1,4 +1,4 @@
-s/*
+/*
     motor_ctrl.ino
 
     Motor PID Control System using Arduino NANO Every.
@@ -21,7 +21,7 @@ s/*
    2. [Done] 4CH
    3. [Done] Arduino <----->  Jetson NANO UART
    4. [Done] Left Motor, Right Motor control
-   5. UART speed cmd
+   5. [Done] UART speed cmd
    6. From RPM to Speed
    7. Refectoring
 */
@@ -91,8 +91,16 @@ long d_pulse_L = 0;
 float RPM_R = 0;
 float RPM_L = 0;
 
+
+String STR_SPD;
+float targetLinear = 0;
+float targetAngular = 0;
+
 int ctrl_period = 100; // ms
 
+////////
+int TEST1 = 0;
+int TEST2 = 0;
 
 void setup() {
   Serial1.begin(115200);
@@ -158,10 +166,12 @@ void loop() {
         RPM_L = RPM_cntL(pre_pulse_L , pulse_L);
 
         //Serial1.println(encoder_R);
+        
         Serial1.print("RPM_R :");
         Serial1.print(RPM_R);
         Serial1.print(", RPM_L :");
         Serial1.println(RPM_L);
+        
         t10ms_index = 4;
         break;
 
@@ -171,20 +181,20 @@ void loop() {
 
       case 5:
         t10ms_index = 6;
-        MotorR_Spd_Ctrl(150, RPM_R);
-        MotorL_Spd_Ctrl(-150, RPM_L);
+        MotorR_Spd_Ctrl(TEST1, RPM_R);
+        MotorL_Spd_Ctrl(TEST2, RPM_L);
         //analogWrite(LEFT_PWM,150);
         //digitalWrite(LEFT_DIR,0);
 
         break;
 
       case 6:
-        if(Serial1.available()>0){
-          Serial1.println(Serial1.read());
-
-          analogWrite(A2,int(Serial1.read()));
-        }
-
+        //        if(Serial1.available()){
+        //
+        //          analogWrite(A2,int(Serial1.read()));
+        //        }
+        //
+        SerialToNum();
 
 
         t10ms_index = 7;
@@ -326,11 +336,38 @@ void MotorL_Spd_Ctrl(int spd_target, int spd_now) {
   analogWrite(LEFT_PWM, u_val);
 }
 
-void SerialToNum(){
-  char wait = Serial1.read()
+void SerialToNum() {
+  if (Serial1.available()) {
+
+    //char wait = Serial1.read();
+
+    //STR_SPD.concat(wait);
+    STR_SPD = Serial1.readStringUntil('\n');
+    //if(wait == '.') break;
+  }
+  else
+    return;
+
+  int Length = STR_SPD.length();
+  int LIN = STR_SPD.indexOf(",");
+  int ANG = STR_SPD.indexOf(".");
+
+  String LinVel = STR_SPD.substring(0, LIN);
+  String AngVel = STR_SPD.substring(LIN + 1, ANG);
+//  Serial1.print("ORGIN : ");
+//  Serial1.print(STR_SPD);
+//  Serial1.print("LinVel : ");
+//  Serial1.print(LinVel.toInt());
+//  Serial1.print(" AngVel : ");
+//  Serial1.println(AngVel.toInt());
+
+  TEST1 = LinVel.toInt();
+  TEST2 = AngVel.toInt();
+  STR_SPD = "";
+
 }
 
-void targetSpd(float &Lspd, float & Rspd){
+void targetSpd(float &Lspd, float & Rspd) {
   Lspd  /*INPUT From Serial*/;
   Rspd  /*INPUT Frin Serial*/;
 }
