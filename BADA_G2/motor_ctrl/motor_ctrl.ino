@@ -166,12 +166,12 @@ void loop() {
         RPM_L = RPM_cntL(pre_pulse_L , pulse_L);
 
         //Serial1.println(encoder_R);
-        
+
         Serial1.print("RPM_R :");
         Serial1.print(RPM_R);
         Serial1.print(", RPM_L :");
         Serial1.println(RPM_L);
-        
+
         t10ms_index = 4;
         break;
 
@@ -189,13 +189,7 @@ void loop() {
         break;
 
       case 6:
-        //        if(Serial1.available()){
-        //
-        //          analogWrite(A2,int(Serial1.read()));
-        //        }
-        //
         SerialToNum();
-
 
         t10ms_index = 7;
         break;
@@ -340,7 +334,6 @@ void SerialToNum() {
   if (Serial1.available()) {
 
     //char wait = Serial1.read();
-
     //STR_SPD.concat(wait);
     STR_SPD = Serial1.readStringUntil('\n');
     //if(wait == '.') break;
@@ -354,12 +347,12 @@ void SerialToNum() {
 
   String LinVel = STR_SPD.substring(0, LIN);
   String AngVel = STR_SPD.substring(LIN + 1, ANG);
-//  Serial1.print("ORGIN : ");
-//  Serial1.print(STR_SPD);
-//  Serial1.print("LinVel : ");
-//  Serial1.print(LinVel.toInt());
-//  Serial1.print(" AngVel : ");
-//  Serial1.println(AngVel.toInt());
+  //  Serial1.print("ORGIN : ");
+  //  Serial1.print(STR_SPD);
+  //  Serial1.print("LinVel : ");
+  //  Serial1.print(LinVel.toInt());
+  //  Serial1.print(" AngVel : ");
+  //  Serial1.println(AngVel.toInt());
 
   TEST1 = LinVel.toInt();
   TEST2 = AngVel.toInt();
