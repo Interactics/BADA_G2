@@ -45,12 +45,8 @@ void DCMotor::WritePWM_(bool Dir, int PWM){
     digitalWrite(MOTR_DIR_, Dir);
     analogWrite(MOTR_PWM_, PWM); 
 }
-
-void DCMotor::CalcEncodDiff(){
-    Position_diff_ = Position_current_ - Position_prev_;
-    Position_prev_ = Position_current_;
-}
-
+ 
+ 
 void DCMotor::MotorControl(float TargetSpd){
     float Speed = Velocity_; // Current Speed 
     float err = 0f;
@@ -102,8 +98,7 @@ void DCMotor::SetUpSpd(double TargetSpd){
 /******************************************************************************************/
 double DCMotor::Trans_Spd2Encod_(double spd){
     double temp_RPM;
-    temp_RPM = double(vel * 60)/double(2*PI*WHEELSIZE) * 1000;
-    
+    temp_RPM = double(spd * 60) / double(2*PI*WHEELSIZE) * 1000;
     return double(temp_RPM * ENCODER_RESOLUTION) / 600; //ENC
 };   // Transforming Speed to encoder val 
 double DCMotor::Trans_Encod2Spd_(double encod){
@@ -112,18 +107,22 @@ double DCMotor::Trans_Encod2Spd_(double encod){
     
     double temp_RPM;
     temp_RPM = (double(diff_Enc) / CONTROL_FREQUENCY) * (60 / 1) * (1000 / 1) * (1 / ENCODER_RESOLUTION); 
-    
     return temp_RPM / 1 * 1 / 60 * 2*WHEELSIZE*PI / 1 * 1 / 1000; // Velocity
 } // Transforming Encoder val to Speed
 /********************************************************************************************/
 /******************************************************************************************/
 
-void DCMotor::EncodDiff();
+void DCMotor::EncodDiff(){
+    CalcEncodDiff();
+}
+
 void DCMotor::CalcSpd(){
-    Trans_Encod2Spd
+    Velocity_ = Trans_Encod2Spd(Position_diff_);
 }
 
 void DCMotor::PID_Update(){
     MotorControl(Spd_target_);
 }
 
+void DCMotor::callbackEncod_A_();
+void DCMotor::callbackEncod_B_();
