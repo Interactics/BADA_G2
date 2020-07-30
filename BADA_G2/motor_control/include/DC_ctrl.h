@@ -4,20 +4,20 @@
 
 enum M_Locate{LEFT, RIGHT};             //Robot's Location of Motor; LEFT or RIGHT? 
 
-extern const int  WHEELSIZE           = 84;       // Wheel Size
-extern const int  WHEELBASE           = 999;      // Wheel to wheel distance
-extern const int  ENCODER_RESOLUTION  = 1612;      // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
-extern const int  CONTROL_FREQUENCY   = 20;        // [ms]
+extern const int  WHEELSIZE;       // Wheel Size
+extern const int  WHEELBASE;      // Wheel to wheel distance
+extern const int  ENCODER_RESOLUTION;      // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
+extern const int  CONTROL_FREQUENCY;        // [ms]
 
-extern const byte R_MOTOR_ENCOD_A     = 12;
-extern const byte R_MOTOR_ENCOD_B     = 11;
-extern const byte R_MOTOR_PWM         = 6;
-extern const byte R_MOTOR_DIR         = 8;
+extern const byte R_MOTOR_ENCOD_A;
+extern const byte R_MOTOR_ENCOD_B;
+extern const byte R_MOTOR_PWM;
+extern const byte R_MOTOR_DIR;
 
-extern const byte L_MOTOR_ENCOD_A     = 10;
-extern const byte L_MOTOR_ENCOD_B     = 9;
-extern const byte L_MOTOR_PWM         = 5;
-extern const byte L_MOTOR_DIR         = 3;
+extern const byte L_MOTOR_ENCOD_A;
+extern const byte L_MOTOR_ENCOD_B;
+extern const byte L_MOTOR_PWM;
+extern const byte L_MOTOR_DIR;
  
 
 /***************************************
