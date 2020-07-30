@@ -1,6 +1,24 @@
+/* File        : motor_control.ino
+ * Date        : 2020.07.30.
+ * Arthor      : Interactics 
+ * Description : 
+ * - This code is made for BADA_G2's Motor system control. 
+ * - BADA_G2 is a social robot which help hearing-impaired peoeple 
+ * - to know sound informations in their home.
+ */
+
 #include "include/DC_ctrl.h"
 #include "include/EveryTimerB.h"
 
+/************************************
+ * ------------TODO-----------
+ * 1. fix VELOCITY function 
+ * 2. divide file
+ * 3. add communication
+ * 4. refactoring
+ ************************************/
+
+ 
 const int WHELLBASE          = 100;  // [mm]
 const int WHEELSIZE          = 999;  // Wheel to wheel distance
 const int ENCODER_RESOLUTION = 1612; // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
@@ -23,8 +41,16 @@ void CB_LA();
 void CB_LB();
 
 void TimerB2_ISR();
+void Motor_control_ISR();
+void Vel_print_ISR();
+void VelocityCTRL();
+void velTarget(const float LinearV_X, const float AngularV_Z);
+void velTwist(float* L_X, float* A_Z);
+void velShow();
 
-bool          t10ms_flag = false;
+void SerialToNum();
+
+bool          t10ms_flag  = false;
 unsigned int  t10ms_index = 0;
 
 String STR_SPD;
@@ -36,6 +62,9 @@ DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B,  R_MOTOR_PWM, R_MOTOR_DIR, RIGH
 DCMotor MotorL(L_MOTOR_ENCOD_A, L_MOTOR_ENCOD_B,  L_MOTOR_PWM, L_MOTOR_DIR, LEFT);
 
 void setup() {
+  MotorR.PIDgainSet(10, 10, 10);
+  MotorL.PIDgainSet(10, 10, 10);
+  
   Serial.begin(9600);
   Serial1.begin(115200);
 
@@ -47,14 +76,18 @@ void setup() {
   TimerB2.initialize();                // Timer Init
   TimerB2.attachInterrupt(TimerB2_ISR);
   TimerB2.setPeriod(10000);            // f : 100HZ, T : 10ms
-  
-  Serial1.println("---Motor Control System is up!---");  // PC의 시리얼 모니터에 표시합니다.
+
+  Serial1.println("---Motor Control System is up!---");
+  MotorR.SetUpSpd(1);
+  MotorL.SetUpSpd(1);
 }
 
 void loop() {
 if (t10ms_flag) {
     t10ms_flag = 0;
-    Motor_control_ISR(); // 1 per 20ms 
+
+    Motor_control_ISR();    // 1 per 20ms 
+    
     switch (t10ms_index) {
       case 0:
         t10ms_index = 1;
@@ -85,6 +118,7 @@ if (t10ms_flag) {
         break;
       case 9:
         t10ms_index = 0;
+        Vel_print_ISR();
         break;
       default:
         t10ms_index = 0;
@@ -94,8 +128,8 @@ if (t10ms_flag) {
 }
 
 void VelocityCTRL(){
-  R_Motor.PID_Update();
-  L_Motor.PID_Update();
+  MotorR.PID_Update();
+  MotorL.PID_Update();
 }
 
 void velTarget(const float LinearV_X, const float AngularV_Z){
@@ -106,24 +140,30 @@ void velTarget(const float LinearV_X, const float AngularV_Z){
   LEFT_V  = LinearV_X - AngularV_Z * WHEELBASE / 2000.0;
   // It is not clear what the number '2000' is 
 
-  R_Motor.SetVel_Target(RIGHT_V);
-  L_Motor.SetVel_Target(LEFT_V);
+  MotorR.SetUpSpd(RIGHT_V);
+  MotorL.SetUpSpd(LEFT_V);
 }
 
 void velTwist(float* L_X, float* A_Z){
-  float SpeedR = R_Motor.ShowSpeed();
-  float SpeedL = L_Motor.ShowSpeed();
+  float SpeedR = MotorR.ShowSpeed();
+  float SpeedL = MotorL.ShowSpeed();
 
   //FK of the mobile robot's wheel
   *L_X = (SpeedR + SpeedL) / 2.0;
   *A_Z = (SpeedR - SpeedL) / WHEELBASE * 1000.0 ;
 }
 
-void velShow(const float* L_X, const float* A_Z){
+void velTwist(float* L_X, float* A_Z){
   Serial.print("Linear x : ");
   Serial.print(*L_X);
   Serial.print(", Angular z : ");
   Serial.println(*A_Z);
+}
+void velShow(){
+  Serial.print("Linear x : ");
+  Serial.print(MotorR.ShowEncoder());
+  Serial.print(", Angular z : ");
+  Serial.println(MotorL.ShowEncoder());
 }
 
 void CB_RA() {
@@ -154,6 +194,11 @@ void Motor_control_ISR(){
   } 
 }
 
+void Vel_print_ISR(){
+  velShow();
+}
+
+
 void SerialToNum() {
   if (Serial1.available()) {
 
@@ -177,9 +222,9 @@ void SerialToNum() {
   //  Serial1.print(LinVel.toInt());
   //  Serial1.print(" AngVel : ");
   //  Serial1.println(AngVel.toInt());
-
-  TEST1 = LinVel.toInt();
-  TEST2 = AngVel.toInt();
-  STR_SPD = "";
+//
+//  TEST1 = LinVel.toInt();
+//  TEST2 = AngVel.toInt();
+//  STR_SPD = "";
 
 }

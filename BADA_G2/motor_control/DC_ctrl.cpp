@@ -37,6 +37,10 @@ DCMotor::DCMotor(int pin_encod_A, int pin_encod_B, int pin_direct, int pin_PWM, 
     Position_prev_    = 0;
     Position_current_ = 0;
     Position_diff_    = 0;
+    
+    P_gain_           = 0;
+    I_gain_           = 0;
+    D_gain_           = 0;
 
     // Other Motor Setup
     PWM_current_      = 0;

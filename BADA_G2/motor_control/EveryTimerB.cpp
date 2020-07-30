@@ -1,5 +1,5 @@
 #ifdef ARDUINO_ARCH_MEGAAVR
-#include "EveryTimerB.h"
+#include "include/EveryTimerB.h"
 
 void EveryTimerB::isrDefaultUnused(void) {}
 
