@@ -1,24 +1,24 @@
 // DC_ctrl_H_
-
 #ifndef DC_CTRL_H_
 #define DC_CTRL_H_
 
 enum M_Locate{LEFT, RIGHT};             //Robot's Location of Motor; LEFT or RIGHT? 
 
-// const byte R_MOTOR_ENCOD_A = 12;
-// const byte R_MOTOR_ENCOD_B = 11;
-// const byte R_MOTOR_PWM   = 6;
-// const byte R_MOTOR_DIR   = 8;
+extern const int  WHEELSIZE           = 84;       // Wheel Size
+extern const int  WHEELBASE           = 999;      // Wheel to wheel distance
+extern const int  ENCODER_RESOLUTION  = 1612;      // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
+extern const int  CONTROL_FREQUENCY   = 20;        // [ms]
 
-// const byte L_MOTOR_ENCOD_A = 10;
-// const byte L_MOTOR_ENCOD_B = 9;
-// const byte L_MOTOR_PWM   = 5;
-// const byte L_MOTOR_DIR   = 3;
+extern const byte R_MOTOR_ENCOD_A     = 12;
+extern const byte R_MOTOR_ENCOD_B     = 11;
+extern const byte R_MOTOR_PWM         = 6;
+extern const byte R_MOTOR_DIR         = 8;
 
-const int WHEELSIZE           = 84;       // Wheel Size
-const int WHEELBASE           = 999;      // Wheel to wheel distance
-const int ENCODER_RESOLUTION  = 1612;      // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
-const int CONTROL_FREQUENCY   = 20;        // [ms]
+extern const byte L_MOTOR_ENCOD_A     = 10;
+extern const byte L_MOTOR_ENCOD_B     = 9;
+extern const byte L_MOTOR_PWM         = 5;
+extern const byte L_MOTOR_DIR         = 3;
+ 
 
 /***************************************
 *             DC Motor Class           *
@@ -26,7 +26,6 @@ const int CONTROL_FREQUENCY   = 20;        // [ms]
 
 class DCMotor{
 private:
-
     //Pin Setup
     int MOTR_ENCOD_A_;
     int MOTR_ENCOD_B_;
@@ -40,7 +39,6 @@ private:
     float D_gain_;
     
     //Encoder Position
-
     long Encoder_;
     long Position_prev_;
     long Position_current_;
@@ -55,8 +53,6 @@ private:
     double Velocity_; //current speed
 
     void WritePWM_(bool Dir, int PWM);  // Writing PWM on PWN Pin.
-
-
     double Trans_Spd2Encod_(double spd);   // Transforming Speed to encoder val 
     double Trans_Encod2Spd_(double encod); // Transforming Encoder val to Speed
 
@@ -83,7 +79,8 @@ public:
     void callbackEncod_A();
     void callbackEncod_B();
 
-    long ShowEncoder();
+    long  ShowEncoder();
+    float ShowSpeed();
 };
 
 

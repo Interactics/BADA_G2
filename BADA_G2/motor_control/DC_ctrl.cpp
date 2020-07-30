@@ -25,8 +25,8 @@ DCMotor::DCMotor(int pin_encod_A, int pin_encod_B, int pin_direct, int pin_PWM, 
     pinMode(pin_encod_B, INPUT_PULLUP);
     
     ////////////////// NOT WORK //////////////////////
-    // attachInterrupt(digitalPinToInterrupt(pin_encod_A), reinterpret_cast<void (*)()>(&callbackEncod_A_), CHANGE);
-    // attachInterrupt(digitalPinToInterrupt(pin_encod_B), reinterpret_cast<void (*)()>(&callbackEncod_B_), CHANGE);
+    // attachInterrupt(digitalPinToInterrupt(pin_encod_A), callbackEncod_A_, CHANGE);
+    // attachInterrupt(digitalPinToInterrupt(pin_encod_B), callbackEncod_B_, CHANGE);
 
     // PID Error Setup
     err_prev_         = 0.0f;
@@ -150,5 +150,9 @@ void DCMotor::callbackEncod_B(){
 
 long DCMotor::ShowEncoder(){
     return Encoder_;
+}
+
+float DCMotor::ShowSpeed(){
+    return Velocity_;
 }
 
