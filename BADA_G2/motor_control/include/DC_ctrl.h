@@ -81,6 +81,7 @@ public:
 
     long  ShowEncoder();
     float ShowSpeed();
+    float showDebug(int options);
 };
 
 
