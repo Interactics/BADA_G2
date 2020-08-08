@@ -166,7 +166,6 @@ float DCMotor::showDebug(int options){
         case 2 :
         return PWM_current_;
         case 3 :
-
         break;
     }
 }

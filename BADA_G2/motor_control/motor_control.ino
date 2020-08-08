@@ -17,14 +17,14 @@
  * 4. refactoring
  ************************************/
   
-const int WHELLBASE          = 100;  // [mm]
-const int WHEELSIZE          = 100;  // Wheel to wheel distance
+const int WHELLBASE          = 265;  // [mm]
+const int WHEELSIZE          = 84;  // Wheel to wheel distance
 const int ENCODER_RESOLUTION = 1612; // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
 const int CONTROL_FREQUENCY  = 20;   // [ms]
 
 //Arduino Pin
-const byte R_MOTOR_ENCOD_A   = 12;
-const byte R_MOTOR_ENCOD_B   = 11;
+const byte R_MOTOR_ENCOD_A   = 11;
+const byte R_MOTOR_ENCOD_B   = 12;
 const byte R_MOTOR_PWM       = 6;
 const byte R_MOTOR_DIR       = 8;
 
@@ -53,15 +53,16 @@ unsigned int  t10ms_index = 0;
 
 String STR_SPD;
 
-float targetLinear = 0;
+float targetLinear  = 0;
 float targetAngular = 0;
 
-DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM, RIGHT);
 DCMotor MotorL(L_MOTOR_ENCOD_A, L_MOTOR_ENCOD_B, L_MOTOR_DIR, L_MOTOR_PWM, LEFT);
+DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM, RIGHT);
+
 
 void setup() {
-  MotorR.PIDgainSet(0, 0, 0);
-  MotorL.PIDgainSet(0.2, 0.1, 0);
+  MotorR.PIDgainSet(0.1, 0.01, 0);
+  MotorL.PIDgainSet(0.1, 0.01, 0);
   
   Serial.begin(9600);
   Serial1.begin(115200);
@@ -81,7 +82,6 @@ void setup() {
 void loop() {
 if (t10ms_flag) {
     t10ms_flag = 0;
-    MotorL.SetUpSpd(1);
     Motor_control_ISR();    // 1 per 20ms 
     
     switch (t10ms_index) {
@@ -111,7 +111,6 @@ if (t10ms_flag) {
         break;
       case 8:
         t10ms_index = 9;
-
         break;
       case 9:
         t10ms_index = 0;
@@ -162,17 +161,20 @@ void twistShow(float* L_X, float* A_Z){
   Serial.println(*A_Z);
 }
 void velShow(){
-  Serial.print("Linear x : ");
-  Serial.print(MotorR.ShowEncoder());
-  Serial.print(", Angular z : ");
-  Serial.println(MotorL.ShowEncoder());
+//  Serial.print("Linear x : ");
+//  Serial.print(MotorR.ShowEncoder());
+//  Serial.print(", Angular z : ");
+//  Serial.println(MotorL.ShowEncoder());
 }
 
 void motorVelShow(){
-  Serial.print("Right : ");
-  Serial.print(MotorR.ShowSpeed());
-  Serial.print(", Left: ");
-  Serial.println(MotorL.ShowSpeed());
+//  Serial.print("Right : ");
+//  Serial.print(MotorR.ShowSpeed());
+//  Serial.print(", Left: ");
+Serial.print("R, L : ");
+Serial.print(MotorR.ShowSpeed());
+Serial.print(" ");
+Serial.println(MotorL.ShowSpeed());
 }
 
 void CB_RA() {
