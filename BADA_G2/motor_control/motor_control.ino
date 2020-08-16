@@ -1,5 +1,5 @@
 /* File        : motor_control.ino
- * Date        : 2020.07.30.
+ * Date        : 2020.08.16.
  * Arthor      : Interactics 
  * Description : 
  * - This code is made for BADA_G2's Motor system control. 
