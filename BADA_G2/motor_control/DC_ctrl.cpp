@@ -8,28 +8,21 @@
 
 /**********************
         TODO LIST
-    2. Update Trans_Encod2Spd_
-    3. Update Velocity_ = Trans_Encod2Spd_(CurrentEncod); // FIX THIS!!!!! Variable is wrong
     4. Refactoring 
-    
 ************************/
 
 
-DCMotor::DCMotor(int pin_encod_A, int pin_encod_B, int pin_direct, int pin_PWM, M_Locate M_LOC)
+DCMotor::DCMotor(int pin_encod_A, int pin_encod_B, int pin_direct, int pin_PWM)
     :MOTR_ENCOD_A_(pin_encod_A), MOTR_ENCOD_B_(pin_encod_B), 
-     MOTR_DIR_(pin_direct), MOTR_PWM_(pin_PWM), M_Locate_(M_LOC) 
+     MOTR_DIR_(pin_direct), MOTR_PWM_(pin_PWM) 
 {
     // Encoder pin Setup
     pinMode(pin_encod_A, INPUT_PULLUP);
     pinMode(pin_encod_B, INPUT_PULLUP);
     
-    ////////////////// NOT WORK //////////////////////
-    // attachInterrupt(digitalPinToInterrupt(pin_encod_A), callbackEncod_A_, CHANGE);
-    // attachInterrupt(digitalPinToInterrupt(pin_encod_B), callbackEncod_B_, CHANGE);
-
     // PID Error Setup
-    err_prev_         = 0.0f;
-    err_sum_          = 0.0f;
+    err_prev_         = 0;
+    err_sum_          = 0;
 
     // Encoder Position Setup
     Encoder_          = 0;
@@ -65,10 +58,9 @@ void DCMotor::WritePWM_(bool Dir, int PWM){
     analogWrite(MOTR_PWM_, PWM); 
 }
  
- 
-void DCMotor::MotorControl(float TargetSpd){
-    float Speed = Velocity_; // Current Speed 
-    float err = 0.0f;
+void DCMotor::MotorControl(int TargetSpd){
+    int Speed = Velocity_; // Current Speed 
+    float err = 0;
     float K_P = 0.0f, 
           K_I = 0.0f, 
           K_D = 0.0f;
@@ -76,16 +68,14 @@ void DCMotor::MotorControl(float TargetSpd){
     int  u_val = 0;
     bool m_dir = false;
 
-    long double Y_output     = 0.0f;
-    long double TargetEncod;
-    long double CurrentEncod;
-    //long double inputSpeed;
+    int Y_output = 0;
+    float TargetEncod;
+    float CurrentEncod;
 
     TargetEncod  = Trans_Spd2Encod_(TargetSpd);
     CurrentEncod = Trans_Spd2Encod_(Speed);
-
-    err       = TargetEncod - CurrentEncod;
-    err_sum_ += err;
+    err          = TargetEncod - CurrentEncod;
+    err_sum_    += err;
 
     K_P = P_gain_ * err;
     K_I = I_gain_ * err_sum_;
@@ -93,7 +83,6 @@ void DCMotor::MotorControl(float TargetSpd){
 
     err_prev_ = err;
     Y_output  = K_P + K_I + K_D;
-    
 
     if(Y_output < 0){
         m_dir = false; 
@@ -103,32 +92,41 @@ void DCMotor::MotorControl(float TargetSpd){
     }
 
     if (Y_output > 255) Y_output = 255;
-    PWM_current_ = Y_output;
-    
-    //Velocity_ = Trans_Encod2Spd_(CurrentEncod); // FIX THIS!!!!! Variable is wrong
-    
+    PWM_current_ = Y_output;    
     WritePWM_(m_dir, Y_output);
 } // Controlling MotorSpd using PID_Ctrl.
 
-void DCMotor::SetUpSpd(double TargetSpd){
+void DCMotor::SetUpSpd(int TargetSpd){
     Spd_target_ = TargetSpd;
 } // Setting up Target Speed.
 
 
-/******************** NEED TO CHANGE Of VARIABLE NAME *************************************/
-/******************************************************************************************/
-double DCMotor::Trans_Spd2Encod_(double spd){
-    double temp_RPM;
-    temp_RPM = double(spd * 60) / double(2*PI*WHEELSIZE) * 1000.0f;
-    return double(temp_RPM * ENCODER_RESOLUTION) / 600.0; //ENC
-};   // Transforming Speed to encoder val 
+float DCMotor::Trans_Spd2Encod_(int spd){
+    // RPM = { SPD[mm/sec] / [sec] } * { 1 [ROUND]/ (WHEELSIZE[mm] * PI)} * { 60[sec] / 1[min]}
+    // Encoder =  1 [RPM] * { 1[MIN]/ 60[sec] } * { ENCODER / 1[ROUND]} * { 1[sec] / 1[min] }
+    // instanteneous Encoder = CONTROL_FREQUENCY * Encoder
 
-double DCMotor::Trans_Encod2Spd_(double encod){
+    float encoder_value;
+
+    float NUM = CONTROL_FREQUENCY * (ENCODER_RESOLUTION / 1000.0) * spd;
+    float DEN = PI * WHEELSIZE;
+
+    encoder_value = NUM / DEN;
+
+    return encoder_value; // 
+};   // Transforming from Speed to encoder val 
+
+int DCMotor::Trans_Encod2Spd_(int Encod_diff){
     // RPM = [del(encoder)/ms] * [1000ms/1sec] * [60sec/1 min] * [1round/1roundEncoder]
     // Velocity = [(RPM)Round/1min] * [1min/60sec] * [2pi*r/1Round] * [1m/1000sec]
-    double temp_RPM;
-    temp_RPM = (double(Position_diff_) / CONTROL_FREQUENCY) * (60 / 1) * (1000 / 1) * (1.0 / ENCODER_RESOLUTION); 
-    return temp_RPM / 1.0 * 1 / 60.0 * 2*WHEELSIZE*PI / 1.0 * 1.0 / 1000; // Velocity
+    int spd_value;
+
+    float NUM = Encod_diff * PI * WHEELSIZE;
+    float DEN = CONTROL_FREQUENCY * (ENCODER_RESOLUTION / 1000.0);
+    
+    spd_value = NUM / DEN;
+
+    return spd_value;
 } // Transforming Encoder val to Speed
 /******************************************************************************************/
 
@@ -139,7 +137,8 @@ void DCMotor::EncodDiff(){
 }
 
 void DCMotor::CalcSpd(){
-    Velocity_ = Trans_Encod2Spd_(Position_diff_);
+    int Encod_Diff = Position_diff_;
+    Velocity_ = Trans_Encod2Spd_(Encod_Diff);
 }
 
 void DCMotor::PID_Update(){
@@ -159,11 +158,11 @@ long DCMotor::ShowEncoder(){
     return Encoder_;
 }
 
-float DCMotor::ShowSpeed(){
+int DCMotor::ShowSpeed(){
     return Velocity_;
 }
 
-float DCMotor::showDebug(int options){
+int DCMotor::showDebug(int options){
     switch(options) {
         case 1 : 
         return Spd_target_;

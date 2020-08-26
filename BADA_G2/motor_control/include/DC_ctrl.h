@@ -2,8 +2,6 @@
 #ifndef DC_CTRL_H_
 #define DC_CTRL_H_
 
-enum M_Locate{LEFT, RIGHT};             //Robot's Location of Motor; LEFT or RIGHT? 
-
 extern const int  WHEELSIZE;       // Wheel Size
 extern const int  WHEELBASE;      // Wheel to wheel distance
 extern const int  ENCODER_RESOLUTION;      // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
@@ -31,7 +29,6 @@ private:
     int MOTR_ENCOD_B_;
     int MOTR_DIR_;
     int MOTR_PWM_;
-    M_Locate M_Locate_;
 
     //PID Setup
     float P_gain_;
@@ -42,32 +39,32 @@ private:
     long Encoder_;
     long Position_prev_;
     long Position_current_;
-    long Position_diff_;
+    int  Position_diff_;
 
-    float  err_prev_;
-    float  err_sum_;
-    double Spd_target_;
+    long double err_prev_;
+    long double err_sum_;
+    int Spd_target_;
 
-    int  PWM_current_;
+    int PWM_current_;
 
-    double Velocity_; //current speed
+    int Velocity_; //current speed
 
     void WritePWM_(bool Dir, int PWM);  // Writing PWM on PWN Pin.
-    double Trans_Spd2Encod_(double spd);   // Transforming Speed to encoder val 
-    double Trans_Encod2Spd_(double encod); // Transforming Encoder val to Speed
+    float Trans_Spd2Encod_(int spd);   // Transforming Speed to encoder val 
+    int Trans_Encod2Spd_(int encod); // Transforming Encoder val to Speed
 
 public:
     bool Direction_current;
     
-    DCMotor(int pin_encod_A, int pin_encod_B, int pin_direct, int pin_PWM, M_Locate M_LOC);
+    DCMotor(int pin_encod_A, int pin_encod_B, int pin_direct, int pin_PWM);
     ~DCMotor();
 
     void PIDgainSet(float P_gain, float I_gain, float D_gain);
     int EncoderPos();                     // Returning current encoder's position.
     void CalcEncodDiff();                 // Calulating Diff of Encoder.
 
-    void MotorControl(float TargetSpd);   // Controlling MotorSpd using PID_Ctrl.
-    void SetUpSpd(double TargetSpd);      // Setting up Target Speed.
+    void MotorControl(int TargetSpd);   // Controlling MotorSpd using PID_Ctrl.
+    void SetUpSpd(int TargetSpd);      // Setting up Target Speed.
 
     // double Trans_Spd2Encod(double spd);   // Transforming Speed to encoder val 
     // double Trans_Encod2Spd(double encod); // Transforming Encoder val to Speed
@@ -79,9 +76,9 @@ public:
     void callbackEncod_A();
     void callbackEncod_B();
 
-    long  ShowEncoder();
-    float ShowSpeed();
-    float showDebug(int options);
+    long ShowEncoder();
+    int ShowSpeed();
+    int showDebug(int options);
 };
 
 
