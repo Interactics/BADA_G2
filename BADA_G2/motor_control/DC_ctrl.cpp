@@ -93,6 +93,7 @@ void DCMotor::MotorControl(float TargetSpd){
 
     err_prev_ = err;
     Y_output  = K_P + K_I + K_D;
+    
 
     if(Y_output < 0){
         m_dir = false; 
@@ -102,8 +103,10 @@ void DCMotor::MotorControl(float TargetSpd){
     }
 
     if (Y_output > 255) Y_output = 255;
+    PWM_current_ = Y_output;
     
-    Velocity_ = Trans_Encod2Spd_(CurrentEncod); // FIX THIS!!!!! Variable is wrong
+    //Velocity_ = Trans_Encod2Spd_(CurrentEncod); // FIX THIS!!!!! Variable is wrong
+    
     WritePWM_(m_dir, Y_output);
 } // Controlling MotorSpd using PID_Ctrl.
 
@@ -119,6 +122,7 @@ double DCMotor::Trans_Spd2Encod_(double spd){
     temp_RPM = double(spd * 60) / double(2*PI*WHEELSIZE) * 1000.0f;
     return double(temp_RPM * ENCODER_RESOLUTION) / 600.0; //ENC
 };   // Transforming Speed to encoder val 
+
 double DCMotor::Trans_Encod2Spd_(double encod){
     // RPM = [del(encoder)/ms] * [1000ms/1sec] * [60sec/1 min] * [1round/1roundEncoder]
     // Velocity = [(RPM)Round/1min] * [1min/60sec] * [2pi*r/1Round] * [1m/1000sec]
@@ -169,4 +173,3 @@ float DCMotor::showDebug(int options){
         break;
     }
 }
-
