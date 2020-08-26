@@ -56,13 +56,13 @@ String STR_SPD;
 float targetLinear  = 0;
 float targetAngular = 0;
 
-DCMotor MotorL(L_MOTOR_ENCOD_A, L_MOTOR_ENCOD_B, L_MOTOR_DIR, L_MOTOR_PWM, LEFT);
-DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM, RIGHT);
+DCMotor MotorL(L_MOTOR_ENCOD_A, L_MOTOR_ENCOD_B, L_MOTOR_DIR, L_MOTOR_PWM);
+DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM);
 
 
 void setup() {
-  MotorR.PIDgainSet(0.5, 0, 0);
-  MotorL.PIDgainSet(0.5, 0, 0.2);
+  MotorR.PIDgainSet(6, 0.8, 0);
+  MotorL.PIDgainSet(6, 0.8, 0);
   
   Serial.begin(9600);
   Serial1.begin(115200);
@@ -89,14 +89,14 @@ if (t10ms_flag) {
     switch (t10ms_index) {
       case 0:
         t10ms_index = 1;
-        velTarget(0.3, 0);
+        velTarget(300, 0);
         break;
       case 1:
         t10ms_index = 2;
         break;
       case 2:
         t10ms_index = 3;
-        Serial_Input_ISR();
+        //Serial_Input_ISR();
         break;
       case 3:
         t10ms_index = 4;
@@ -120,6 +120,7 @@ if (t10ms_flag) {
         t10ms_index = 0;
         Vel_print_ISR();
         motorVelShow();
+        //Serial.print(MotorL.showDebug(2));
         break;
       default:
         t10ms_index = 0;
@@ -178,10 +179,10 @@ void motorVelShow(){
 //  Serial.print("Right : ");
 //  Serial.print(MotorR.ShowSpeed());
 //  Serial.print(", Left: ");
-Serial.print("R, L : ");
-Serial.print(MotorR.ShowSpeed()*1000);
-Serial.print(" ");
-Serial.println(MotorL.ShowSpeed()*1000);
+  Serial.print("R, L : ");
+  Serial.print(MotorR.ShowSpeed());
+  Serial.print(" ");
+  Serial.println(MotorL.ShowSpeed());
 }
 
 void CB_RA() {
