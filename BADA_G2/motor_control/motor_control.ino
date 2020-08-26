@@ -17,7 +17,7 @@
  * 4. refactoring
  ************************************/
   
-const int WHELLBASE          = 265;  // [mm]
+const int WHEELBASE          = 265;  // [mm]
 const int WHEELSIZE          = 84;  // Wheel to wheel distance
 const int ENCODER_RESOLUTION = 1612; // Pulse Per Round (31gear * 13)402 Pulse/CH x 4 
 const int CONTROL_FREQUENCY  = 20;   // [ms]
@@ -45,8 +45,8 @@ void VelocityCTRL();
 void velTarget(const float LinearV_X, const float AngularV_Z);
 void velTwist(float* L_X, float* A_Z);
 void velShow();
+void Serial_Input_ISR();
 
-void SerialToNum();
 
 bool          t10ms_flag  = false;
 unsigned int  t10ms_index = 0;
@@ -61,11 +61,12 @@ DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM, RIGHT
 
 
 void setup() {
-  MotorR.PIDgainSet(0.1, 0.01, 0);
-  MotorL.PIDgainSet(0.1, 0.01, 0);
+  MotorR.PIDgainSet(0.5, 0, 0);
+  MotorL.PIDgainSet(0.5, 0, 0.2);
   
   Serial.begin(9600);
   Serial1.begin(115200);
+  delay(100);
 
   attachInterrupt(digitalPinToInterrupt(R_MOTOR_ENCOD_A), CB_RA, CHANGE);
   attachInterrupt(digitalPinToInterrupt(R_MOTOR_ENCOD_B), CB_RB, CHANGE);
@@ -77,6 +78,7 @@ void setup() {
   TimerB2.setPeriod(10000);            // f : 100HZ, T : 10ms
 
   Serial1.println("---Motor Control System is up!---");
+
 }
 
 void loop() {
@@ -87,12 +89,14 @@ if (t10ms_flag) {
     switch (t10ms_index) {
       case 0:
         t10ms_index = 1;
+        velTarget(0.3, 0);
         break;
       case 1:
         t10ms_index = 2;
         break;
       case 2:
         t10ms_index = 3;
+        Serial_Input_ISR();
         break;
       case 3:
         t10ms_index = 4;
@@ -125,12 +129,15 @@ if (t10ms_flag) {
 }
 
 void VelocityCTRL(){
-  MotorR.EncodDiff();
   MotorL.EncodDiff();
-  MotorR.CalcSpd();
+  MotorR.EncodDiff();
+
   MotorL.CalcSpd();
-  MotorR.PID_Update();
+  MotorR.CalcSpd();
+
   MotorL.PID_Update();
+  MotorR.PID_Update();
+
 }
 
 void velTarget(const float LinearV_X, const float AngularV_Z){
@@ -139,7 +146,7 @@ void velTarget(const float LinearV_X, const float AngularV_Z){
   //IK of the mobile robot's wheel 
   RIGHT_V = LinearV_X + AngularV_Z * WHEELBASE / 2000.0;
   LEFT_V  = LinearV_X - AngularV_Z * WHEELBASE / 2000.0;
-  // It is not clear what the number '2000' is 
+  // The number '2000'  is not clear
 
   MotorR.SetUpSpd(RIGHT_V);
   MotorL.SetUpSpd(LEFT_V);
@@ -172,9 +179,9 @@ void motorVelShow(){
 //  Serial.print(MotorR.ShowSpeed());
 //  Serial.print(", Left: ");
 Serial.print("R, L : ");
-Serial.print(MotorR.ShowSpeed());
+Serial.print(MotorR.ShowSpeed()*1000);
 Serial.print(" ");
-Serial.println(MotorL.ShowSpeed());
+Serial.println(MotorL.ShowSpeed()*1000);
 }
 
 void CB_RA() {
@@ -196,6 +203,7 @@ void TimerB2_ISR() {
 
 void Motor_control_ISR(){
   // Motor Ctrl Frequency == 2 * Ctrl Frequency 
+  
   static bool M_index = false;
   if(M_index == true){
     VelocityCTRL();
@@ -203,13 +211,14 @@ void Motor_control_ISR(){
   } else {
     M_index  = true;
   } 
+  
 }
 
 void Vel_print_ISR(){
   velShow();
 }
 
-void SerialToNum() {
+void Serial_Input_ISR() {
   if (Serial1.available()) {
 
     //char wait = Serial1.read();
@@ -223,18 +232,18 @@ void SerialToNum() {
   int Length = STR_SPD.length();
   int LIN = STR_SPD.indexOf(",");
   int ANG = STR_SPD.indexOf(".");
-
   String LinVel = STR_SPD.substring(0, LIN);
   String AngVel = STR_SPD.substring(LIN + 1, ANG);
   //  Serial1.print("ORGIN : ");
   //  Serial1.print(STR_SPD);
-  //  Serial1.print("LinVel : ");
-  //  Serial1.print(LinVel.toInt());
-  //  Serial1.print(" AngVel : ");
-  //  Serial1.println(AngVel.toInt());
-//
-//  TEST1 = LinVel.toInt();
-//  TEST2 = AngVel.toInt();
-//  STR_SPD = "";
+
+
+  float LinVelIn = LinVel.toInt()/1000.0f;
+  float AngVelIn = AngVel.toInt()/1000.0f;
+  velTarget(LinVelIn, AngVelIn);
+  Serial.print("LinVel : ");
+  Serial.print(LinVelIn);
+  Serial.print(" AngVel : ");
+  Serial.println(AngVelIn);
 
 }

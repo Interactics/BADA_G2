@@ -18,12 +18,12 @@ ser.close()
 ser.open()
 
 while True:
-    LinearVel = 0
-    AngVel = 0
+    LinearVel = 0 # mm/s
+    AngVel    = 0    # mm/s
     
     Trans = str(LinearVel) + "," + str(AngVel) + "." + "\n" 
     ser.write(Trans.encode('utf-8'))
-    #print(Trans)
+    print(Trans)
     #123, 567 \n
     
     ser.write(Trans)
