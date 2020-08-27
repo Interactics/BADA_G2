@@ -1,9 +1,9 @@
 /* File        : motor_control.ino
- * Date        : 2020.08.16.
+ * Date        : 2020.08.27.
  * Arthor      : Interactics 
  * Description : 
  * - This code is made for BADA_G2's Motor system control. 
- * - BADA_G2 is a social robot which help hearing-impaired peoeple 
+ * - BADA_G2 is a social robot which helps hearing-impaired peoeple 
  * - to know sound informations in their home.
  */
 
@@ -13,7 +13,7 @@
 /************************************
  * ------------TODO-----------
  * 2. divide file
- * 3. add communication
+ * 3. add communication [proceeding]
  * 4. refactoring
  ************************************/
   
@@ -78,25 +78,24 @@ void setup() {
   TimerB2.setPeriod(10000);            // f : 100HZ, T : 10ms
 
   Serial1.println("---Motor Control System is up!---");
-
 }
 
 void loop() {
 if (t10ms_flag) {
     t10ms_flag = 0;
     Motor_control_ISR();    // 1 per 20ms 
-    
+
     switch (t10ms_index) {
       case 0:
         t10ms_index = 1;
-        velTarget(300, 0);
+//        velTarget(200, 0);
         break;
       case 1:
         t10ms_index = 2;
         break;
       case 2:
         t10ms_index = 3;
-        //Serial_Input_ISR();
+        Serial_Input_ISR();
         break;
       case 3:
         t10ms_index = 4;
@@ -106,6 +105,7 @@ if (t10ms_flag) {
         break;
       case 5:
         t10ms_index = 6;
+        Vel_print_ISR();
         break;
       case 6:
         t10ms_index = 7;
@@ -118,8 +118,7 @@ if (t10ms_flag) {
         break;
       case 9:
         t10ms_index = 0;
-        Vel_print_ISR();
-        motorVelShow();
+        //motorVelShow();
         //Serial.print(MotorL.showDebug(2));
         break;
       default:
@@ -179,10 +178,10 @@ void motorVelShow(){
 //  Serial.print("Right : ");
 //  Serial.print(MotorR.ShowSpeed());
 //  Serial.print(", Left: ");
-  Serial.print("R, L : ");
-  Serial.print(MotorR.ShowSpeed());
-  Serial.print(" ");
-  Serial.println(MotorL.ShowSpeed());
+  Serial1.print("R, L : ");
+  Serial1.print(MotorR.ShowSpeed());
+  Serial1.print(" ");
+  Serial1.println(MotorL.ShowSpeed());
 }
 
 void CB_RA() {
@@ -216,7 +215,15 @@ void Motor_control_ISR(){
 }
 
 void Vel_print_ISR(){
-  velShow();
+    
+  static bool M_index = false;
+  if(M_index == true){
+    motorVelShow();
+    M_index  = false;
+  } else {
+    M_index  = true;
+  } 
+  
 }
 
 void Serial_Input_ISR() {
@@ -239,12 +246,12 @@ void Serial_Input_ISR() {
   //  Serial1.print(STR_SPD);
 
 
-  float LinVelIn = LinVel.toInt()/1000.0f;
-  float AngVelIn = AngVel.toInt()/1000.0f;
+  float LinVelIn = LinVel.toInt();
+  float AngVelIn = AngVel.toInt();
   velTarget(LinVelIn, AngVelIn);
-  Serial.print("LinVel : ");
-  Serial.print(LinVelIn);
-  Serial.print(" AngVel : ");
-  Serial.println(AngVelIn);
+//  Serial1.print("LinVel : ");
+//  Serial1.print(LinVelIn);
+//  Serial1.print(" AngVel : ");
+//  Serial1.println(AngVelIn);
 
 }

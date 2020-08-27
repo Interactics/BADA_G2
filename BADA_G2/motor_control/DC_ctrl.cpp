@@ -61,14 +61,14 @@ void DCMotor::WritePWM_(bool Dir, int PWM){
 void DCMotor::MotorControl(int TargetSpd){
     int Speed = Velocity_; // Current Speed 
     float err = 0;
-    float K_P = 0.0f, 
-          K_I = 0.0f, 
-          K_D = 0.0f;
+    float u_p = 0.0f, 
+          u_i = 0.0f, 
+          u_d = 0.0f;
 
     int  u_val = 0;
     bool m_dir = false;
 
-    int Y_output = 0;
+    int u_output = 0;
     float TargetEncod;
     float CurrentEncod;
 
@@ -77,23 +77,23 @@ void DCMotor::MotorControl(int TargetSpd){
     err          = TargetEncod - CurrentEncod;
     err_sum_    += err;
 
-    K_P = P_gain_ * err;
-    K_I = I_gain_ * err_sum_;
-    K_D = D_gain_ * (err - err_prev_);
+    u_p = P_gain_ * err;
+    u_i = I_gain_ * err_sum_;
+    u_d = D_gain_ * (err - err_prev_);
 
     err_prev_ = err;
-    Y_output  = K_P + K_I + K_D;
+    u_output  = u_p + u_i + u_d;
 
-    if(Y_output < 0){
+    if(u_output < 0){
         m_dir = false; 
-        Y_output *= -1;
+        u_output *= -1;
     } else {
         m_dir = true; 
     }
 
-    if (Y_output > 255) Y_output = 255;
-    PWM_current_ = Y_output;    
-    WritePWM_(m_dir, Y_output);
+    if (u_output > 255) u_output = 255;
+    PWM_current_ = u_output;    
+    WritePWM_(m_dir, u_output);
 } // Controlling MotorSpd using PID_Ctrl.
 
 void DCMotor::SetUpSpd(int TargetSpd){
