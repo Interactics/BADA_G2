@@ -1,0 +1,209 @@
+<?xml version="1.0" ?>
+<robot name="my_first_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find bada_g2_description)/urdf/material.xacro" />
+  <xacro:include filename="$(find bada_g2_description)/urdf/bada_g2.gazebo" />
+
+  <xacro:include filename="$(find bada_g2_description)/urdf/_d435.urdf.xacro"/>
+
+  <link
+    name="base_footprint_link">
+  </link>
+  <link
+    name="base_link">
+    <inertial>
+			<mass value="8" />
+			<!--<origin xyz="-0.025 0 -0.223"/> -->
+			<origin xyz="-0.01 0 0.08" />
+			<inertia ixx="0.06833333" ixy="0" ixz="0" iyy="0.08666666666" iyz="0" izz="0.10166666666" />
+		</inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bada_g2_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bada_g2_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+ <joint
+    name="base_link_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0.00900000000000009"
+      rpy="0 0 0" />
+    <parent
+      link="base_footprint_link" />
+    <child
+      link="base_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="L_link">
+    <inertial>
+      <origin
+        xyz="-5.55111512312578E-17 0.0105 5.55111512312578E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.0812700200410188" />
+      <inertia
+        ixx="4.08495570817307E-05"
+        ixy="-9.68675562982482E-20"
+        ixz="-2.27151551025304E-21"
+        iyy="7.66250906473836E-05"
+        iyz="-2.47184831485579E-22"
+        izz="4.08495570817308E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bada_g2_description/meshes/L_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.666666666666667 0.698039215686274 0.768627450980392 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bada_g2_description/meshes/L_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="L_joint"
+    type="continuous">
+    <origin
+      xyz="0.078301258184095 0.120003013664007 0.0330000000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="L_link" />
+    <axis
+      xyz="0 1 0" />
+    <!-- <limit effort="10000" velocity="1000"/>
+    <joint_properties damping="0.1" friction="1.0"/> -->
+  </joint>
+  <link
+    name="R_link">
+    <inertial>
+      <origin
+        xyz="-5.55111512312578E-17 0.0105 5.55111512312578E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.0812700200410188" />
+      <inertia
+        ixx="4.08495570817307E-05"
+        ixy="-9.68675562982482E-20"
+        ixz="-2.27151551025304E-21"
+        iyy="7.66250906473836E-05"
+        iyz="-2.47184831485579E-22"
+        izz="4.08495570817308E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bada_g2_description/meshes/R_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.666666666666667 0.698039215686274 0.768627450980392 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bada_g2_description/meshes/R_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="R_joint"
+    type="continuous">
+    <origin
+      xyz="0.0783012581840955 -0.119996986335993 0.0330000000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="R_link" />
+    <axis
+      xyz="0 1 0" />
+    <!-- <limit effort="10000" velocity="1000"/>
+    <joint_properties damping="1.0" friction="1.0"/> -->
+  </joint>
+
+
+
+    <xacro:sensor_d435 name="d435_camera" topics_ns="d435_camera" parent="base_link">
+        <origin xyz="0.145 0 0.15" rpy="0 0 0"/>
+    </xacro:sensor_d435>
+
+  <!-- rplidar -->
+
+  <joint name="rplidar_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0.145 0 0.085" rpy="0 0 0"/> <!--rpy : 0 0 3.14-->
+    <parent link="base_link"/>
+    <child link="laser"/>
+  </joint>
+
+
+  <link name="laser">
+    <collision>
+      <origin xyz="0 0 -0.0308" rpy="1.5707 0 4.71"/>
+      <geometry>
+        <mesh filename="package://my_mobile/meshes/rplidar.dae" scale="0.001 0.001 0.001" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 -0.0308" rpy="1.5707 0 4.71"/>
+      <geometry>
+        <mesh filename="package://my_mobile/meshes/rplidar.dae" scale="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 -0.0308" rpy="1.5707 0 4.71"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+
+
+
+
+</robot>
