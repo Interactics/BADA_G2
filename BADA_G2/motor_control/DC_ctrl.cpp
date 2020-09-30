@@ -16,7 +16,7 @@ DCMotor::DCMotor(int pin_encod_A, int pin_encod_B, int pin_direct, int pin_PWM)
     :MOTR_ENCOD_A_(pin_encod_A), MOTR_ENCOD_B_(pin_encod_B), 
      MOTR_DIR_(pin_direct), MOTR_PWM_(pin_PWM) 
 {
-    // Encoder pin Setup
+    // Encoder pin SetupshowDebug
     pinMode(pin_encod_A, INPUT_PULLUP);
     pinMode(pin_encod_B, INPUT_PULLUP);
     
@@ -59,7 +59,7 @@ void DCMotor::WritePWM_(bool Dir, int PWM){
 }
  
 void DCMotor::MotorControl(int TargetSpd){
-    int Speed = Velocity_; // Current Speed 
+    int Speed = Velocity_;         // Current Speed
     float err = 0;
     float u_p = 0.0f, 
           u_i = 0.0f, 
@@ -169,6 +169,7 @@ int DCMotor::showDebug(int options){
         case 2 :
         return PWM_current_;
         case 3 :
+        return Position_current_;
         break;
     }
 }

@@ -7,15 +7,14 @@
    - to know sound informations in their home.
 */
 
-// 2020.09.27 add publishing TF and odometry 
+// 2020.09.27 add publishing TF and odometry
 
 #include <ros.h>
 #include <ros/time.h>
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
-#include <geometry_msgs/Twist.h>
-#include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Twist.h>
 
 #include "include/DC_ctrl.h"
 #include "include/EveryTimerB.h"
@@ -27,9 +26,17 @@
    4. refactoring
  ************************************/
 
+/************************************
+    ---------------UNIT------------
+
+    Velocity == [mm/sec]
+*/
+
 const int WHEELBASE          = 265;  // [mm]
 const int WHEELSIZE          = 84;  // Wheel to wheel distance
-const int ENCODER_RESOLUTION = 1612; // Pulse Per Round (31gear * 13)402 Pulse/CH x 4
+//const int ENCODER_RESOLUTION = 1612; // Pulse Per Round (31gear * 13)402 Pulse/CH x 4
+const int ENCODER_RESOLUTION = 390 * 4; // Pulse Per Round (31gear * 13)390 Pulse/CH x 4
+
 const int CONTROL_FREQUENCY  = 20;   // [ms]
 
 //Arduino Pin
@@ -74,13 +81,17 @@ DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM);
 
 nav_msgs::Odometry wheelOdom;
 geometry_msgs::Twist cmd_vel;
+geometry_msgs::Twist cmd_twist;
 geometry_msgs::Quaternion odom_quat;
 geometry_msgs::TransformStamped odom_trans;
 ros::NodeHandle nh;
 
-ros::Publisher odom_pub("wheel_odom", &wheelOdom);
-tf::TransformBroadcaster odom_broadcaster;
+void cmdvelCB(const geometry_msgs::Twist& Twist_msg);
 
+ros::Publisher odom_pub("wheel_odom", &wheelOdom);
+ros::Subscriber<geometry_msgs::Twist> sub_cmdvel("cmd_vel", &cmdvelCB);
+
+tf::TransformBroadcaster odom_broadcaster;
 
 char base_link[] = "/base_link";
 char odom[] = "/odom";
@@ -122,6 +133,8 @@ void loop() {
         break;
       case 6:
         t10ms_index = 7;
+        nh.spinOnce();
+
         break;
       case 7:
         t10ms_index = 8;
@@ -132,7 +145,7 @@ void loop() {
       case 9:
         t10ms_index = 0;
         motorVelShow();
-        //Serial.print(MotorL.showDebug(2));
+        Serial.println(MotorL.showDebug(3));
         break;
       default:
         t10ms_index = 0;
@@ -157,8 +170,8 @@ void velTarget(const float LinearV_X, const float AngularV_Z) {
   float LEFT_V = 0, RIGHT_V = 0;
 
   //IK of the mobile robot's wheel
-  RIGHT_V = LinearV_X + AngularV_Z * WHEELBASE / 2000.0;
-  LEFT_V  = LinearV_X - AngularV_Z * WHEELBASE / 2000.0;
+  RIGHT_V = LinearV_X + AngularV_Z * WHEELBASE / 2000.0;  // [m/sec]
+  LEFT_V  = LinearV_X - AngularV_Z * WHEELBASE / 2000.0;  // [m/sec]
   // The number '2000'  is not clear
 
   MotorR.SetUpSpd(RIGHT_V);
@@ -291,7 +304,7 @@ void ardInit() {
   MotorR.PIDgainSet(6, 0.8, 0);
   MotorL.PIDgainSet(6, 0.8, 0);
 
-  //Serial.begin(9600);
+  Serial.begin(9600);
   Serial1.begin(115200);
   delay(100);
 
@@ -311,19 +324,28 @@ void rosInit() {
   nh.initNode();
   nh.advertise(odom_pub);
   odom_broadcaster.init(nh);
+  nh.subscribe(sub_cmdvel);
+
 }
+
+void cmdvelCB(const geometry_msgs::Twist& Twist_msg) {
+  cmd_twist = Twist_msg;
+}
+
 
 void pubOdometry() {
   ros::Time current_time, last_time;
 
+  last_time = nh.now();
+
   float Linear_Vel;
   float Angular_Vel;
+
   int Vel_R = MotorR.ShowSpeed();
   int Vel_L = MotorL.ShowSpeed();
 
-  Linear_Vel  = float(Vel_R + Vel_L) / 2;               //[mm/sec]
-  Angular_Vel = float(Vel_R - Vel_L) / WHEELBASE;       //[rad/sec]
-
+  Linear_Vel  = float(Vel_R + Vel_L) / 2000;      // [m/sec]
+  Angular_Vel = float(Vel_R - Vel_L) / WHEELBASE; // [rad/sec]
 
   static double x = 0.0;
   static double y = 0.0;
@@ -331,15 +353,14 @@ void pubOdometry() {
 
   current_time = nh.now();
 
-  double dt = 20;
+  double dt = 100; // [msec]
   double delta_x = (Linear_Vel * cos(th)) * dt;
   double delta_y = (Linear_Vel * sin(th)) * dt;
   double delta_th = Angular_Vel * dt;
 
-  x += delta_x;
-  y += delta_y;
-  th += delta_th;
-
+  x += delta_x / 1000;      // [m/sec]
+  y += delta_y / 1000;      // [m/sec]
+  th += delta_th / 1000 ;    // [rad/sec]
 
   geometry_msgs::Quaternion odom_quat;
   odom_quat = tf::createQuaternionFromYaw(th);
@@ -360,5 +381,4 @@ void pubOdometry() {
   wheelOdom.header.stamp = nh.now();
 
   odom_pub.publish(&wheelOdom);
-  nh.spinOnce();
 }
