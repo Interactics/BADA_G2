@@ -204,14 +204,14 @@
     <collision>
       <origin xyz="0 0 -0.0308" rpy="1.5707 0 4.71"/>
       <geometry>
-        <mesh filename="package://my_mobile/meshes/rplidar.dae" scale="0.001 0.001 0.001" />
+        <mesh filename="package://bada_g2_description/meshes/rplidar.dae" scale="0.001 0.001 0.001" />
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 -0.0308" rpy="1.5707 0 4.71"/>
       <geometry>
-        <mesh filename="package://my_mobile/meshes/rplidar.dae" scale="0.001 0.001 0.001" />
+        <mesh filename="package://bada_g2_description/meshes/rplidar.dae" scale="0.001 0.001 0.001" />
       </geometry>
     </visual>
 
