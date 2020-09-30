@@ -2,6 +2,9 @@
 <launch>
     <param name="robot_description" command="$(find xacro)/xacro $(find bada_g2_description)/urdf/bada_g2.xacro"/>
     
+
+    <arg name="world_name" default="$(find bada_g2_description)/worlds/robot_house.world"/>
+
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
     <arg name="z" default="0.5"/>
@@ -10,9 +13,10 @@
 	  <arg name="paused" value="false"/>
 	  <arg name="use_sim_time" value="true"/>
 	  <arg name="gui" value="true"/>
+          <arg name="world_name" value="$(arg world_name)"/>
 	</include>
     
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-urdf -param robot_description -model my_first_robot -x $(arg x) -y $(arg y) -z $(arg z)" />
+          args="-urdf -param robot_description -model bada_robot -x $(arg x) -y $(arg y) -z $(arg z)" />
           
 </launch>
