@@ -4,6 +4,8 @@
     <arg unless="$(arg localization)" name="args"  default="--delete_db_on_start"/>
 
 
+  <include file="$(find bada_g2_2dnav)/launch/move_base.launch"/>
+
   <group ns="rtabmap">
 
     <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="screen">
@@ -36,6 +38,10 @@
     
         <!-- output -->
         <remap from="grid_map" to="/map"/>
+        <param name="use_action_for_goal" type="bool" value="true"/>
+        <remap from="move_base"            to="/move_base"/>
+
+
 
         <param name="queue_size" type="int" value="10"/>
 
@@ -56,6 +62,8 @@
         <param name="GridGlobal/MinSize"           type="string" value="20"/>
   
         <param name="Rtabmap/DetectionRate"    type="double" value="2"/>
+        <!-- <param name="Rtabmap/StartNewMapOnLoopClosure" type="string"  value="true"/> -->
+
 
         <param name="RGBD/OptimizeMaxError"            type="string" value="10"/>
         <param name="RGBD/LoopClosureReextractFeatures"            type="string" value="true"/>
