@@ -1,5 +1,5 @@
 /* File        : motor_control.ino
-   Date        : 2020.09.27.
+   Date        : 2020.10.02.
    Arthor      : Interactics
    Description :
    - This code is made for BADA_G2's Motor system control.
@@ -7,7 +7,12 @@
    - to know sound informations in their home.
 */
 
-// 2020.09.27 add publishing TF and odometry
+// 2020.10.2 add IMU Senosr and cmd_vel
+
+#include <Adafruit_FXAS21002C.h>
+#include <Adafruit_FXOS8700.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
 
 #include <ros.h>
 #include <ros/time.h>
@@ -15,6 +20,9 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/MagneticField.h>
+
 
 #include "include/DC_ctrl.h"
 #include "include/EveryTimerB.h"
@@ -77,30 +85,41 @@ DCMotor MotorL(L_MOTOR_ENCOD_A, L_MOTOR_ENCOD_B, L_MOTOR_DIR, L_MOTOR_PWM);
 DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM);
 
 ////////////////ROS/////////////////
-
+Adafruit_FXAS21002C gyro = Adafruit_FXAS21002C(0x0021002C);
+Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
 
 nav_msgs::Odometry wheelOdom;
 geometry_msgs::Twist cmd_vel;
 geometry_msgs::Twist cmd_twist;
 geometry_msgs::Quaternion odom_quat;
 geometry_msgs::TransformStamped odom_trans;
+sensor_msgs::Imu imu_msg;
+sensor_msgs::MagneticField mag_msg;
+std_msgs::Header header;
+
 ros::NodeHandle nh;
 
 void cmdvelCB(const geometry_msgs::Twist& Twist_msg);
 
-ros::Publisher odom_pub("wheel_odom", &wheelOdom);
-ros::Subscriber<geometry_msgs::Twist> sub_cmdvel("cmd_vel", &cmdvelCB);
+ros::Publisher odom_pub("bada/wheel_odom", &wheelOdom);
+ros::Publisher raw_imu("imu/data_raw", &imu_msg);
+ros::Publisher raw_mag("imu/mag"     , &mag_msg);
+ros::Subscriber<geometry_msgs::Twist> sub_cmdvel("bada/cmd_vel", &cmdvelCB);
 
 tf::TransformBroadcaster odom_broadcaster;
 
 char base_link[] = "/base_link";
 char odom[] = "/odom";
-
 //////////////////////////////////////
+
+//// IMU init////
+sensors_event_t aevent, mevent, event;
+
 
 void setup() {
   ardInit();
   rosInit();
+  imuInit();
 }
 
 void loop() {
@@ -118,7 +137,7 @@ void loop() {
         break;
       case 2:
         t10ms_index = 3;
-        Serial_Input_ISR();
+        //Serial_Input_ISR();
         break;
       case 3:
         t10ms_index = 4;
@@ -133,19 +152,19 @@ void loop() {
         break;
       case 6:
         t10ms_index = 7;
-        nh.spinOnce();
-
+        nh.spinOnce();   //
         break;
       case 7:
         t10ms_index = 8;
         break;
       case 8:
         t10ms_index = 9;
+        pubIMU();
         break;
       case 9:
         t10ms_index = 0;
-        motorVelShow();
-        Serial.println(MotorL.showDebug(3));
+        //        motorVelShow();
+        //        Serial.println(MotorL.showDebug(3));
         break;
       default:
         t10ms_index = 0;
@@ -317,19 +336,53 @@ void ardInit() {
   TimerB2.attachInterrupt(TimerB2_ISR);
   TimerB2.setPeriod(10000);            // f : 100HZ, T : 10ms
 
-  Serial1.println("---Motor Control System is up!---");
 }
 
 void rosInit() {
   nh.initNode();
+  
+  nh.logwarn("--ino for BADA--");
+
   nh.advertise(odom_pub);
   odom_broadcaster.init(nh);
   nh.subscribe(sub_cmdvel);
 
+  /* IMU ROS Init*/
+  nh.advertise(raw_imu);
+  nh.advertise(raw_mag);
+}
+
+void imuInit() {
+
+  if (!accelmag.begin(ACCEL_RANGE_4G)) {
+    /* There was a problem detecting the FXOS8700 ... check your connections */
+    nh.logwarn("Accel is not connected!");
+  }
+  /* Initialise the sensor */
+  if (!gyro.begin()) {
+    /* There was a problem detecting the FXAS21002C ... check your connections
+    */
+    nh.logwarn("Gyro is not connected!");
+  }
+
+  // put your setup code here, to run once:
+  gyro.begin();
+  accelmag.begin(ACCEL_RANGE_4G);
 }
 
 void cmdvelCB(const geometry_msgs::Twist& Twist_msg) {
-  cmd_twist = Twist_msg;
+  double dx = 0, dy = 0, dr = 0;
+  double RIGHT_V = 0, LEFT_V = 0;
+
+  dx = Twist_msg.linear.x;
+  dy = Twist_msg.linear.y;
+  dr = Twist_msg.angular.z;
+
+  RIGHT_V = dx + dr * WHEELBASE / 2000;
+  LEFT_V = dx - dr * WHEELBASE / 2000;
+
+  MotorR.SetUpSpd(RIGHT_V);
+  MotorL.SetUpSpd(LEFT_V);
 }
 
 
@@ -381,4 +434,34 @@ void pubOdometry() {
   wheelOdom.header.stamp = nh.now();
 
   odom_pub.publish(&wheelOdom);
+}
+
+void pubIMU() {
+  ros::Time current_time =  nh.now();
+
+  accelmag.getEvent(&aevent, &mevent);
+  gyro.getEvent(&event);
+
+  imu_msg.header.stamp       = current_time;
+  imu_msg.header.frame_id    = "bada/imu";
+
+  imu_msg.orientation.x = 0;
+  imu_msg.orientation.y = 0;
+  imu_msg.orientation.z = 0;
+  imu_msg.orientation.w = 0;
+
+  imu_msg.angular_velocity.x = event.gyro.x;
+  imu_msg.angular_velocity.y = event.gyro.y;
+  imu_msg.angular_velocity.z = event.gyro.z;
+
+  imu_msg.linear_acceleration.x = aevent.acceleration.x;
+  imu_msg.linear_acceleration.y = aevent.acceleration.y;
+  imu_msg.linear_acceleration.z = aevent.acceleration.z;
+  raw_imu.publish(&imu_msg);
+
+  mag_msg.header.stamp = current_time;
+  mag_msg.magnetic_field.x = mevent.magnetic.x;
+  mag_msg.magnetic_field.y = mevent.magnetic.y;
+  mag_msg.magnetic_field.z = mevent.magnetic.z;
+  raw_mag.publish(&mag_msg);
 }
