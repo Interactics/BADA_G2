@@ -4,3 +4,4 @@ build
 devel
 logs
 node_modules
+.catkin_tools
