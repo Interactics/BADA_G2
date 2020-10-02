@@ -1,0 +1,6 @@
+config.js
+venv
+build
+devel
+logs
+node_modules
