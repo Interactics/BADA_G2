@@ -23,7 +23,6 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
 
-
 #include "include/DC_ctrl.h"
 #include "include/EveryTimerB.h"
 
@@ -102,14 +101,13 @@ ros::NodeHandle nh;
 void cmdvelCB(const geometry_msgs::Twist& Twist_msg);
 
 ros::Publisher odom_pub("bada/wheel_odom", &wheelOdom);
-ros::Publisher raw_imu("imu/data_raw", &imu_msg);
-ros::Publisher raw_mag("imu/mag"     , &mag_msg);
+ros::Publisher raw_imu("imu_bada_base", &imu_msg);
+ros::Publisher raw_mag("mag_bada_base", &mag_msg);
 ros::Subscriber<geometry_msgs::Twist> sub_cmdvel("bada/cmd_vel", &cmdvelCB);
 
 tf::TransformBroadcaster odom_broadcaster;
 
-char base_link[] = "/base_link";
-char odom[] = "/odom";
+
 //////////////////////////////////////
 
 //// IMU init////
@@ -144,7 +142,7 @@ void loop() {
         break;
       case 4:
         t10ms_index = 5;
-        pubOdometry();
+        pubWheelOdometry();
         break;
       case 5:
         t10ms_index = 6;
@@ -340,8 +338,6 @@ void ardInit() {
 
 void rosInit() {
   nh.initNode();
-  
-  nh.logwarn("--ino for BADA--");
 
   nh.advertise(odom_pub);
   odom_broadcaster.init(nh);
@@ -386,10 +382,8 @@ void cmdvelCB(const geometry_msgs::Twist& Twist_msg) {
 }
 
 
-void pubOdometry() {
-  ros::Time current_time, last_time;
-
-  last_time = nh.now();
+void pubWheelOdometry() {
+  ros::Time current_time =  nh.now();
 
   float Linear_Vel;
   float Angular_Vel;
@@ -400,38 +394,63 @@ void pubOdometry() {
   Linear_Vel  = float(Vel_R + Vel_L) / 2000;      // [m/sec]
   Angular_Vel = float(Vel_R - Vel_L) / WHEELBASE; // [rad/sec]
 
-  static double x = 0.0;
-  static double y = 0.0;
-  static double th = 0.0;
+  static double x_final  = 0.0;
+  static double y_final  = 0.0;
+  static double th_final = 0.0;
 
   current_time = nh.now();
 
   double dt = 100; // [msec]
-  double delta_x = (Linear_Vel * cos(th)) * dt;
-  double delta_y = (Linear_Vel * sin(th)) * dt;
+  double delta_x = (Linear_Vel * cos(th_final)) * dt;
+  double delta_y = (Linear_Vel * sin(th_final)) * dt;
   double delta_th = Angular_Vel * dt;
 
-  x += delta_x / 1000;      // [m/sec]
-  y += delta_y / 1000;      // [m/sec]
-  th += delta_th / 1000 ;    // [rad/sec]
+  x_final += delta_x / 1000;      // [m/sec]
+  y_final += delta_y / 1000;      // [m/sec]
+  th_final += delta_th / 1000 ;    // [rad/sec]
+
+  char base[] = "/mobile_base";
+  char odom[] = "/odom";
 
   geometry_msgs::Quaternion odom_quat;
-  odom_quat = tf::createQuaternionFromYaw(th);
+
+  odom_quat = tf::createQuaternionFromYaw(th_final);
+
+
+  // publish the transform over tf
   geometry_msgs::TransformStamped odom_trans;
-  odom_trans.header.stamp = nh.now();
+  odom_trans.header.stamp = current_time;
   odom_trans.header.frame_id = odom;
-  odom_trans.child_frame_id = base_link;
-  odom_trans.transform.translation.x = x;
-  odom_trans.transform.translation.y = y;
+  odom_trans.child_frame_id = base;
+
+  odom_trans.transform.translation.x = x_final;
+  odom_trans.transform.translation.y = y_final;
   odom_trans.transform.translation.z = 0.0;
   odom_trans.transform.rotation = odom_quat;
-  odom_broadcaster.sendTransform(odom_trans);
 
+  // send the transform
+  odom_broadcaster.sendTransform(odom_trans);
+  
+
+  // publish the odometry message
+
+  wheelOdom.header.stamp    = current_time;
   wheelOdom.header.frame_id = odom;
-  wheelOdom.child_frame_id = base_link;
-  wheelOdom.twist.twist.linear.x = Linear_Vel;
+
+
+  //set the position
+  wheelOdom.pose.pose.position.x = x_final;
+  wheelOdom.pose.pose.position.y = y_final;
+  wheelOdom.pose.pose.position.z = 0.0;
+  wheelOdom.pose.pose.orientation = odom_quat;
+
+  // set the vel
+  wheelOdom.child_frame_id  = base;
+  wheelOdom.twist.twist.linear.x  = Linear_Vel;
+  wheelOdom.twist.twist.linear.y  = 0;
   wheelOdom.twist.twist.angular.z = Angular_Vel;
-  wheelOdom.header.stamp = nh.now();
+
+
 
   odom_pub.publish(&wheelOdom);
 }
@@ -442,13 +461,15 @@ void pubIMU() {
   accelmag.getEvent(&aevent, &mevent);
   gyro.getEvent(&event);
 
+  // IMU
+  
   imu_msg.header.stamp       = current_time;
-  imu_msg.header.frame_id    = "bada/imu";
+  imu_msg.header.frame_id    = "imu_base";
 
-  imu_msg.orientation.x = 0;
-  imu_msg.orientation.y = 0;
-  imu_msg.orientation.z = 0;
-  imu_msg.orientation.w = 0;
+  //  imu_msg.orientation.x = 0;
+  //  imu_msg.orientation.y = 0;
+  //  imu_msg.orientation.z = 0;
+  //  imu_msg.orientation.w = 1;
 
   imu_msg.angular_velocity.x = event.gyro.x;
   imu_msg.angular_velocity.y = event.gyro.y;
@@ -459,9 +480,15 @@ void pubIMU() {
   imu_msg.linear_acceleration.z = aevent.acceleration.z;
   raw_imu.publish(&imu_msg);
 
-  mag_msg.header.stamp = current_time;
+
+  // MagneticField
+  
+  mag_msg.header.stamp     = current_time;
+  mag_msg.header.frame_id  = "imu_base";
+
   mag_msg.magnetic_field.x = mevent.magnetic.x;
   mag_msg.magnetic_field.y = mevent.magnetic.y;
   mag_msg.magnetic_field.z = mevent.magnetic.z;
   raw_mag.publish(&mag_msg);
+  
 }

@@ -11,7 +11,7 @@ int main(int argc, char **argv){
     while (node.ok()) {
         transform.setOrigin(tf::Vector3(-0.70, 0, 0.79));
         transform.setRotation(tf::Quaternion(0, 0, 0, 1));
-        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "bada_wheelOdom", "bada_odom"));
+        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "mobile_base", "imu_link"));
         rate.sleep();
     }
     return 0;
