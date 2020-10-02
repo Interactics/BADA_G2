@@ -140,10 +140,6 @@ def signal(msg):
             if(longQ.empty()): break
         waveform = np.frombuffer(bytearray(currentLong), dtype=np.int16) / 32768.0
 
-        # print(type(waveform))
-        # print(waveform.shape)
-        # print(waveform[:20])
-        # print(np.mean(np.absolute(waveform)))
         old=time.time()
         scores, spectrogram = yamnet.predict(np.reshape(waveform, [1, -1]), steps=1)
         # outputs = model.predict(inputs)
@@ -196,10 +192,7 @@ def signal(msg):
 
     # print(current)
     waveform = np.frombuffer(bytearray(current), dtype=np.int16) / 32768.0
-    # print(type(waveform))
-    # print(waveform.shape)
-    # print(waveform[:20])
-    # print(np.mean(np.absolute(waveform)))
+    
     old=time.time()
     scores, spectrogram = yamnet.predict(np.reshape(waveform, [1, -1]), steps=1)
     # outputs = model.predict(inputs)
@@ -250,29 +243,8 @@ def signal(msg):
         elif(v == 'Water'):
             signals[v]=signals[v]*0.1+picked[v]*0.9
 
-        # if(v == 'Alarm'):
-        #     #picked['Alarm']+=float(prob)
-        #     signals[v]=signals[v]*0.6+picked[v]*0.4
-        # elif(v == 'Door'):
-        #     signals[v]=signals[v]*0.05+picked[v]*0.95
-        # elif(v == 'Bell'):
-        #     signals[v]=signals[v]*0.05+picked[v]*0.95
-        # elif(v == 'Cry'):
-        #     signals[v]=signals[v]*0.4+picked[v]*0.8
-        # elif(v == 'Boiling'):
-        #     signals[v]=signals[v]*0.8+picked[v]*0.2
-        # elif(v == 'Water'):
-        #     signals[v]=signals[v]*0.8+picked[v]*0.2
-
-        # rospy.loginfo(signals[v])
-        # signals[v]=signals[v]*0.3+picked[v]*0.7
-        # print(v+' ' +str(round(signals[v], 2)) + ' ' + str(detected[v]))
-
     print(picked)
-    # print(alarmSignals)
-    # print(boilSignals)
-    # print(waterSignals)
-    # detect
+
     detectAny=False
     for _, v in enumerate(keys):
         detectInfoPub.publish('key ' + v + str(signals[v]))
