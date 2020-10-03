@@ -1,0 +1,30 @@
+{
+  "development": {
+    "username": "admin",
+    "password": "pqieowie",
+    "database": "database-1",
+    "host": "database-1.c0gqhc57eg3z.ap-northeast-2.rds.amazonaws.com",
+    "dialect": "mysql",
+    "pool": {
+      "max": 20,
+      "min": 0,
+      "idle": 5000
+    },
+    "logging": true,
+    "forceSync": true
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
