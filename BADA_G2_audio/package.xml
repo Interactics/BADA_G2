@@ -64,5 +64,6 @@
   <export>
     <!-- Other tools can request additional information be placed here -->
 
+    <pip_requirements>requirements.txt</pip_requirements>
   </export>
 </package>

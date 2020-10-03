@@ -4,3 +4,5 @@ matplotlib
 soundfile
 tensorflow
 roslibpy
+GitPython==2.1
+psutil==5.2.2
