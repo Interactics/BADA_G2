@@ -1,0 +1,6 @@
+build
+devel
+venv
+yamnet.h5
+logs
+*.pyc
