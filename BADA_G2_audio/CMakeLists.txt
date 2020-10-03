@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(bada_audio)
+project(BADA_G2_audio)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -11,11 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  catkin_virtualenv
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -108,6 +108,15 @@ catkin_package(
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
+
+catkin_generate_virtualenv(
+  INPUT_REQUIREMENTS requirements.txt
+  PYTHON_INTERPRETER python3
+  USE_SYSTEM_PACKAGES TRUE
+  ISOLATE_REQUIREMENTS FALSE
+  CHECK_VENV FALSE
+)
+
 
 ###########
 ## Build ##

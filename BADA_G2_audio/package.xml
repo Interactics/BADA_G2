@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>bada_audio</name>
+  <name>BADA_G2_audio</name>
   <version>0.0.0</version>
-  <description>The bada_audio package</description>
+  <description>The BADA_G2_audio package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -52,12 +52,16 @@
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
+  <build_depend>catkin_virtualenv</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>catkin_virtualenv</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>catkin_virtualenv</exec_depend>
+  
 
 
   <!-- The export tag contains other, unspecified, tags -->
