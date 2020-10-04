@@ -42,18 +42,21 @@
 const int WHEELBASE          = 265;  // [mm]
 const int WHEELSIZE          = 84;  // Wheel to wheel distance
 //const int ENCODER_RESOLUTION = 1612; // Pulse Per Round (31gear * 13)402 Pulse/CH x 4
-const int ENCODER_RESOLUTION = 390 * 4; // Pulse Per Round (31gear * 13)390 Pulse/CH x 4
-
+const int ENCODER_RESOLUTION = 1440 * 4; // Pulse Per Round (31gear * 13)390 Pulse/CH x 4
 const int CONTROL_FREQUENCY  = 20;   // [ms]
 
 //Arduino Pin
+
+////2
+
 const byte R_MOTOR_ENCOD_A   = 11;
 const byte R_MOTOR_ENCOD_B   = 12;
 const byte R_MOTOR_PWM       = 6;
 const byte R_MOTOR_DIR       = 8;
 
-const byte L_MOTOR_ENCOD_A   = 10;
-const byte L_MOTOR_ENCOD_B   = 9;
+/////1
+const byte L_MOTOR_ENCOD_A   = 9;
+const byte L_MOTOR_ENCOD_B   = 10;
 const byte L_MOTOR_PWM       = 5;
 const byte L_MOTOR_DIR       = 3;
 
@@ -68,7 +71,6 @@ void Vel_print_ISR();
 void VelocityCTRL();
 void velTarget(const float LinearV_X, const float AngularV_Z);
 void velTwist(float* L_X, float* A_Z);
-void velShow();
 void Serial_Input_ISR();
 
 
@@ -84,14 +86,17 @@ DCMotor MotorL(L_MOTOR_ENCOD_A, L_MOTOR_ENCOD_B, L_MOTOR_DIR, L_MOTOR_PWM);
 DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM);
 
 ////////////////ROS/////////////////
-Adafruit_FXAS21002C gyro = Adafruit_FXAS21002C(0x0021002C);
+Adafruit_FXAS21002C gyro   = Adafruit_FXAS21002C(0x0021002C);
 Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
 
 nav_msgs::Odometry wheelOdom;
 geometry_msgs::Twist cmd_vel;
-geometry_msgs::Twist cmd_twist;
+geometry_msgs::Twist bada_vel;
+geometry_msgs::Vector3 bada_vel2;
+
 geometry_msgs::Quaternion odom_quat;
 geometry_msgs::TransformStamped odom_trans;
+
 sensor_msgs::Imu imu_msg;
 sensor_msgs::MagneticField mag_msg;
 std_msgs::Header header;
@@ -100,13 +105,18 @@ ros::NodeHandle nh;
 
 void cmdvelCB(const geometry_msgs::Twist& Twist_msg);
 
-ros::Publisher odom_pub("bada/wheel_odom", &wheelOdom);
-ros::Publisher raw_imu("imu_bada_base", &imu_msg);
-ros::Publisher raw_mag("mag_bada_base", &mag_msg);
+ros::Publisher vel_pub("bada/vel",         &bada_vel);
+ros::Publisher vel_pub2("bada/vel2",        &bada_vel2);
+
 ros::Subscriber<geometry_msgs::Twist> sub_cmdvel("bada/cmd_vel", &cmdvelCB);
 
-tf::TransformBroadcaster odom_broadcaster;
+//tf::TransformBroadcaster odom_broadcaster;
 
+//ros::Publisher odom_pub("bada/wheel_odom", &wheelOdom);
+
+/*           IMU                 */
+ros::Publisher raw_imu("imu_bada_base",    &imu_msg);
+ros::Publisher raw_mag("mag_bada_base",    &mag_msg);
 
 //////////////////////////////////////
 
@@ -124,14 +134,14 @@ void loop() {
   if (t10ms_flag) {
     t10ms_flag = 0;
     Motor_control_ISR();    // 1 per 20ms
-
     switch (t10ms_index) {
       case 0:
         t10ms_index = 1;
-        //        velTarget(200, 0);
+        //        velTarget(0, 3.0);
         break;
       case 1:
         t10ms_index = 2;
+        nh.spinOnce();   //
         break;
       case 2:
         t10ms_index = 3;
@@ -142,27 +152,32 @@ void loop() {
         break;
       case 4:
         t10ms_index = 5;
-        pubWheelOdometry();
+        //pubWheelOdometry();
         break;
       case 5:
         t10ms_index = 6;
-        Vel_print_ISR();
+        pubVelTwist();
+        //Vel_print_ISR();
         break;
       case 6:
         t10ms_index = 7;
-        nh.spinOnce();   //
         break;
       case 7:
         t10ms_index = 8;
         break;
       case 8:
         t10ms_index = 9;
-        pubIMU();
+//        pubIMU();
         break;
       case 9:
         t10ms_index = 0;
         //        motorVelShow();
-        //        Serial.println(MotorL.showDebug(3));
+        //        Serial.print(" MotorR : ");
+        //        Serial.print(MotorR.ShowSpeed());
+        //
+        //        Serial.print(" MotorL : ");
+        //        Serial.println(MotorL.ShowSpeed());
+
         break;
       default:
         t10ms_index = 0;
@@ -183,17 +198,7 @@ void VelocityCTRL() {
 
 }
 
-void velTarget(const float LinearV_X, const float AngularV_Z) {
-  float LEFT_V = 0, RIGHT_V = 0;
 
-  //IK of the mobile robot's wheel
-  RIGHT_V = LinearV_X + AngularV_Z * WHEELBASE / 2000.0;  // [m/sec]
-  LEFT_V  = LinearV_X - AngularV_Z * WHEELBASE / 2000.0;  // [m/sec]
-  // The number '2000'  is not clear
-
-  MotorR.SetUpSpd(RIGHT_V);
-  MotorL.SetUpSpd(LEFT_V);
-}
 
 void velTwist(float* L_X, float* A_Z) {
   float SpeedR = MotorR.ShowSpeed();
@@ -204,25 +209,8 @@ void velTwist(float* L_X, float* A_Z) {
   *A_Z = (SpeedR - SpeedL) / WHEELBASE * 1000.0 ;
 }
 
-void twistShow(float* L_X, float* A_Z) {
-  Serial.print("Linear x : ");
-  Serial.print(*L_X);
-  Serial.print(", Angular z : ");
-  Serial.println(*A_Z);
-}
-void velShow() {
-  //  Serial.print("Linear x : ");
-  //  Serial.print(MotorR.ShowEncoder());
-  //  Serial.print(", Angular z : ");
-  //  Serial.println(MotorL.ShowEncoder());
-}
-
 void motorVelShow() {
-  //Publish Twist and ODOM
 
-  //  Serial.print("Right : ");
-  //  Serial.print(MotorR.ShowSpeed());
-  //  Serial.print(", Left: ");
   float Linear_Vel;
   float Angular_Vel;
   int Vel_R = MotorR.ShowSpeed();
@@ -231,12 +219,17 @@ void motorVelShow() {
   Linear_Vel  = float(Vel_R + Vel_L) / 2;               //[mm/sec]
   Angular_Vel = float(Vel_R - Vel_L) / WHEELBASE;       //[rad/sec]
 
+  Serial.print("Lin, Ang : ");
+  Serial.print(Linear_Vel);
+  Serial.print(" ");
+  Serial.println(Angular_Vel);
+  Serial.print(" target: ");
+  Serial.println(MotorL.showDebug(1));
 
-  Serial1.print("Lin, Ang : ");
-  Serial1.print(Linear_Vel);
-  Serial1.print(" ");
-  Serial1.println(Angular_Vel);
-}
+  //Or Publish Twist
+
+
+}  //Motor's Twist display
 
 
 void CB_RA() {
@@ -266,11 +259,9 @@ void Motor_control_ISR() {
   } else {
     M_index  = true;
   }
-
 }
 
 void Vel_print_ISR() {
-
   static bool M_index = false;
   if (M_index == true) {
     motorVelShow();
@@ -318,11 +309,11 @@ void Serial_Input_ISR() { // Twist CMD
 
 void ardInit() {
 
-  MotorR.PIDgainSet(6, 0.8, 0);
-  MotorL.PIDgainSet(6, 0.8, 0);
-
+  MotorR.PIDgainSet(5.8, 0.2, 0.1);
+  MotorL.PIDgainSet(5.8, 0.2, 0.1);
+  //
   Serial.begin(9600);
-  Serial1.begin(115200);
+  //  Serial1.begin(115200);
   delay(100);
 
   attachInterrupt(digitalPinToInterrupt(R_MOTOR_ENCOD_A), CB_RA, CHANGE);
@@ -339,9 +330,13 @@ void ardInit() {
 void rosInit() {
   nh.initNode();
 
-  nh.advertise(odom_pub);
-  odom_broadcaster.init(nh);
+  //  nh.advertise(odom_pub);
+  nh.advertise(vel_pub);
+  //nh.advertise(vel_pub2);
+
   nh.subscribe(sub_cmdvel);
+
+  //  odom_broadcaster.init(nh);
 
   /* IMU ROS Init*/
   nh.advertise(raw_imu);
@@ -366,19 +361,50 @@ void imuInit() {
   accelmag.begin(ACCEL_RANGE_4G);
 }
 
-void cmdvelCB(const geometry_msgs::Twist& Twist_msg) {
-  double dx = 0, dy = 0, dr = 0;
-  double RIGHT_V = 0, LEFT_V = 0;
+void velTarget(const float LinearV_X, const float AngularV_Z) {
+  float LEFT_V = 0, RIGHT_V = 0;  // [mm/sec]
 
-  dx = Twist_msg.linear.x;
-  dy = Twist_msg.linear.y;
-  dr = Twist_msg.angular.z;
-
-  RIGHT_V = dx + dr * WHEELBASE / 2000;
-  LEFT_V = dx - dr * WHEELBASE / 2000;
+  //IK of the mobile robot's wheel
+  RIGHT_V = LinearV_X + AngularV_Z * WHEELBASE / 2.0f;  // [m/sec]
+  LEFT_V  = LinearV_X - AngularV_Z * WHEELBASE / 2.0f;  // [m/sec]
+  // The number '2000'  is not clear
 
   MotorR.SetUpSpd(RIGHT_V);
   MotorL.SetUpSpd(LEFT_V);
+} // Set up Motor velocity Target
+
+
+void cmdvelCB(const geometry_msgs::Twist& Twist_msg) {
+  double Linear_X = 0, Angular_Z = 0;
+  double LEFT_V = 0, RIGHT_V = 0;
+
+  Linear_X  = Twist_msg.linear.x * 1000;   // [mm/s]
+  Angular_Z = Twist_msg.angular.z;         // [rad/s]
+
+
+  velTarget(Linear_X, Angular_Z);
+  //  RIGHT_V = dx + dr * WHEELBASE / 2;
+  //  LEFT_V  = dx - dr * WHEELBASE / 2;
+  //  MotorL.SetUpSpd(LEFT_V);
+  //  MotorR.SetUpSpd(RIGHT_V);
+}
+
+void pubVelTwist() {
+  ros::Time current_time =  nh.now();
+
+  float Linear_Vel;
+  float Angular_Vel;
+
+  int Vel_R = MotorR.ShowSpeed();
+  int Vel_L = MotorL.ShowSpeed();
+
+  Linear_Vel  = float(Vel_R + Vel_L) / 2000;      // [m/sec]
+  Angular_Vel = float(Vel_R - Vel_L) / WHEELBASE; // [rad/sec]
+
+  bada_vel.linear.x  = Linear_Vel;
+  bada_vel.angular.z = Angular_Vel;
+
+  vel_pub.publish(&bada_vel);
 }
 
 
@@ -429,8 +455,8 @@ void pubWheelOdometry() {
   odom_trans.transform.rotation = odom_quat;
 
   // send the transform
-  odom_broadcaster.sendTransform(odom_trans);
-  
+  //  odom_broadcaster.sendTransform(odom_trans);
+
 
   // publish the odometry message
 
@@ -452,7 +478,7 @@ void pubWheelOdometry() {
 
 
 
-  odom_pub.publish(&wheelOdom);
+  //  odom_pub.publish(&wheelOdom);
 }
 
 void pubIMU() {
@@ -462,7 +488,7 @@ void pubIMU() {
   gyro.getEvent(&event);
 
   // IMU
-  
+
   imu_msg.header.stamp       = current_time;
   imu_msg.header.frame_id    = "imu_base";
 
@@ -482,7 +508,7 @@ void pubIMU() {
 
 
   // MagneticField
-  
+
   mag_msg.header.stamp     = current_time;
   mag_msg.header.frame_id  = "imu_base";
 
@@ -490,5 +516,5 @@ void pubIMU() {
   mag_msg.magnetic_field.y = mevent.magnetic.y;
   mag_msg.magnetic_field.z = mevent.magnetic.z;
   raw_mag.publish(&mag_msg);
-  
+
 }
