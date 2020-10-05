@@ -40,7 +40,7 @@
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
-      <robotBaseFrame>base_link</robotBaseFrame>
+      <robotBaseFrame>base_footprint_link</robotBaseFrame>
       <rosDebugLevel>ns</rosDebugLevel>
       <publishWheelTF>false</publishWheelTF>
       <publishOdomTF>true</publishOdomTF>

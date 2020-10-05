@@ -13,7 +13,10 @@
 	  <arg name="paused" value="false"/>
 	  <arg name="use_sim_time" value="true"/>
 	  <arg name="gui" value="true"/>
-          <arg name="world_name" value="$(arg world_name)"/>
+      <arg name="world_name" value="$(arg world_name)"/>
+      <arg name="debug" value="false" />
+      <arg name="headless" value="false"/>
+      <arg name="verbose" value="true"/>
 	</include>
     
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen"

@@ -3,10 +3,15 @@
   <param name="robot_description" command="$(find xacro)/xacro.py $(find bada_g2_description)/urdf/bada_g2.xacro" />
   <!-- send fake joint values -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="use_gui" value="False"/>
+    <param name="publish_frequency" value="100.0"/>
+    <param name="use_sim_time" value="true"/>
   </node>
   <!-- Combine joint values -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+    <param name="use_sim_time" value="true"/>
+    <param name="publish_frequency" value="100.0"/>
+
+
   <!-- Show in Rviz   -->
-  <node name="rviz" pkg="rviz" type="rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bada_g2_2dnav)/rviz/r.rviz" /> />
 </launch>
