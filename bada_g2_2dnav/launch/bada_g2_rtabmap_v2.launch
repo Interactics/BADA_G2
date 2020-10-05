@@ -1,0 +1,68 @@
+<launch>
+    <arg name="localization"      default="false"/>
+    <arg if="$(arg localization)" name="args"  default=""/>
+    <arg unless="$(arg localization)" name="args"  default="--delete_db_on_start"/>
+
+
+  <include file="$(find bada_g2_2dnav)/launch/move_base.launch"/>
+
+  <group ns="rtabmap">
+
+    <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="screen">
+      <remap from="rgb/image"       to="/d435_camera/color/image_raw"/>
+      <remap from="depth/image"     to="/d435_camera/depth/image_raw"/>
+      <remap from="rgb/camera_info" to="/d435_camera/color/camera_info"/>
+      <remap from="rgbd_image"      to="/rgbd_image"/> <!-- output -->
+      
+      <!-- Should be true for not synchronized camera topics 
+           (e.g., false for kinectv2, zed, realsense, true for xtion, kinect360)-->
+      <param name="approx_sync"       value="true"/> 
+    </node>
+
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="">
+        <param name="frame_id" type="string" value="base_link"/>
+	      <param name="wait_for_transform_duration"  type="double"   value="0.2"/>
+        <param name="subscribe_depth" type="bool" value="false"/>
+        <param name="subscribe_rgbd" type="bool" value="true"/>
+        <param name="subscribe_scan" type="bool" value="true"/>
+        
+        <!-- inputs -->
+        <remap from="odom" to="/odom"/>
+        <remap from="scan" to="/scan"/>
+        <remap from="rgbd_image" to="/rgbd_image"/>
+    
+        <!-- output -->
+        <remap from="grid_map" to="/map"/>
+        <param name="use_action_for_goal" type="bool" value="true"/>
+        <remap from="move_base"            to="/move_base"/>
+
+
+
+        <param name="queue_size" type="int" value="10"/>
+
+        <!-- RTAB-Map's parameters -->
+        <param name="RGBD/NeighborLinkRefining" type="string" value="true"/>
+        <param name="RGBD/ProximityBySpace"     type="string" value="true"/>
+        <param name="RGBD/AngularUpdate"        type="string" value="0.01"/>
+        <param name="RGBD/LinearUpdate"         type="string" value="0.01"/>
+        <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+        <param name="Grid/FromDepth"            type="string" value="false"/> <!-- occupancy grid from lidar -->
+        <param name="Reg/Force3DoF"             type="string" value="true"/>
+        <param name="Reg/Strategy"              type="string" value="1"/> <!-- 1=ICP -->
+        
+        <!-- ICP parameters -->
+        <param name="Icp/VoxelSize"                 type="string" value="0.05"/>
+        <param name="Icp/MaxCorrespondenceDistance" type="string" value="0.1"/>
+
+        <!-- user parameter-->
+        <param name="Rtabmap/DetectionRate"    type="double" value="2"/>
+
+
+        <param if="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="false"/>
+        <param unless="$(arg localization)" name="Mem/IncrementalMemory" type="string" value="true"/>
+        <param name="Mem/InitWMWithAllNodes" type="string" value="$(arg localization)"/>
+   
+        <param name="database_path" type="string" value="$(find bada_g2_2dnav)/maps/rtabmap_copyv2.db"/>
+    </node>
+  </group>
+</launch>
