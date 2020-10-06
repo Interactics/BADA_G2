@@ -4,7 +4,6 @@
         <meta charset="utf-8"/>
        
     
-        <script type="text/javascript" src="index.js"></script>
         <script type="text/javascript" src="http://static.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
         <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
         <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
@@ -17,8 +16,11 @@
         <link rel="stylesheet" href="index.css"/>
         <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-
+        <!-- <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/> -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script type="text/javascript" src="index.js"></script>
+        
     </head>
     
     <style>
@@ -84,8 +86,8 @@
                                 </div>
                                 <script>
       
-                                    Kakao.init("b886eede39b9d47bc9d3cb6e91483799");   // 사용할 앱의 JavaScript 키를 설정
-                                    init();
+                                    // Kakao.init("a4365158deb211d98898dba793c60acb");   // 사용할 앱의 JavaScript 키를 설정
+                                    // init();
                                     /*  Kakao.Auth.createLoginButton({
                                         container: '#kakao-login-btn',
                                         size : 'small',
@@ -97,18 +99,18 @@
                                         }
                                       });*/
                                     
-                                      function setAuth() {
-                                        Kakao.Auth.login({
-                                          scope: 'talk_message,friends',
-                                          success: function (response) {
-                                            console.log(response);
-                                          },
-                                          fail: function (error) {
-                                            console.log(error);
-                                          }
-                                        });
-                                      }
-                                      setAuth();
+                                    //   function setAuth() {
+                                    //     Kakao.Auth.login({
+                                    //       scope: 'talk_message,friends',
+                                    //       success: function (response) {
+                                    //         console.log(response);
+                                    //       },
+                                    //       fail: function (error) {
+                                    //         console.log(error);
+                                    //       }
+                                    //     });
+                                    //   }
+                                    //   setAuth();
                                     </script>
                             </div>
                         </div>
