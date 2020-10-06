@@ -2,13 +2,14 @@
     <arg name="localization"      default="false"/>
     <arg if="$(arg localization)" name="args"  default=""/>
     <arg unless="$(arg localization)" name="args"  default="--delete_db_on_start"/>
-
+    <arg name="rtabmapviz"    default="false"/>
+    <arg name="simulation"  default="false"/>
 
   <include file="$(find bada_g2_2dnav)/launch/move_base.launch"/>
 
   <group ns="rtabmap">
     <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="">
-        <param name="frame_id" type="string" value="base_link"/>
+        <param name="frame_id" type="string" value="base_footprint_link"/>
 	      <param name="wait_for_transform_duration"  type="double"   value="0.2"/>
         <param name="subscribe_depth" type="bool" value="true"/>
         <param name="subscribe_scan" type="bool" value="true"/>
@@ -49,7 +50,6 @@
         <param name="Rtabmap/TimeThr"           type="string" value="700"/>
         <param name="Rtabmap/DetectionRate"     type="string" value="2" />
         <param name="Mem/RehearsalSimilarity"   type="string" value="0.45"/>
-        <param name="Grid/MaxObstacleHeight"    type="string" value="1.7" />
         <param name="Grid/NoiseFilteringRadius" type="string" value="0.05"/>
         <param name="Grid/NoiseFilteringMinNeighbors" type="string" value="5"/>
         
@@ -59,5 +59,23 @@
    
 
     </node>
+
+
+        <!-- Visualisation RTAB-Map -->
+    <node if="$(arg rtabmapviz)" pkg="rtabmap_ros" type="rtabmapviz" name="rtabmapviz" args="-d $(find rtabmap_ros)/launch/config/rgbd_gui.ini" output="screen">
+  	  <param name="subscribe_depth" type="bool" value="true"/>
+      <param name="subscribe_scan"  type="bool" value="true"/>
+      <param name="frame_id"        type="string" value="base_footprint_link"/>
+  
+      <remap from="rgb/image"    to="/d435_camera/color/image_raw"/>
+      <remap from="depth/image"     to="/d435_camera/depth/image_raw"/>
+      <remap from="rgb/camera_info" to="/d435_camera/color/camera_info"/>
+      <remap from="scan"            to="/scan_filtered"/>
+      <remap from="odom"            to="/odom"/>
+      
+      <param name="rgb/image_transport"   type="string" value="compressed"/>
+      <param name="depth/image_transport" type="string" value="compressedDepth"/>
+    </node>
+    
   </group>
 </launch>
