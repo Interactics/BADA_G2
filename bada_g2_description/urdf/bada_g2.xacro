@@ -175,7 +175,7 @@
 
   <joint name="rplidar_joint" type="fixed">
     <axis xyz="0 1 0" />
-    <origin xyz="0.145 0 0.085" rpy="0 0 0"/> <!--rpy : 0 0 3.14-->
+    <origin xyz="0.145 0 0.085" rpy="0 0 -3.14"/> <!--simulation rpy : 0 0 0-->
     <parent link="base_link"/>
     <child link="laser"/>
   </joint>
