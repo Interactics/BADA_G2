@@ -15,15 +15,13 @@
       <remap if="$(arg simulation)"     from="rgb/image"    to="/d435_camera/color/image_raw"/>
       <remap if="$(arg simulation)"     from="depth/image"     to="/d435_camera/depth/image_raw"/>
       <remap if="$(arg simulation)"     from="rgb/camera_info" to="/d435_camera/color/camera_info"/>
-      
-      <remap unless="$(arg simulation)"     from="rgb/image"    to="/d435_camera/aligned_depth_to_color/image_raw"/>
-      <remap unless="$(arg simulation)"     from="depth/image"     to="/d435_camera/aligned_depth_to_color/image_raw"/>
-      <remap unless="$(arg simulation)"     from="rgb/camera_info" to="/d435_camera/aligned_depth_to_color/camera_info"/>
-      
-      <remap from="rgbd_image"      to="/rgbd_image"/> 
       <!-- real world -->
+      <remap unless="$(arg simulation)"     from="rgb/image"    to="/d435_camera/color/image_raw"/>
+      <remap unless="$(arg simulation)"     from="depth/image"     to="/d435_camera/aligned_depth_to_color/image_raw"/>
+      <remap unless="$(arg simulation)"     from="rgb/camera_info" to="/d435_camera/color/camera_info"/>
+      
 
-
+      <remap from="rgbd_image"      to="/rgbd_image"/> 
 
       <!-- Should be true for not synchronized camera topics 
            (e.g., false for kinectv2, zed, realsense, true for xtion, kinect360)-->
