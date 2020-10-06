@@ -1,2 +1,6 @@
 pyaudio
 numpy
+matplotlib
+soundfile
+tensorflow
+roslibpy
