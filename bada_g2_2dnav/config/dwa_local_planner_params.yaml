@@ -1,19 +1,11 @@
 DWAPlannerROS:
-<<<<<<< HEAD
   max_vel_x: 0.5
   min_vel_x: -0.5
   max_vel_y: 0.0
   min_vel_y: 0.0
   max_vel_trans: 0.5
   min_vel_trans: -0.5
-=======
-  max_vel_x: 0.18
-  min_vel_x: 0.0
-  max_vel_y: 0.0
-  min_vel_y: 0.0
-  max_vel_trans: 0.18
-  min_vel_trans: -0.18
->>>>>>> daaf075b948ad6c17179152564893a22d2eb04cb
+
 #trans_stopped_vel:0.01
   max_vel_theta: 1.8
   min_vel_theta: 0.7
