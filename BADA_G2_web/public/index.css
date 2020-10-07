@@ -1,0 +1,112 @@
+
+.title-container {
+  align-content: top, center;
+  height: 130px;
+  width : 100%;
+  margin-top: 20px;
+}
+
+.title-container .logo {
+  color : #2b2a27;
+  height: 83px;
+  width: 100%;
+  font-family: 'Anton', sans-serif;
+  font-size: 70px;
+  text-align: center;
+  
+}
+
+.title-container .sub_logo {
+  width: 100%;
+  height: min-content;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 20px;
+  color :#2b2a27;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+
+.cards {
+      background: #fefaef;
+}
+
+  .cards .row {
+      width: 100%;
+  }
+  .cards .row .alarm-col {
+    left : 40px;
+    position: absolute;
+    font-family: 'Nanum Gothic', sans-serif;
+    color : #2b2a27;
+    text-align: center;
+
+    background: transparent;
+    
+    border-radius: 20px;
+    border: 2px solid #000000;
+    height: 600px;
+    width: 300px;
+  }
+
+  .cards .row .middle-section {
+    float : left;
+    position: absolute;
+    left : 360px;
+    width : 572px;
+  }
+  .cards .row .middle-section .clock-container {
+    position: relative;
+    float : left;
+    font-family: 'Nanum Gothic', sans-serif;
+    text-align: center;
+
+    background: transparent;
+    border-radius: 20px;
+    border-style: solid #000000;
+    
+    height: 100px;
+    width: 100%;
+  }
+  .cards .row .middle-section .history-col {
+    position: relative;
+    font-family: 'Nanum Gothic', sans-serif;
+    color : #2b2a27;
+
+    background: transparent;
+    border-radius: 20px;
+    border: 2px solid #000000;
+
+    float: left;
+    text-align: center;
+  
+    /*padding-right: 20px; */
+    height: 478px;
+    width: 100%;
+
+    margin-top: 20px;
+  }
+  
+  .cards .row .map-col {
+    position: relative;
+    float: right;
+    background: #feeba7;
+    border-radius: 20px;
+    border: 2px solid #000000;
+    
+    margin-right: 20px;
+    height: 600px;
+    width: 400px;
+  }
+
+  .alarm-contents-block {
+    text-align: center;
+    align-content: center;
+    padding-top: 20px;
+  }
+  .now {font-size: 24px;}
+  .signal {font: 45px; color: #b00020;}
+  .hear {font-size: 24px;}
+
+  .history-title { font-size: 24px;}
