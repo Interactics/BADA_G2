@@ -200,7 +200,7 @@
 
 function setAuth(){
 	Kakao.Auth.login({
-	    scope: 'talk_message,friends',
+	    scope: 'talk_message,friends,profile',
 	    success: function(response) {
 	        console.log(response);
 	    },

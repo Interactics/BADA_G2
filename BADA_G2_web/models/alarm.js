@@ -2,8 +2,8 @@ const { Sequelize } = require("sequelize");
 
 module.exports = function (sequelize, DataTypes) {
   const alarm = sequelize.define('Alarm', {
-    type: { field: 'type', type: DataTypes.STRING(50), unique: true, allowNull: true },
-    // time: { field: 'time', type: DataTypes.DATE, allowNull: false, defaultValue:Sequelize.NOW }
+    type: { field: 'type', type: DataTypes.STRING(50), unique: false, allowNull: true },
+    time: { field: 'time', type: DataTypes.DATE, allowNull: false, defaultValue:Sequelize.NOW }
   }, {
     // don't use camelcase for automatically added attributes but underscore style
     // so updatedAt will be updated_at
