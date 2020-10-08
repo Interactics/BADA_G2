@@ -1,13 +1,11 @@
-/* File        : motor_control.ino
-   Date        : 2020.10.02.
+/* File        : bada_g2.ino
+   Date        : 2020.10.04.
    Arthor      : Interactics
    Description :
    - This code is made for BADA_G2's Motor system control.
    - BADA_G2 is a social robot which helps hearing-impaired peoeple
    - to know sound informations in their home.
 */
-
-// 2020.10.2 add IMU Senosr and cmd_vel
 
 #include <Adafruit_FXAS21002C.h>
 #include <Adafruit_FXOS8700.h>
@@ -28,8 +26,6 @@
 
 /************************************
    ------------TODO-----------
-   2. divide file
-   3. add communication [proceeding]
    4. refactoring
  ************************************/
 
@@ -167,7 +163,7 @@ void loop() {
         break;
       case 8:
         t10ms_index = 9;
-//        pubIMU();
+        //        pubIMU();
         break;
       case 9:
         t10ms_index = 0;
@@ -324,7 +320,6 @@ void ardInit() {
   TimerB2.initialize();                // Timer Init
   TimerB2.attachInterrupt(TimerB2_ISR);
   TimerB2.setPeriod(10000);            // f : 100HZ, T : 10ms
-
 }
 
 void rosInit() {
@@ -339,8 +334,8 @@ void rosInit() {
   //  odom_broadcaster.init(nh);
 
   /* IMU ROS Init*/
-  nh.advertise(raw_imu);
-  nh.advertise(raw_mag);
+//  nh.advertise(raw_imu);
+//  nh.advertise(raw_mag);
 }
 
 void imuInit() {
@@ -401,7 +396,7 @@ void pubVelTwist() {
   Linear_Vel  = float(Vel_R + Vel_L) / 2000;      // [m/sec]
   Angular_Vel = float(Vel_R - Vel_L) / WHEELBASE; // [rad/sec]
 
-  bada_vel.linear.x  = Linear_Vel;
+  bada_vel.linear.x  = Linear_Vel; imuInit
   bada_vel.angular.z = Angular_Vel;
 
   vel_pub.publish(&bada_vel);
@@ -477,7 +472,6 @@ void pubWheelOdometry() {
   wheelOdom.twist.twist.angular.z = Angular_Vel;
 
 
-
   //  odom_pub.publish(&wheelOdom);
 }
 
@@ -492,11 +486,6 @@ void pubIMU() {
   imu_msg.header.stamp       = current_time;
   imu_msg.header.frame_id    = "imu_base";
 
-  //  imu_msg.orientation.x = 0;
-  //  imu_msg.orientation.y = 0;
-  //  imu_msg.orientation.z = 0;
-  //  imu_msg.orientation.w = 1;
-
   imu_msg.angular_velocity.x = event.gyro.x;
   imu_msg.angular_velocity.y = event.gyro.y;
   imu_msg.angular_velocity.z = event.gyro.z;
@@ -506,9 +495,7 @@ void pubIMU() {
   imu_msg.linear_acceleration.z = aevent.acceleration.z;
   raw_imu.publish(&imu_msg);
 
-
   // MagneticField
-
   mag_msg.header.stamp     = current_time;
   mag_msg.header.frame_id  = "imu_base";
 
@@ -516,5 +503,4 @@ void pubIMU() {
   mag_msg.magnetic_field.y = mevent.magnetic.y;
   mag_msg.magnetic_field.z = mevent.magnetic.z;
   raw_mag.publish(&mag_msg);
-
 }

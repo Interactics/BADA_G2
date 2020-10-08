@@ -1,6 +1,8 @@
 <launch>
   <!-- bada teleop twist keyboard -->
   <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py"   name="teleop_key_node"          output="screen">
-  <remap from="/cmd_vel" to="/bada/cmd_vel"/>
+    <param name="speed" type="double" value="0.2"/>
+    <param name="turn"  type="double" value="0.5"/>
+    <remap from="/cmd_vel" to="/bada/cmd_vel"/>
   </node>
 </launch>
