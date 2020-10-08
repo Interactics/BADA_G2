@@ -56,8 +56,9 @@ function setAuth() {
 setAuth();
 // Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
 
-function shareKakaotalk(sig_name)
-{
+function shareKakaotalk(sig_name){
+  try {
+    
     Kakao.API.request({
       url: '/v2/api/talk/memo/default/send',
       data: {
@@ -78,7 +79,10 @@ function shareKakaotalk(sig_name)
         console.log(error);
       },
     });
+  } catch (error) {
+    console.error(error);
   }
+}
 
   // function shareKakaotalk(sig_name)
   // {
@@ -338,13 +342,14 @@ var h = new Queue();
     }
     else if(sig_name!=dic1["Silence"])
     {
+      
         shareKakaotalk(sig_name);
         h.enqueue([sig_name, viewtime]);
         hidx=hidx+1;       
         PrintHistory=h.toString();
     }
     document.getElementById("history").innerHTML=PrintHistory;
-
+    
   });
 
   //ALARM Section
@@ -427,47 +432,6 @@ var h = new Queue();
   });*/
   
   // shareKakaotalk("BADA 인증 완료");
-
-function Queue(){
-
-    this.dataStore = [];
-    this.enqueue = enqueue;
-    this.dequeue = dequeue;
-    this.search=search;
-}
-
-function enqueue(element)
-{
-    this.dataStore.push(element);
-}
-
-function dequeue()
-{
-    return this.dataStore.shift();
-}
-
-var cnt=0;
-function search(){
-    
-    for(var i=0; i<this.dataStore.length;i++)
-    {
-      if((this.dataStore[i]-time)>1800000) //30분 이상이면 반복문탈출
-      {
-        break;
-      }
-      else{
-        cnt++;
-        console.log("Water events occur" + cnt + "times");
-      }
-    }
-    if(cnt>=3)
-    { console.log("Water event exceed 3 times. Send Message");
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
 
 w_remove = setInterval(function() {
     water.dequeue();
