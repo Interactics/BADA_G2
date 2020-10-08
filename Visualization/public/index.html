@@ -49,7 +49,7 @@
                         <div class = "card">
                             <div class = "alarm-contents-block">
                                     <h1 class = "now">지금,</h1>
-                                        <div id="signal"></div>
+                                        <div id="signal" style="font-size: 40px;color: #8B0000;font-weight: bold;"></div>
                                     <h2 class = "can hear">소리가 들려요!</h2>
                                     <div id="sign_language_gif"></div>
                             </div>
@@ -60,10 +60,7 @@
                     <div class =  "middle-section">  
                         <!-- clock -->
                         <div class = "clock-container">
-                            <div id = "clock_icon">
-                                <i class = "meterial-icons"></i>
-                            </div>
-                            <div id = "date_and_clock"></div>
+                            <div id = "date_and_time"></div>
                         </div>
     
                         <!-- history section -->
@@ -84,34 +81,6 @@
                                     <img id = "maping" src="./finalmap.png" width="400">
                                     <canvas id = "canvas" width="500" height="610"></canvas>
                                 </div>
-                                <script>
-      
-                                    // Kakao.init("a4365158deb211d98898dba793c60acb");   // 사용할 앱의 JavaScript 키를 설정
-                                    // init();
-                                    /*  Kakao.Auth.createLoginButton({
-                                        container: '#kakao-login-btn',
-                                        size : 'small',
-                                        success: function (authObj) {
-                                          alert(JSON.stringify(authObj));
-                                        },
-                                        fail: function (err) {
-                                          alert(JSON.stringify(err));
-                                        }
-                                      });*/
-                                    
-                                    //   function setAuth() {
-                                    //     Kakao.Auth.login({
-                                    //       scope: 'talk_message,friends',
-                                    //       success: function (response) {
-                                    //         console.log(response);
-                                    //       },
-                                    //       fail: function (error) {
-                                    //         console.log(error);
-                                    //       }
-                                    //     });
-                                    //   }
-                                    //   setAuth();
-                                    </script>
                             </div>
                         </div>
                 
