@@ -1,91 +1,117 @@
+.viewport-container {
+  height: 90%;
+  width: 90%;
+  margin: auto;
+}
+
 
 .title-container {
-  align-content: top, center;
+  /* align-content: top, center; */
+  /* float: left; */
+  /* display: block; */
+  justify-content: space-between;
   height: 130px;
   width : 100%;
   margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .title-container .logo {
   color : #2b2a27;
   height: 83px;
-  width: 100%;
+  float: left;
+  width: 70%;
   font-family: 'Anton', sans-serif;
   font-size: 70px;
-  text-align: center;
-  
+  text-align: left;
+  /* flex-grow: 1; */
+  /* flex: 1 1 1500px */
 }
 
-.title-container .sub_logo {
+.title-container .logo .sub_logo {
   width: 100%;
   height: min-content;
   font-family: 'Bebas Neue', cursive;
-  font-size: 20px;
+  font-size: 30px;
+  font-weight: 100;
   color :#2b2a27;
-  text-align: center;
+  text-align: left;
   margin-top: 0;
   margin-bottom: 10px;
+}
+
+.title-container .clock-container {
+  /* position: relative; */
+  float : left;
+  font-family: 'Nanum Gothic', sans-serif;
+  text-align: center;
+
+  background: transparent;
+  border-radius: 20px;
+  border-style: solid #000000;
+  
+  height: 100px;
+  width: 30%;
+}
+
+.title-container .clock-container .clock-icon {
+  font-size: 150px;
 }
 
 
 .cards {
       background: #fefaef;
-}
+      /* display: flex; */
+    }
 
+.cards .card {
+  flex: 1 1 auto;
+  margin: 10px;
+}
+    
   .cards .row {
       width: 100%;
+      display: flex;
   }
   .cards .row .alarm-col {
-    left : 40px;
-    position: absolute;
+    /* left : 40px; */
+    /* position: relative; */
     font-family: 'Nanum Gothic', sans-serif;
     color : #2b2a27;
     text-align: center;
+    float: left;
 
     background: transparent;
     
     border-radius: 20px;
     border: 2px solid #000000;
     height: 600px;
-    width: 300px;
+    /* width: 30%; */
   }
 
   .cards .row .middle-section {
     float : left;
-    position: absolute;
-    left : 360px;
-    width : 572px;
-  }
-  .cards .row .middle-section .clock-container {
-    position: relative;
-    float : left;
-    font-family: 'Nanum Gothic', sans-serif;
-    text-align: center;
-
-    background: transparent;
+    /* position: relative; */
+    /* left : 360px; */
+    /* width : 40%; */
     border-radius: 20px;
-    border-style: solid #000000;
-    
-    height: 100px;
-    width: 100%;
+    border: 2px solid #000000;
   }
+
   .cards .row .middle-section .history-col {
-    position: relative;
+    /* position: relative; */
     font-family: 'Nanum Gothic', sans-serif;
     color : #2b2a27;
 
     background: transparent;
-    border-radius: 20px;
-    border: 2px solid #000000;
 
-    float: left;
+    /* float: left; */
     text-align: center;
   
     /*padding-right: 20px; */
     height: 478px;
     width: 100%;
 
-    margin-top: 20px;
   }
   
   .cards .row .map-col {
@@ -97,7 +123,11 @@
     
     margin-right: 20px;
     height: 600px;
-    width: 400px;
+    /* width: 30%; */
+  }
+
+  .cards .row .map-col .map-canvas {
+    width: 100%;
   }
 
   .alarm-contents-block {

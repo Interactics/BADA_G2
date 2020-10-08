@@ -31,93 +31,98 @@
     
     <body>
         <!-- title section  -->
-        
-        <div class = "title-container">
-            <div class= "logo">BADA</div>
-            <div class = "sub_logo">
-                BUDDY FOR AUDITORY DETECTION ASSISTANCE
+        <div class="viewport-container">
+
+          <div class = "title-container">
+              <div class= "logo">BADA
+                <div class = "sub_logo">
+                  BUDDY FOR AUDITORY DETECTION ASSISTANCE
+                </div>
+              </div>
+  
+              <!-- clock -->
+              <div class = "row clock-container row">
+                <div class="col s3" id = "clock_description">지금 시각</div>
+                <div class="col s6" id = "clock_icon">
+                    <i class = "meterial-icons"></i>
+                    <span class="material-icons clock-icon">
+                      schedule
+                      </span>
+                </div>
+                <div class="col s3" id = "date_and_clock">
+                  <div>dates</div>
+                  <div>times</div>
+                </div>
             </div>
-        </div>
-        
-
-
-    <div class = "container cards">
-               <div class = "row">
-
-                    <!-- left section -->
-                    <div class = "alarm-col">
-                        <div class = "card">
-                            <div class = "alarm-contents-block">
-                                    <h1 class = "now">지금,</h1>
-                                        <div id="signal"></div>
-                                    <h2 class = "can hear">소리가 들려요!</h2>
-                                    <div id="sign_language_gif"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- middle section -->
-                    <div class =  "middle-section">  
-                        <!-- clock -->
-                        <div class = "clock-container">
-                            <div id = "clock_icon">
-                                <i class = "meterial-icons"></i>
-                            </div>
-                            <div id = "date_and_clock"></div>
-                        </div>
-    
-                        <!-- history section -->
-                        <div class = "history-col">
-                            <div class = "card">
-                                <div class = "history-contents-block">
-                                    <h1 class = "history-title">몇 시에 어떤 소리가 ?</h1>
-                                    <div id="history"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- map = right section -->                 
-                    <div class = "map-col">
-                            <div class = "card">
-                                <div class = "map-contents-block">
-                                    <img id = "maping" src="./finalmap.png" width="400">
-                                    <canvas id = "canvas" width="500" height="610"></canvas>
-                                </div>
-                                <script>
+          </div>
+          <div class="divider"></div>
+  
+  
+      <div class = "cards">
+                 <div class = "row">
+  
+                      <!-- left section -->
+                      <div class = "col s3 alarm-col card">
+                          <div class = "alarm-contents-block">
+                                <h1 class = "now">지금,</h1>
+                                    <div id="signal"></div>
+                                <h2 class = "can hear">소리가 들려요!</h2>
+                                <div id="sign_language_gif"></div>
+                          </div>
+                      </div>
+  
+                      <!-- middle section -->
+                      <div class =  "col s5 middle-section card">  
       
-                                    // const KAKAO_TOKEN='token';
-                                    // Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
-                                    // init();
-                                    // /*  Kakao.Auth.createLoginButton({
-                                    //     container: '#kakao-login-btn',
-                                    //     size : 'small',
-                                    //     success: function (authObj) {
-                                    //       alert(JSON.stringify(authObj));
-                                    //     },
-                                    //     fail: function (err) {
-                                    //       alert(JSON.stringify(err));
-                                    //     }
-                                    //   });*/
-                                    
-                                    //   function setAuth() {
-                                    //     Kakao.Auth.login({
-                                    //       scope: 'talk_message,friends',
-                                    //       success: function (response) {
-                                    //         console.log(response);
-                                    //       },
-                                    //       fail: function (error) {
-                                    //         console.log(error);
-                                    //       }
-                                    //     });
-                                    //   }
-                                    //   setAuth();
-                                    </script>
-                            </div>
-                        </div>
-                
-                    </div>
-           </div>
+                          <!-- history section -->
+                          <div class = "history-col">
+                                  <div class = "history-contents-block">
+                                      <h1 class = "history-title">몇 시에 어떤 소리가 ?</h1>
+                                      <div id="history"></div>
+                                  </div>
+                          </div>
+                      </div>
+                      
+                      <!-- map = right section -->                 
+                      <div class = "col s5 map-col card">
+                                  <div class = "map-contents-block">
+                                      <img class="map-canvas" id = "maping" src="./finalmap.png" width="400">
+                                      <canvas class="map-canvas" id = "canvas" width="500" height="610"></canvas>
+                                  </div>
+                                  <script>
+        
+                                      // const KAKAO_TOKEN='token';
+                                      // Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
+                                      // init();
+                                      // /*  Kakao.Auth.createLoginButton({
+                                      //     container: '#kakao-login-btn',
+                                      //     size : 'small',
+                                      //     success: function (authObj) {
+                                      //       alert(JSON.stringify(authObj));
+                                      //     },
+                                      //     fail: function (err) {
+                                      //       alert(JSON.stringify(err));
+                                      //     }
+                                      //   });*/
+                                      
+                                      //   function setAuth() {
+                                      //     Kakao.Auth.login({
+                                      //       scope: 'talk_message,friends',
+                                      //       success: function (response) {
+                                      //         console.log(response);
+                                      //       },
+                                      //       fail: function (error) {
+                                      //         console.log(error);
+                                      //       }
+                                      //     });
+                                      //   }
+                                      //   setAuth();
+                                      </script>
+                          </div>
+                  
+                      </div>
+             </div>
+        </div>
     </body>
 </html>
 

@@ -915,7 +915,7 @@ var ros = new ROSLIB.Ros({
 
 var audio_topic = new ROSLIB.Topic({
     ros: ros,
-    name:'/audio',
+    name:'/signal',
     // name: '/bada_audio/audio',
     messageType: 'std_msgs/String'
 });
