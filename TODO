@@ -17,3 +17,7 @@ roslaunch bada_g2_2dnav bada_g2_rtabmap.launch localization:=true
 roslaunch bada_g2_description spawn.launch
 roslaunch bada_g2_description rviz.launch sim_time:=true
 roslaunch bada_g2_2dnav bada_g2_rtabmap.launch simulation:=true localization:=true
+
+
+robot localization package download
+sudo apt-get install libgeographic-dev

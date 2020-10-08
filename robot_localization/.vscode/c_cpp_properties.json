@@ -1,0 +1,45 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/opt/ros/melodic/include/**",
+        "/home/jonghak/catkin_ws/devel/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/amcl/include/**",
+        "/home/jonghak/catkin_ws/src/dual_sim/auto_slam/include/**",
+        "/home/jonghak/catkin_ws/src/bada_description/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/base_local_planner/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/carrot_planner/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/clear_costmap_recovery/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/costmap_2d/include/**",
+        "/home/jonghak/catkin_ws/src/BADA_G2/ddynamic_reconfigure/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/dwa_local_planner/include/**",
+        "/home/jonghak/catkin_ws/src/gazebo_tutorial/include/**",
+        "/home/jonghak/catkin_ws/src/gazebo_tutorial_description/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/global_planner/include/**",
+        "/home/jonghak/catkin_ws/src/multiple-object-tracking-lidar/include/**",
+        "/home/jonghak/catkin_ws/src/BADA_G2/laser_filters/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/map_server/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/move_base/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/move_slow_and_clear/include/**",
+        "/home/jonghak/catkin_ws/src/my_first_ros_pkg/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/nav_core/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/navfn/include/**",
+        "/home/jonghak/catkin_ws/src/opencv/include/**",
+        "/home/jonghak/catkin_ws/src/openslam_gmapping/include/**",
+        "/home/jonghak/catkin_ws/src/realsense-ros/realsense2_camera/include/**",
+        "/home/jonghak/catkin_ws/src/BADA_G2/realsense_gazebo_plugin/include/**",
+        "/home/jonghak/catkin_ws/src/BADA_G2/robot_localization/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/rotate_recovery/include/**",
+        "/home/jonghak/catkin_ws/src/teb_local_planner/include/**",
+        "/home/jonghak/catkin_ws/src/velodyne_simulator/velodyne_gazebo_plugins/include/**",
+        "/home/jonghak/catkin_ws/src/navigation/voxel_grid/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ]
+}
