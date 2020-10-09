@@ -3,6 +3,7 @@ var router = express.Router();
 var models = require('../models');
 
 router.put('/', async function(req, res){
+
   console.log('writing alarm : ');
   console.log(req.body);
 
@@ -14,24 +15,21 @@ router.put('/', async function(req, res){
   // })
 
   const alarm = await models.Alarm.create({
-  
     type: req.body.alarmType,
     time: req.body.alarmTime
-    
-  })
+  });
+
 
   console.log(alarm);
-  
   res.sendStatus(200);
-});
+})
 
 router.get('/', async function(req, res){
   console.log('getting alarms');
   
-  const alarms = await models.Alarm.findAll({ });
-
+  //const alarms = await models.Alarm.findAll({ });
+  const alarms = await models.Alarm.findAll({limit:10, order: [['createdAt', 'DESC']]});
   console.log(alarms);
-
   res.json(alarms);
 })
 

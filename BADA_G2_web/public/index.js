@@ -2,9 +2,9 @@ var data;
 var time;
 var sig_name;
 var viewtime;
-var PrintHistory = " ... ";
-
-var hidx = 0;
+var PrintHistory= " ... ";
+var uuid;
+var hidx=0;
 const FRAMES_PER_SECOND = 10;  // Valid values are 60,30,20,15,10...
 const FRAME_MIN_TIME = (1000 / 60) * (60 / FRAMES_PER_SECOND) - (1000 / 60) * 0.5;
 var lastFrameTime = 0;  // the last frame time
@@ -32,8 +32,8 @@ today.setTime(0);
 
 const dic1 = { 'Cry': '아기 우는 소리', 'Alarm': '화재 경보', 'Door': '노크', 'Boiling': '물 끓는 소리', 'Silence': '조용한', 'Water': '물소리', 'Bell': '초인종 소리' };
   
-const KAKAO_REST_API_TOKEN = "KAKAO_REST_API_TOKEN";
-const KAKAO_TOKEN = "KAKAO_TOKEN";
+const KAKAO_REST_API_TOKEN="dbd9b580157dee2b3191671338533e46";
+const KAKAO_TOKEN="f09ecd64a934de6bfd02f6ff2f98c2b6";
 
 Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
 init();
@@ -48,7 +48,8 @@ init();
     }
   });*/
 
-function setAuth() {
+
+/*function setAuth() {
   Kakao.Auth.login({
     scope: 'talk_message,friends',
     success: function (response) {
@@ -59,81 +60,83 @@ function setAuth() {
     }
   });
 }
-setAuth();
+setAuth();*/
+
+
 // Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
 
-function shareKakaotalk(sig_name) {
+function loadfriendlist()
+{
   Kakao.API.request({
-    url: '/v2/api/talk/memo/default/send',
-    data: {
-      template_object: {
-        object_type: 'text',
-        text: sig_name + "가 발생한 것 같아요!",
-        link: {
-          web_url: 'http://192.168.0.193',
-          mobile_web_url: 'http://192.168.0.193',
+    url: '/v1/api/talk/friends',
+    success: function(response) {
+      console.log("this is kakao friends token");
+      console.log(response);
+      console.log(response.uuid);
+      uuid=response.result_id;
+    },
+    fail: function(error) {
+      console.log(error);
+    }
+  });
+}
+loadfriendlist();
+
+
+function auth_shareKakaotalk()
+{
+    Kakao.API.request({
+      url: '/v1/api/talk/friends/message/default/send',
+      data: {
+        receiver_uuids: ['7dXs1ODX4tT4yv3E9cPzxPLD79vj2u3b65Y'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+        template_object: {
+          object_type: 'text',
+          text: "BADA 로그인이 성공했어요",
+          link: {
+              web_url: 'http://192.168.0.193',
+              mobile_web_url: 'http://192.168.0.193',
+            },
+            button_title : "BADA에서 확인하기"
         },
         button_title: "BADA에서 확인하기"
       },
-    },
-    success: function (response) {
-      console.log(response);
-    },
-    fail: function (error) {
-      console.log(error);
-    },
-  });
-}
-
-// function shareKakaotalk(sig_name)
-// {
-//   Kakao.API.request({
-//     url: '/v2/api/talk/memo/default/send',
-//     data: {
-//       template_object: {
-//         object_type: 'text',
-//         text: sig_name,
-//         link: {
-//             web_url: 'http://192.168.137.1',
-//             mobile_web_url: 'http://192.168.137.1',
-//           },
-//       },
-//     },
-//     success: function(response) {
-//       console.log(response);
-//     },
-//     fail: function(error) {
-//       console.log(error);
-//     },
-//   });
-
-// }
+      success: function(response) {
+        console.log(response);
+      },
+      fail: function(error) {
+        console.log(error);
+      },
+    });
+  }
+  //auth_shareKakaotalk();
 
 
-function shareauthKakaotalk() {
-  Kakao.API.request({
-    url: '/v2/api/talk/memo/default/send',
-    data: {
-      template_object: {
-        object_type: 'text',
-        text: "BADA 인증이 완료되었습니다",
-        link: {
-          web_url: 'http://192.168.0.193',
-          mobile_web_url: 'http://192.168.0.193',
+  function shareKakaotalk()
+{
+    Kakao.API.request({
+      url: '/v1/api/talk/friends/message/default/send',
+      data: {
+        receiver_uuids: ['7dXs1ODX4tT4yv3E9cPzxPLD79vj2u3b65Y'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+        template_object: {
+          object_type: 'text',
+          text: sig_name+"가 발생했어요",
+          link: {
+              web_url: 'http://192.168.0.193',
+              mobile_web_url: 'http://192.168.0.193',
+            },
+            button_title : "BADA에서 확인하기"
         },
         button_title: "BADA에서 확인하기"
 
       },
-    },
-    success: function (response) {
-      console.log(response);
-    },
-    fail: function (error) {
-      console.log(error);
-    },
-  });
-}
-shareauthKakaotalk();
+      success: function(response) {
+        console.log(response);
+      },
+      fail: function(error) {
+        console.log(error);
+      },
+    });
+  }
 
 
 function printNow() {
@@ -193,6 +196,42 @@ function printClock() {
 
 
 };
+var DBtype=[];
+var DBtime=[];
+var water= new Queue();
+var h_element;
+var h = new Queue();
+
+function loaddatabase(){
+    console.log("load database");
+
+    axios.get('/alarm')
+    .then(function (response) {
+      // handle success
+      console.log(response);   // should be 200 (success)
+      for(var i=0; i<response.data.length;i++){
+          DBtype[i]=response.data[i].type;
+          DBtime[i]=response.data[i].time;
+      }
+      //console.log(DBtype);
+      //console.log(DBtime);
+      })
+    .catch(function (error) {
+      // handle error
+      console.error(error);
+    })
+    .then(function () {
+      // always executed
+    });
+
+    for(var i=0; i<DBtype.length;i++)
+    {
+      sig_name=dic1[DBtype[i]];
+      h.enqueue[sig_name,DBtime[i]];
+      hidx=hidx+1;
+    }
+  }
+
 
 
 function Queue() {
@@ -611,8 +650,6 @@ function draw(timestamp) {
   const endangle = theta + 1 / 16 * Math.PI;
   ctx.fillStyle = 'rgba(248,206,105,0.7)';
 
-
-
   ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
   ctx.moveTo(x, y);
   ctx.arc(x, y, radius, startangle, endangle);
@@ -652,24 +689,69 @@ function readAlarmTest() {
 
 }
 
-function getAlarmTest() {
-  console.log('getting data from db...');
-
+function writeAlarmTest(){
+  console.log('writing data to db...');
+      
   // Make a request for a user with a given ID
-  axios.get('/alarm/1')  // '/alarm/:id
-    .then(function (response) {
-      // handle success
-      // console.log(response);
-      console.log(response.status);   // should be 200 (success)
+  axios.put('/alarm', {alarmType:'knock', alarmTime: Date.now()} )
+  .then(function (response) {
+    // handle success
+    console.log(response);  // should be 200 (succes
+
+  })
+  .catch(function (error) {
+    // handle error
+    console.error(error);
+  })
+  .then(function () {
+    // always executed
+  });
+
+}
+
+function getAlarmTest(){
+  console.log('getting data from db...');
+      
+  // Make a request for a user with a given ID
+  axios.get('/alarm')
+  .then(function (response) {
+    // handle success
+    console.log(response);
+    console.log(response.data[0].type);
+
+  
+     // should be 200 (success)
+  })
+  .catch(function (error) {
+    // handle error
+    console.error(error);
+  })
+  .then(function () {
+    // always executed
+  });
+ 
+
+}
+
+function readAlarmTest(){
+  console.log('reading data from db...');
+   
+  // Make a request for a user with a given ID
+  axios.get('/alarm', {data:'what'} )
+  .then(function (response) {
+    // handle success
+    // console.log(response);
+    console.log(response.status);   // should be 200 (success)
 
 
-    })
-    .catch(function (error) {
-      // handle error
-      console.error(error);
-    })
-    .then(function () {
-      // always executed
-    });
+  })
+  .catch(function (error) {
+    // handle error
+    console.error(error);
+  })
+  .then(function () {
+    // always executed
+    
+  });
 
 }
