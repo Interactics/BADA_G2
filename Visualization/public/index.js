@@ -291,17 +291,17 @@ var h = new Queue();
       messageType : 'std_msgs/String'
     });
     // const dic1={'Speech':'말하는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Television':'티비 소리', 'Silence':'...', 'Water':'물소리', 'Music':'휴대폰 벨소리'};
-  
+    
     signal.subscribe(function(m){
-      sig_name=dic1[m.data];
+      sig_name=m.data;
       
-      if(sig_name=='Speech') document.getElementById("sign_language_gif").src=img_info(S);
-      else if(sig_name=='Alarm') document.getElementById("sign_language_gif").src=img_info(A);
-      else if(sig_name=='Door') document.getElementById("sign_language_gif").src=img_info(D);
-      else if(sig_name=='Boiling') document.getElementById("sign_language_gif").src=img_info(B);
-      else if(sig_name=='Cry') document.getElementById("sign_language_gif").src=img_info(C);
-      else if(sig_name=='Bell') document.getElementById("sign_language_gif").src=img_info(b);
-      else if(sig_name=='Water') document.getElementById("sign_language_gif").src=img_info(W);
+      if(sig_name=='Speech') document.getElementById("sign_language_gif").src=img_info('S');
+      else if(sig_name=='Alarm') document.getElementById("sign_language_gif").src=img_info('A');
+      else if(sig_name=='Door') document.getElementById("sign_language_gif").src=img_info('D');
+      else if(sig_name=='Boiling') document.getElementById("sign_language_gif").src=img_info('B');
+      else if(sig_name=='Cry') document.getElementById("sign_language_gif").src=img_info('C');
+      else if(sig_name=='Bell') document.getElementById("sign_language_gif").src=img_info('b');
+      else if(sig_name=='Water') document.getElementById("sign_language_gif").src=img_info('W');
       
       document.getElementById("alarm").innerHTML = sig_name;
 
