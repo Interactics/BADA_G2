@@ -7,31 +7,42 @@
 }
 
 .title-container .logo {
-  color : #2b2a27;
   height: 83px;
   width: 100%;
-  font-family: 'Anton', sans-serif;
   font-size: 70px;
   text-align: center;
+  color: #f3c452;
+  /*color : #4eaea1;*/
+  text-shadow: 0px 3px 0 #040404, -3px 0 0 #040404, 3px 0 0 #040404, -3px -3px 0 #040404, 2px -3px 0 #040404;
+  font-family: 'Anton', sans-serif; 
 }
 .title-container .sub_logo {
   width: 100%;
-  height: min-content;
-  font-family: 'Bebas Neue', cursive;
-  font-size: 20px;
-  color :#2b2a27;
+  height : 20px;
+  font-family: 'Anton', sans-serif;
+  font-size: 23px;
+  color :#ec6d69;/*#2b2a27;*/
   text-align: center;
   margin-top: 0;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+  text-shadow: 0px 2px 0 #040404, -2px 0 0 #040404, 2px 0 0 #040404, -2px -1px 0 #040404, 1px -2px 0 #040404;
+}
+.title-container .copyright {
+  margin-top: 10px;
+  text-align: center;
+  font-family:'Nanum Myeongjo', serif;
+  font-size : 13px;
 }
 
 
 .cards{
       background: transparent;
+      margin-top: 30px;
 }
 
   .cards .row {
       width: 100%;
+      margin-top: 20px;
   }
   .cards .row .alarm-col {
     left : 40px;
@@ -39,15 +50,17 @@
     font-family: 'Nanum Gothic', sans-serif;
     color : #2b2a27;
     text-align: center;
-
     background: transparent;
-    
     border-radius: 20px;
     border: 1px solid #000000;
-    height: 550px;
+    height: 520px;
     width: 300px;
   }
 
+  .cards .row .alarm-col .alarm-contents-block .sign_language {
+    align-content: center;
+    top: 700px;
+  }
   .cards .row .alarm-col .card{
     border: none;
     background-color: transparent;
@@ -80,12 +93,12 @@
     background: transparent;
     border-radius: 20px;
     border: 1px solid #000000;
-
+    overflow: auto;
     float: left;
     text-align: center;
   
     /*padding-right: 20px; */
-    height: 350px;
+    height: 400px;
     width: 100%;
 
     margin-top: 20px;
@@ -105,7 +118,7 @@
     border: 1px solid #000000;
     
     margin-right: 20px;
-    height: 500px;
+    height: 520px;
     width: 400px;
   }
 
@@ -120,7 +133,7 @@
   }
 
   .cards .row .map-col .card .map-contents-block {
-    margin-top: 70px;
+    margin-top: 40px;
   }
 
   .alarm-contents-block {
