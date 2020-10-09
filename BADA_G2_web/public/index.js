@@ -76,12 +76,41 @@ function loadfriendlist()
 }
 loadfriendlist();
 
+
 function auth_shareKakaotalk()
+{
+    Kakao.API.request({
+      url: '/v2/api/talk/memo/default/send',
+      data: {
+        template_object: {
+          object_type: 'text',
+          text: "BADA 로그인 성공",
+          link: {
+              web_url: 'http://192.168.137.1',
+              mobile_web_url: 'http://192.168.137.1',
+            },
+        },
+      },
+      success: function(response) {
+        console.log(response);
+      },
+      fail: function(error) {
+        console.log(error);
+      },
+    });
+  }
+ 
+
+/*function auth_shareKakaotalk() 
 {
     Kakao.API.request({
       url: '/v1/api/talk/friends/message/default/send',
       data: {
-        receiver_uuids: ['7dXs1ODX4tT4yv3E9cPzxPLD79vj2u3b65Y'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+        receiver_uuids: ['7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+        // 팀원 UUID 목록
+        //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
+        //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
+
         template_object: {
           object_type: 'text',
           text: "BADA 로그인이 성공했어요",
@@ -99,16 +128,41 @@ function auth_shareKakaotalk()
         console.log(error);
       },
     });
-  }
-  //auth_shareKakaotalk();
+  }*/
+ auth_shareKakaotalk();
 
-
-  function shareKakaotalk()
+ function shareKakaotalk(sig_name)
+ {
+     Kakao.API.request({
+       url: '/v2/api/talk/memo/default/send',
+       data: {
+         template_object: {
+           object_type: 'text',
+           text: sig_name+"가 발생한 것 같아요!",
+           link: {
+               web_url: 'http://192.168.0.193',
+               mobile_web_url: 'http://192.168.0.193',
+             },
+             button_title : "BADA에서 확인하기"
+         },
+       },
+       success: function(response) {
+         console.log(response);
+       },
+       fail: function(error) {
+         console.log(error);
+       },
+     });
+   }
+/*function shareKakaotalk(sig_name)
 {
     Kakao.API.request({
       url: '/v1/api/talk/friends/message/default/send',
       data: {
-        receiver_uuids: ['7dXs1ODX4tT4yv3E9cPzxPLD79vj2u3b65Y'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+        receiver_uuids: ['7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+        // 팀원 UUID 목록
+        //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
+        //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
         template_object: {
           object_type: 'text',
           text: sig_name+"가 발생했어요",
@@ -127,7 +181,7 @@ function auth_shareKakaotalk()
       },
     });
   }
-
+*/
 
   function printNow() {
     const today = new Date();
@@ -276,9 +330,11 @@ function loaddatabase(){
     for(var i=0; i<DBtype.length;i++)
     {
       sig_name=dic1[DBtype[i]];
-      h.enqueue[sig_name,DBtime[i]];
-      hidx=hidx+1;
+      h.enqueue(sig_name,DBtime[i]);
+      hidx=hidx+1;    
+      PrintHistory=h.toString();
     }
+    document.getElementById("history").innerHTML=PrintHistory;
   }
 
 
@@ -608,7 +664,7 @@ var water= new Queue();
   });
 
   signal.subscribe(function(m){
-    sig_name=m.data;
+    sig_name=dic1[m.data];
 
 
     //console.log("NOW SIGNAL : "+sig_name);
