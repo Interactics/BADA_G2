@@ -39,7 +39,16 @@
   font-size : 13px;
 }
 
-
+.clock-container {
+  position: absolute;
+  font-family: 'Nanum Gothic', sans-serif;
+  text-align: center;
+  background: transparent;
+  width: 100%;
+}
+.clock-container .clock{
+  font-family:'Nanum Gothic', sans-serif;
+}
 .cards{
       background: transparent;
       margin-top: 30px;
@@ -78,21 +87,7 @@
     left : 360px;
     width : 572px;
   }
-  .cards .row .middle-section .clock-container {
-    position: relative;
-    float : left;
-    font-family: 'Nanum Gothic', sans-serif;
-    text-align: center;
-    background: transparent;
-    border-radius: 20px;
-    border-style: solid #000000;
-    height: 100px;
-    width: 300px;
-  }
-  .cards .row .middle-section .clock-container .clock{
-    font-family:'Nanum Gothic', sans-serif;
-    
-  }
+  
   .cards .row .middle-section .history-title{
     font-weight: bolder;
     width: 230px;

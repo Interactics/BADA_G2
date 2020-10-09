@@ -44,62 +44,62 @@
                 © 2020.Hanyang univ.Robotics 사과가 쿵!
             </div>
         </div>
+        <!-- clock -->
+        <div class = "clock-container">
+            <div id="its">지금은,</div>
+            <div id="clock">
+                <span class="txt_lg" id="month"></span>
+                <span class="mark">월</span>
+                <span class="txt_lg" id="date"></span>
+                <span class="mark">일</span>
+                <span class="txt_lg" id="ampm"></span>
+                <span class="txt_lg" id="hour"></span>
+                <span class="mark">시</span>
+                <span class="txt_lg" id="minute"></span>
+                <span class="mark">분</span>
+            </div>
+        </div>
     <hr style="color:#000000; width: 94.5%; position: absolute; top: 118px;z-index:-10;left: 2.75%;">
-    <div class = "container cards">
-               <div class = "row">
+        <div class = "container cards">
+                <div class = "row">
 
-                    <!-- left section -->
-                    <div class = "alarm-col">
-                        <div class = "card">
-                            <div class = "alarm-contents-block">
-                                    <h1 class = "now" style = "margin-bottom: 20px;">지금,</h1>
-                                        <div id="alarm" style="font-size: 40px;color: #8B0000;font-weight: bold;"></div>
-                                    <h2 class = "can hear" style="margin-top: 25px;">소리가 들려요!</h2>
-                                    <div id="sign_language">
-                                        <img id="sign_language_gif" style="width: 250px; border:1px; border-radius: 20px;">
+                        <!-- left section -->
+                        <div class = "alarm-col">
+                            <div class = "card">
+                                <div class = "alarm-contents-block">
+                                        <h1 class = "now" style = "margin-bottom: 20px;">지금,</h1>
+                                            <div id="alarm" style="font-size: 40px;color: #8B0000;font-weight: bold;"></div>
+                                        <h2 class = "can hear" style="margin-top: 25px;">소리가 들려요!</h2>
+                                        <div id="sign_language">
+                                            <img id="sign_language_gif" style="width: 250px; border:1px; border-radius: 20px;">
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- middle section -->
+                        <div class =  "middle-section">  
+                            <div class = "history-title">몇 시에 어떤 소리가 ?</div>
+                            <!-- history section -->
+                            <div class = "history-col">
+                                <div class = "card">
+                                    <div class = "history-contents-block">
+                                        <div id="History"></div>
                                     </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- middle section -->
-                    <div class =  "middle-section">  
-                        <!-- clock -->
-                        <div class = "clock-container">
-                            <div id="its">지금은,</div>
-                            <div id="clock">
-                                <span class="txt_lg" id="month"></span>
-                                <span class="mark">월</span>
-                                <span class="txt_lg" id="date"></span>
-                                <span class="mark">일</span>
-                                <span class="txt_lg" id="ampm"></span>
-                                <span class="txt_lg" id="hour"></span>
-                                <span class="mark">시</span>
-                                <span class="txt_lg" id="minute"></span>
-                                <span class="mark">분</span>
-                            </div>
-                        <div class = "history-title">몇 시에 어떤 소리가 ?</div>
-                    </div>
-                        <!-- history section -->
-                        <div class = "history-col">
-                            <div class = "card">
-                                <div class = "history-contents-block">
-                                    <div id="History"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- map = right section -->                 
-                    <div class = "map-col">
-                            <div class = "card">
-                                <div class = "map-contents-block">
-                                    <img id = "maping" src="./finalmap.png" width="400">
-                                    <canvas id = "canvas" width="500" height="610"></canvas>
+                        
+                        <!-- map = right section -->                 
+                        <div class = "map-col">
+                                <div class = "card">
+                                    <div class = "map-contents-block">
+                                        <img id = "maping" src="./finalmap.png" width="400">
+                                        <canvas id = "canvas" width="500" height="610"></canvas>
+                                    </div>
                                 </div>
-                            </div>
-                    </div>
-           </div>
+                        </div>
+            </div>
     </body>
 </html>
 
