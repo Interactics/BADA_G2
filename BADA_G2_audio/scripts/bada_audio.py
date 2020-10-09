@@ -24,6 +24,7 @@ print('version major: ', sys.version_info.major)
 if(sys.version_info.major==2):
     import Queue as queue
 else:
+    import queue
     from queue import Queue
 
 import roslibpy
@@ -130,6 +131,7 @@ def signal(msg):
     # read new data and update last 5 sec frames
 
     
+    
     # for i,q in enumerate(qs):
     #     it('this q: ', qs[i])
     #     it('this q len : ', qlens[i])
@@ -141,88 +143,34 @@ def signal(msg):
         
     old=time.time()
 
-    for i, v in enumerate(msg.data):
+    for i, curv in enumerate(msg.data):
+        for j, q in enumerate(qs):
+            print(q)
 
-        console.log(v)
+            q.put(curv)
+            
+            if(q.qsize()>qlens[j]):
+                q.get()
+            curList = list(q.queue)
+            print(len(curList))
+            
+        # console.log(v)
 
         shortQSize+=1
-        shortQ.put(v)
-        longQSize+=1
-        longQ.put(v)
+        shortQ.put(curv)
 
-    # frames+=[msg.data]
-    # if(len(frames)<=int(predictionPeriod/predictionRate)):
-    #     return
-    if(shortQSize<=int(sr*predictionPeriod/predictionRate*2)):
-        return
     current=[]
     currentLong=[]
+
     for i in range(sr*2):
         shortQSize-=1
         current.append(shortQ.get())
         if(shortQ.empty()): break
 
     picked=dict.fromkeys(keys, 0.0)
-    alarmSignals=dict.fromkeys(alarmKeys, 0.0)
-    boilSignals=dict.fromkeys(boilKeys, 0.0)
-    waterSignals=dict.fromkeys(waterKeys, 0.0)
-    
-    if(longQSize>=int(sr*predictionPeriod/predictionRate*8)):
-        for i in range(sr*8):
-            longQSize-=1
-            currentLong.append(longQ.get())
-            if(longQ.empty()): break
-        waveform = np.frombuffer(bytearray(currentLong), dtype=np.int16) / 32768.0
-
-        old=time.time()
-        scores, spectrogram = yamnet.predict(np.reshape(waveform, [1, -1]), steps=1)
-        # outputs = model.predict(inputs)
-
-        # print('prediction time: ', time.time()-old)
-        old=time.time()
-
-        # Plot and label the model output scores for the top-scoring classes.
-        mean_scores = np.mean(scores, axis=0)
-        top_N = 10
-        top_class_indices = np.argsort(mean_scores)[::-1][:top_N]
-
-        dat=np.dstack((class_names[top_class_indices],mean_scores[top_class_indices])).tolist()
-        try:
-            audioPub.publish(roslibpy.Message({'data': json.dumps(dat)}))
-        except:
-            pass
-            
-
-        for _,v in enumerate(dat[0]):
-            [key, prob]=v
-            # SWITHC
-
-            if(key in alarmKeys):
-                picked['Alarm']+=float(prob)
-                alarmSignals[key]+=float(prob)
-            elif(key in cryKeys):
-                picked['Cry']+=float(prob)
-            elif(key in boilKeys):
-                picked['Boiling']+=float(prob)
-                boilSignals[key]+=float(prob)
-            elif(key in waterKeys):
-                picked['Water']+=float(prob)
-                waterSignals[key]+=float(prob)
-
-        picked['Alarm']/=len(alarmKeys)
-        picked['Cry']/=len(cryKeys)
-        picked['Boiling']/=len(boilKeys)
-        picked['Water']/=len(waterKeys)
-
-        print('prediction: ', dat)
-    else:
-        #keep signals
-
-        picked['Alarm']=signals['Alarm']
-        picked['Cry']=signals['Cry']
-        picked['Boiling']=signals['Boiling']
-        picked['Water']=signals['Water']
-        pass
+    # alarmSignals=dict.fromkeys(alarmKeys, 0.0)
+    # boilSignals=dict.fromkeys(boilKeys, 0.0)
+    # waterSignals=dict.fromkeys(waterKeys, 0.0)
 
     # print(current)
     waveform = np.frombuffer(bytearray(current), dtype=np.int16) / 32768.0
@@ -254,9 +202,32 @@ def signal(msg):
             picked['Door']+=float(prob)
         elif(key in bellKeys):
             picked['Bell']+=float(prob)
+        elif(key in alarmKeys):
+            picked['Alarm']+=float(prob)
+            # alarmSignals[key]+=float(prob)
+        elif(key in cryKeys):
+            picked['Cry']+=float(prob)
+        elif(key in boilKeys):
+            picked['Boiling']+=float(prob)
+            # boilSignals[key]+=float(prob)
+        elif(key in waterKeys):
+            picked['Water']+=float(prob)
+            # waterSignals[key]+=float(prob)
     
+
+
+    picked['Alarm']/=len(alarmKeys)
+    picked['Cry']/=len(cryKeys)
+    picked['Boiling']/=len(boilKeys)
+    picked['Water']/=len(waterKeys)
     picked['Door']/=len(doorKeys)
     picked['Bell']/=len(bellKeys)
+
+
+
+
+
+
 
     # update 
     for _, v in enumerate(keys):
@@ -314,6 +285,20 @@ def respeaker_node():
         # print('spinning')
         # rospy.spin()
         time.sleep(0.1)
+
+def data_listener():
+    rospy.init_node('data_read_node', anonymous=True)
+    rospy.loginfo('starting')
+
+    rospy.Subscriber("/audio", AudioData, callback)
+
+    while(not rospy.is_shutdown()):
+        # from_main_thread_blocking()
+        from_main_thread_nonblocking()
+        # print('spinning')
+        # rospy.spin()
+        time.sleep(0.1)
+    
 
 if __name__ == '__main__':
     respeaker_node()
