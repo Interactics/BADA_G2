@@ -17,7 +17,7 @@ print('version major: ', sys.version_info.major)
 if(sys.version_info.major==2):
     import Queue as queue
 else:
-    import queue
+    from queue import Queue
 
 import roslibpy
 
@@ -40,6 +40,15 @@ pub=''
 # keys=['Speech','Alarm','Door','Television', 'Silence', 'Water', 'Music']
 # target: door, water, fire alarm, bell, cry, boiling
 keys=['Alarm','Door','Bell', 'Silence', 'Cry', 'Water', 'Boiling']
+detectWindow={
+    'Alarm':10,
+    'Door':2,
+    'Bell':4,
+    'Silence':10,
+    'Cry':3,
+    'Water':20,
+    'Boiling':20
+}
 alarmKeys=['Alarm', 'Fire alarm', 'Alarm clock']
 doorKeys=['Door', 'Knock']
 bellKeys=['Beep, bleep', 'Doorbell'] # Bell, 'Ding-dong'
@@ -55,6 +64,16 @@ checkThreshold=0.25
 resetThreshold=0.1
 shortKeys=['door', 'bell']
 longKeys=['alarm', 'cry', 'boil', 'water']
+
+kinds=len(keys)
+
+qs=[]
+qlens=[]
+for i in range(kinds):
+    curQ=Queue()
+    qs.append(curQ)
+
+    qlens.append(detectWindow[keys[i]])
 
 # Set up the YAMNet model.
 params.PATCH_HOP_SECONDS = 0.48  # 10 Hz scores frame rate. //0.1
@@ -76,8 +95,8 @@ frames=[]
 last5secFrames=[]
 old5secFrames=[]
 
-shortQ=queue.Queue()
-longQ=queue.Queue()
+shortQ=Queue()
+longQ=Queue()
 shortQSize=0
 longQSize=0
 pub = rospy.Publisher('/signal', String, queue_size=10)
@@ -88,7 +107,7 @@ audioPub = rospy.Publisher('/audio', String, queue_size=10)
 # yamnet._make_predict_function()
 
 #somewhere accessible to both:
-callback_queue = queue.Queue()
+callback_queue = Queue()
 
 def from_dummy_thread(func_to_call_from_main_thread):
     callback_queue.put(func_to_call_from_main_thread)
@@ -106,11 +125,25 @@ def from_main_thread_nonblocking():
         callback()
 
 def signal(msg):
-    global frames, shortQSize, longQSize, yamnet, graph, callback_queue
+    global frames, shortQSize, longQSize, yamnet, graph, callback_queue, q, qs
     # read new data and update last 5 sec frames
+
     
+    # for i,q in enumerate(qs):
+    #     it('this q: ', qs[i])
+    #     it('this q len : ', qlens[i])
+    #     q.put(msg)
+        
+    #     if(q.qsize()>qlens[i]):
+    #         q.get()
+    #     it(list(q.queue))
+        
     old=time.time()
+
     for i, v in enumerate(msg.data):
+
+        console.log(v)
+
         shortQSize+=1
         shortQ.put(v)
         longQSize+=1
