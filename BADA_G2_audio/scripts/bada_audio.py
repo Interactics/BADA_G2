@@ -2,6 +2,13 @@
 import sys
 print('python version: ',sys.version_info)
 
+import os
+
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+# os.chdir(dname+'/../..')
+os.chdir(dname)
+
 import pyaudio
 import numpy as np
 from matplotlib import pyplot as plt
@@ -24,17 +31,11 @@ import roslibpy
 import rospy
 import json
 
-import os
 
 from std_msgs.msg import String
 from std_msgs.msg import Empty
 from audio_common_msgs.msg import AudioData
 import tensorflow as tf
-
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-# os.chdir(dname+'/../..')
-os.chdir(dname)
 
 pub=''
 # keys=['Speech','Alarm','Door','Television', 'Silence', 'Water', 'Music']
