@@ -64,8 +64,9 @@
 
   .cards .row .alarm-col .alarm-contents-block .sign_language {
     align-content: center;
-    top: 700px;
+    margin-top: 100px;
   }
+
   .cards .row .alarm-col .card{
     border: none;
     background-color: transparent;

@@ -291,60 +291,20 @@ var h = new Queue();
       messageType : 'std_msgs/String'
     });
     // const dic1={'Speech':'말하는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Television':'티비 소리', 'Silence':'...', 'Water':'물소리', 'Music':'휴대폰 벨소리'};
-    
+
     signal.subscribe(function(m){
-      sig_name=m.data;
-      
-      if(sig_name=='Speech') document.getElementById("sign_language_gif").src=img_info('S');
-      else if(sig_name=='Alarm') document.getElementById("sign_language_gif").src=img_info('A');
-      else if(sig_name=='Door') document.getElementById("sign_language_gif").src=img_info('D');
-      else if(sig_name=='Boiling') document.getElementById("sign_language_gif").src=img_info('B');
-      else if(sig_name=='Cry') document.getElementById("sign_language_gif").src=img_info('C');
-      else if(sig_name=='Bell') document.getElementById("sign_language_gif").src=img_info('b');
-      else if(sig_name=='Water') document.getElementById("sign_language_gif").src=img_info('W');
-      
-      document.getElementById("alarm").innerHTML = sig_name;
+    sig_name=m.data;
+    if(sig_name=='Silence') document.getElementById("sign_language_gif").src='./조용하다.gif';
+    else if(sig_name=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
+    else if(sig_name=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
+    else if(sig_name=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
+    else if(sig_name=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
+    else if(sig_name=='Bell') document.getElementById("sign_language_gif").src='.초인종.gif';
+    else if(sig_name=='Water') document.getElementById("sign_language_gif").src='./물.gif';
+    else document.getElementById("sign_language_gif").src='';    
+    document.getElementById("alarm").innerHTML = sig_name;
+  });
 
-    });
-
-function img_info(name){
-  var img_src = ' ';
-  switch(name){
-    case 'S':
-      img_src='./Silence.gif';
-    case 'A':
-      img_src='./화재경보기.gif';
-    case 'D':
-      img_src='../노크.gif';
-    case 'B':
-      img_src='./물+끓다.gif';
-    case 'C':
-      img_src='./아기+울음소리.gif';
-    case 'b':
-      img_src='.초인종.gif';
-    case 'W':
-      img_src='./물.gif';
-  }
-  return img_src;
-}
-//from index.js
-
-//KAKAO_TOKEN="adwnM5UYyKBlm7Pg-9OC9BjoDwdUOUo8dCY9DgopyV4AAAFyI3fYdQ";
-// Kakao.init("b886eede39b9d47bc9d3cb6e91483799");   // 사용할 앱의 JavaScript 키를 설정
-
- 
-  // 카카오 로그인 버튼을 생성합니다. 
- 
-
-    /*Kakao.Auth.login({
-	    scope: 'talk_message,friends',
-	    success: function(response) {
-	        console.log(response);
-	    },
-	    fail: function(error) {
-	        console.log(error);
-	    }
-  });*/
   
   function shareKakaotalk(sig_name)
   {
