@@ -1,8 +1,10 @@
+
 var data;
 var time;
 var sig_name;
 var viewtime;
 var PrintHistory= " ... ";
+const dic1={'Cry':'아기 우는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Boiling':'물 끓는 소리', 'Silence':'조용한', 'Water':'물소리', 'Bell':'초인종 소리', 'Silence':'...'};
 
 var hidx=0;
 const FRAMES_PER_SECOND = 10;  // Valid values are 60,30,20,15,10...
@@ -26,35 +28,10 @@ var PrintHistory = "Connection";
 const today = new Date();
 today.setTime(0);
 
-const KAKAO_REST_API_TOKEN="KAKAO_REST_API_TOKEN";
-const KAKAO_TOKEN="KAKAO_TOKEN";
+console.log("a4365158deb211d98898dba793c60acb");
 
-Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
-// init();
-/*  Kakao.Auth.createLoginButton({
-    container: '#kakao-login-btn',
-    size : 'small',
-    success: function (authObj) {
-      alert(JSON.stringify(authObj));
-    },
-    fail: function (err) {
-      alert(JSON.stringify(err));
-    }
-  });*/
 
-function setAuth() {
-  Kakao.Auth.login({
-    scope: 'talk_message,friends',
-    success: function (response) {
-      console.log(response);
-    },
-    fail: function (error) {
-      console.log(error);
-    }
-  });
-}
-setAuth();
-// Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
+// Kakao.init("a4365158deb211d98898dba793c60acb");   // 사용할 앱의 JavaScript 키를 설정
 
 function shareKakaotalk(sig_name)
 {
@@ -80,57 +57,6 @@ function shareKakaotalk(sig_name)
     });
   }
 
-  // function shareKakaotalk(sig_name)
-  // {
-  //   Kakao.API.request({
-  //     url: '/v2/api/talk/memo/default/send',
-  //     data: {
-  //       template_object: {
-  //         object_type: 'text',
-  //         text: sig_name,
-  //         link: {
-  //             web_url: 'http://192.168.137.1',
-  //             mobile_web_url: 'http://192.168.137.1',
-  //           },
-  //       },
-  //     },
-  //     success: function(response) {
-  //       console.log(response);
-  //     },
-  //     fail: function(error) {
-  //       console.log(error);
-  //     },
-  //   });
-  
-  // }
-
-
-  function shareauthKakaotalk()
-  {
-    Kakao.API.request({
-      url: '/v2/api/talk/memo/default/send',
-      data: {
-        template_object: {
-          object_type: 'text',
-          text: "BADA 인증이 완료되었습니다",
-          link: {
-              web_url: 'http://192.168.0.193',
-              mobile_web_url: 'http://192.168.0.193',
-            },
-            button_title : "BADA에서 확인하기"
-
-        },
-      },
-      success: function(response) {
-        console.log(response);
-      },
-      fail: function(error) {
-        console.log(error);
-      },
-    });
-  }
-  shareauthKakaotalk();
-
 
   function printNow() {
     const today = new Date();
@@ -143,7 +69,7 @@ function shareKakaotalk(sig_name)
     let hour = today.getHours();
     let minute = today.getMinutes();
     let second = today.getSeconds();
-    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const ampm = hour >= 12 ? '오후' : '오전';
   
     // 12시간제로 변경
     hour %= 12;
@@ -152,46 +78,27 @@ function shareKakaotalk(sig_name)
     // 10미만인 분과 초를 2자리로 변경
     minute = minute < 10 ? '0' + minute : minute;
     second = second < 10 ? '0' + second : second;
-  
-    var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `;
+    var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `
     return now;
   };
-
-
-  function printClock() {
-
-    var clock = document.getElementById("date_and_time"); 
-    var currentDate = new Date();
-    var calendar = currentDate.getFullYear() + "-" + (currentDate.getMonth()+1) + "-" + currentDate.getDate() // 현재 날짜
-    var AMPM = '오전';
-    var currentHours = addZeros(currentDate.getHours(),2); 
-    var currentMinute = addZeros(currentDate.getMinutes() ,2);
-    var currentSeconds =  addZeros(currentDate.getSeconds(),2);
-    
-    if(currentHours >= 12){ 
-    	AMPM = '오후';
-    	currentHours = addZeros(currentHours - 12,2);
-    }
-    
-    clock.innerHTML = currentHours+":"+currentMinute+":"+currentSeconds +" <span style='font-size:50px;'>"+ amPm+"</span>";
-    setTimeout("printClock()",1000);         
-
-
-
-
-    function addZeros(num, digit) {
-        var zero = '';
-        num = num.toString();
-        if (num.length < digit) {
-          for (i = 0; i < digit - num.length; i++) {
-            zero += '0';
-          }
-        }
-        return zero + num;
-    }
   
-
-};
+  var clock_init = setInterval(function(){
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const date = today.getDate();
+    let hour = today.getHours();
+    let minute = today.getMinutes();
+    const ampm = hour >= 12 ? '오후' : '오전';
+    hour %= 12;
+    hour = hour || 12; // 0 => 12
+    minute = minute < 10 ? '0' + minute : minute;
+    
+    document.getElementById("hour").innerText=hour;
+    document.getElementById("minute").innerText=minute;
+    document.getElementById("month").innerText=month;
+    document.getElementById("date").innerText=date;
+    document.getElementById("noon").innerText=ampm;
+  });
 
 
 function Queue(){
@@ -298,8 +205,7 @@ var h = new Queue();
     //name : '/bada_audio/signal',
     messageType : 'std_msgs/String'
   });
-  const dic1={'Cry':'아기 우는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Boiling':'물 끓는 소리', 'Silence':'조용한', 'Water':'물소리', 'Bell':'초인종 소리'};
-
+  
   hsignal.subscribe(function(m){
 
     sig_name=dic1[m.data];
@@ -325,7 +231,7 @@ var h = new Queue();
           water.dequeue();
         }
         cnt=0;
-        shareKakaotalk(sig_name);
+        // shareKakaotalk(sig_name);
         h.enqueue([sig_name, viewtime]);
         hidx=hidx+1;     
         PrintHistory=h.toString();
@@ -338,13 +244,12 @@ var h = new Queue();
     }
     else if(sig_name!=dic1["Silence"])
     {
-        shareKakaotalk(sig_name);
+        // shareKakaotalk(sig_name);
         h.enqueue([sig_name, viewtime]);
         hidx=hidx+1;       
         PrintHistory=h.toString();
     }
-    document.getElementById("history").innerHTML=PrintHistory;
-
+    document.getElementById("History").innerHTML=PrintHistory;
   });
 
   //ALARM Section
@@ -399,33 +304,45 @@ var h = new Queue();
      // name : '/bada_audio/signal',
       messageType : 'std_msgs/String'
     });
-    // const dic1={'Speech':'말하는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Television':'티비 소리', 'Silence':'조용해요', 'Water':'물소리', 'Music':'휴대폰 벨소리'};
-  
+    // const dic1={'Speech':'말하는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Television':'티비 소리', 'Silence':'...', 'Water':'물소리', 'Music':'휴대폰 벨소리'};
+
     signal.subscribe(function(m){
-      sig_name=dic1[m.data];
-      document.getElementById("signal").innerHTML = sig_name;
-    });
+    sig_name=m.data;
+    if(sig_name=='Silence') document.getElementById("sign_language_gif").src='./조용하다.gif';
+    else if(sig_name=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
+    else if(sig_name=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
+    else if(sig_name=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
+    else if(sig_name=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
+    else if(sig_name=='Bell') document.getElementById("sign_language_gif").src='.초인종.gif';
+    else if(sig_name=='Water') document.getElementById("sign_language_gif").src='./물.gif';
+    else document.getElementById("sign_language_gif").src='';    
+    document.getElementById("alarm").innerHTML = sig_name;
+  });
 
-
-//from index.js
-
-//KAKAO_TOKEN="adwnM5UYyKBlm7Pg-9OC9BjoDwdUOUo8dCY9DgopyV4AAAFyI3fYdQ";
-// Kakao.init("b886eede39b9d47bc9d3cb6e91483799");   // 사용할 앱의 JavaScript 키를 설정
-
- 
-  // 카카오 로그인 버튼을 생성합니다. 
- 
-
-    /*Kakao.Auth.login({
-	    scope: 'talk_message,friends',
-	    success: function(response) {
-	        console.log(response);
-	    },
-	    fail: function(error) {
-	        console.log(error);
-	    }
-  });*/
   
+  function shareKakaotalk(sig_name)
+  {
+    Kakao.API.request({
+      url: '/v2/api/talk/memo/default/send',
+      data: {
+        template_object: {
+          object_type: 'text',
+          text: sig_name,
+          link: {
+              web_url: 'http://192.168.137.1',
+              mobile_web_url: 'http://192.168.137.1',
+            },
+        },
+      },
+      success: function(response) {
+        console.log(response);
+      },
+      fail: function(error) {
+        console.log(error);
+      },
+    });
+  
+  }
   // shareKakaotalk("BADA 인증 완료");
 
 function Queue(){
@@ -561,8 +478,6 @@ var water= new Queue();
 
   signal.subscribe(function(m){
     sig_name=m.data;
-
-
     //console.log("NOW SIGNAL : "+sig_name);
     document.getElementById("signal").innerHTML = sig_name;
     time=today.getTime();
@@ -580,7 +495,7 @@ var water= new Queue();
         }
       
         cnt=0;
-        shareKakaotalk(sig_name);
+        // shareKakaotalk(sig_name);
       }
       else
       {
@@ -590,7 +505,7 @@ var water= new Queue();
     }
     else if(sig_name!="Silence")
     {
-        shareKakaotalk(sig_name);
+        // shareKakaotalk(sig_name);
     }
   });
 /////////////////////////////////////////////////
@@ -610,8 +525,8 @@ var audio_topic = new ROSLIB.Topic({
   messageType: 'std_msgs/String'
 });
 
-audio_topic.subscribe(function (m) {
-  str = m.data;
+audio_topic.subscribe(function (msg) {
+  str = msg.data;
   console.log(str);
   str = str.replace("\"", "").replace("\"", "");
   for(var i=0;i<100;i++) str = str.replace("\"","");
@@ -762,7 +677,7 @@ function tryConnectWebsocket() {
   
   
   
-    odom.subscribe(function (message) {
+    odom.subscribe(function(message) {
       // if (count) {
       //   console.log(message);
       // }
