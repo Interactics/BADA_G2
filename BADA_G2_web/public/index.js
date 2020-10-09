@@ -1,3 +1,4 @@
+
 var data;
 var time;
 var sig_name;
@@ -36,7 +37,6 @@ const KAKAO_REST_API_TOKEN="dbd9b580157dee2b3191671338533e46";
 const KAKAO_TOKEN="f09ecd64a934de6bfd02f6ff2f98c2b6";
 
 Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
-init();
 /*  Kakao.Auth.createLoginButton({
     container: '#kakao-login-btn',
     size : 'small',
@@ -64,6 +64,24 @@ setAuth();*/
 
 
 // Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
+
+
+function Queue() {
+
+  this.dataStore = [];
+  this.enqueue = enqueue;
+  this.dequeue = dequeue;
+  this.search = search;
+  this.toString = toString;
+}
+
+function enqueue(element) {
+  this.dataStore.push(element);
+}
+
+function dequeue() {
+  return this.dataStore.shift();
+}
 
 function loadfriendlist()
 {
@@ -112,30 +130,36 @@ function auth_shareKakaotalk()
 
 
   function shareKakaotalk()
-{
-    Kakao.API.request({
-      url: '/v1/api/talk/friends/message/default/send',
-      data: {
-        receiver_uuids: ['7dXs1ODX4tT4yv3E9cPzxPLD79vj2u3b65Y'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
-        template_object: {
-          object_type: 'text',
-          text: sig_name+"가 발생했어요",
-          link: {
-              web_url: 'http://192.168.0.193',
-              mobile_web_url: 'http://192.168.0.193',
-            },
-            button_title : "BADA에서 확인하기"
+  {
+    try {
+      
+      Kakao.API.request({
+        url: '/v1/api/talk/friends/message/default/send',
+        data: {
+          receiver_uuids: ['7dXs1ODX4tT4yv3E9cPzxPLD79vj2u3b65Y'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+          template_object: {
+            object_type: 'text',
+            text: sig_name+"가 발생했어요",
+            link: {
+                web_url: 'http://192.168.0.193',
+                mobile_web_url: 'http://192.168.0.193',
+              },
+              button_title : "BADA에서 확인하기"
+          },
+          button_title: "BADA에서 확인하기"
+  
         },
-        button_title: "BADA에서 확인하기"
+        success: function(response) {
+          console.log(response);
+        },
+        fail: function(error) {
+          console.log(error);
+        },
+      });
+    } catch (error) {
+      console.error(error);
 
-      },
-      success: function(response) {
-        console.log(response);
-      },
-      fail: function(error) {
-        console.log(error);
-      },
-    });
+    }
   }
 
 
@@ -232,26 +256,6 @@ function loaddatabase(){
     }
   }
 
-
-
-function Queue() {
-
-  this.dataStore = [];
-  this.enqueue = enqueue;
-  this.dequeue = dequeue;
-  this.search = search;
-  this.toString = toString;
-}
-
-function enqueue(element) {
-  this.dataStore.push(element);
-}
-
-function dequeue() {
-  return this.dataStore.shift();
-}
-
-
 var cnt = 0;
 function search() {
 
@@ -277,7 +281,7 @@ function search() {
 function toString() {
   var retStr = "";
   for (var i = this.dataStore.length - 1; i >= 0; i--) {
-    retStr += "  " + this.dataStore[i] + "\n";
+    retStr += "  " + this.dataStore[i][0] + " " + this.dataStore[i][1] + "\n";
   }
   retStr = retStr.replace(/(?:\r\n|\r|\n)/g, '<br />');
   return retStr;
@@ -496,7 +500,7 @@ function tryConnectWebsocket() {
       }
     }
     else if (sig_name != dic1["Silence"]) {
-  
+      console.log('signame!!::', sig_name);
       shareKakaotalk(sig_name);
       h.enqueue([sig_name, viewtime]);
       hidx = hidx + 1;
@@ -513,7 +517,7 @@ function tryConnectWebsocket() {
   });
 
   signal.subscribe(function (m) {
-    sig_name = m.data;
+    sig_name = dic1[m.data];
 
 
     //console.log("NOW SIGNAL : "+sig_name);
