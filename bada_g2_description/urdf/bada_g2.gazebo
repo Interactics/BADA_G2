@@ -38,7 +38,7 @@
       <wheelDiameter>0.084</wheelDiameter>
       <torque>20</torque>
       <commandTopic>cmd_vel</commandTopic>
-      <odometryTopic>odom</odometryTopic>
+      <odometryTopic>bada/filtered_odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
       <robotBaseFrame>base_footprint_link</robotBaseFrame>
       <rosDebugLevel>ns</rosDebugLevel>

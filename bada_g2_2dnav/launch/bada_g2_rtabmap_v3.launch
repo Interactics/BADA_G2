@@ -13,7 +13,7 @@
 
  <group ns="rtabmap">
     <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="">
-        <remap from="odom" to="/odom"/>
+        <remap from="odom" to="/bada/filtered_odom"/>
 		<remap from="scan" to="/scan_filtered"/>
           <!-- simulation -->
         <remap if="$(arg simulation)"     from="rgb/image"    to="/d435_camera/color/image_raw"/>

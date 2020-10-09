@@ -16,7 +16,7 @@
         <param name="database_path" type="string" value="$(find bada_g2_2dnav)/maps/rtabmap_copyv3.db"/>
 
         <!-- inputs -->
-        <remap from="odom" to="/odom"/>
+        <remap from="odom" to="/bada/filtered_odom"/>
         <remap from="scan"            to="/scan_filtered"/>
           <!-- simulation -->
         <remap if="$(arg simulation)"     from="rgb/image"    to="/d435_camera/color/image_raw"/>
@@ -71,7 +71,7 @@
       <remap from="depth/image"     to="/d435_camera/depth/image_raw"/>
       <remap from="rgb/camera_info" to="/d435_camera/color/camera_info"/>
       <remap from="scan"            to="/scan_filtered"/>
-      <remap from="odom"            to="/odom"/>
+      <remap from="odom"            to="/bada/filtered_odom"/>
       
       <param name="rgb/image_transport"   type="string" value="compressed"/>
       <param name="depth/image_transport" type="string" value="compressedDepth"/>

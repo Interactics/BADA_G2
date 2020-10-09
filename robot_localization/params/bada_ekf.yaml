@@ -175,7 +175,7 @@ odom0_relative: false
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
 
-imu0: bada/imu/data
+imu0: imu/data
 #imu0_config: [false, false, false,
 #              true,  true,  true,
 #              false, false, false,

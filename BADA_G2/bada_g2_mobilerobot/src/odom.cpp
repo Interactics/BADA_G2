@@ -14,7 +14,7 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "odometry_node");
 
     ros::NodeHandle n;
-    ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("bada/odom", 50);
+    ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("bada/wheel/odom", 50);
     ros::Subscriber sub = n.subscribe("/bada/vel", 10, twistCB);
     tf::TransformBroadcaster odom_broadcaster;
 
