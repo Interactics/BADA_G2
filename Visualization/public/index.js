@@ -69,7 +69,7 @@ function shareKakaotalk(sig_name)
     let hour = today.getHours();
     let minute = today.getMinutes();
     let second = today.getSeconds();
-    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const ampm = hour >= 12 ? '오후' : '오전';
   
     // 12시간제로 변경
     hour %= 12;
@@ -78,11 +78,27 @@ function shareKakaotalk(sig_name)
     // 10미만인 분과 초를 2자리로 변경
     minute = minute < 10 ? '0' + minute : minute;
     second = second < 10 ? '0' + second : second;
-  
-    var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `;
+    var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `
     return now;
   };
   
+  var clock_init = setInterval(function(){
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const date = today.getDate();
+    let hour = today.getHours();
+    let minute = today.getMinutes();
+    const ampm = hour >= 12 ? '오후' : '오전';
+    hour %= 12;
+    hour = hour || 12; // 0 => 12
+    minute = minute < 10 ? '0' + minute : minute;
+    
+    document.getElementById("hour").innerText=hour;
+    document.getElementById("minute").innerText=minute;
+    document.getElementById("month").innerText=month;
+    document.getElementById("date").innerText=date;
+    document.getElementById("noon").innerText=ampm;
+  });
 
 
 function Queue(){
@@ -843,21 +859,4 @@ audio_topic.subscribe(function (m){
     document.getElementById("ninth_topic").innerHTML = str[8];
     document.getElementById("tenth_topic").innerHTML = str[9];
 });
-var clock_init = setInterval(function(){
-  var hh = addZero(today.getHours());
-  var mm = addZero(today.getMinutes());
-  var MM = today.getMonth()+1;
-  var dd = today.getDate();
-  var ap = "AM";
-  
-  if(hh>=12) ap="PM";
-  document.getElementById("hour").innerText=hh;
-  document.getElementById("minute").innerText=mm;
-  document.getElementById("month").innerText=MM;
-  document.getElementById("date").innerText=dd;
-  document.getElementById("noon").innerText=ap;
-  
-  function addZero(num) {
-    return (num < 10 ? '0'+num : ''+num)
-  }
-});
+
