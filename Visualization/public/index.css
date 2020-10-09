@@ -13,22 +13,22 @@
   text-align: center;
   color: #f3c452;
   /*color : #4eaea1;*/
-  text-shadow: 0px 3px 0 #040404, -3px 0 0 #040404, 3px 0 0 #040404, -3px -3px 0 #040404, 2px -3px 0 #040404;
+  text-shadow: 0px 3px 0 #2e2d2c, -3px 0 0 #2e2d2c, 3px 0 0 #2e2d2c, -3px -3px 0  #2e2d2c, 2px -3px 0 #2e2d2c;
   font-family: 'Anton', sans-serif; 
 }
 .title-container .sub_logo {
   width: 100%;
-  height : 20px;
+  height : 23px;
   font-family: 'Anton', sans-serif;
-  font-size: 23px;
-  color :#ec6d69;/*#2b2a27;*/
+  font-size: 19px;
+  color: #2e2d2c;
   text-align: center;
   margin-top: 0;
   margin-bottom: 0;
-  text-shadow: 0px 2px 0 #040404, -2px 0 0 #040404, 2px 0 0 #040404, -2px -1px 0 #040404, 1px -2px 0 #040404;
+  /*text-shadow: 0px 2px 0 #040404, -2px 0 0 #040404, 2px 0 0 #040404, -2px -1px 0 #040404, 1px -2px 0 #040404;*/
 }
 .title-container .copyright {
-  margin-top: 10px;
+  margin-top: 3px;
   text-align: center;
   font-family:'Nanum Myeongjo', serif;
   font-size : 13px;
