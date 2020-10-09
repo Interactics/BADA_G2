@@ -7,6 +7,13 @@ router.put('/', async function(req, res){
   console.log('writing alarm : ');
   console.log(req.body);
 
+  // const alarm = await models.Alarm.create({
+  //   where: {
+  //     alarmType: req.body.alarmType,
+  //     time: req.body.alarmTime
+  //   }
+  // })
+
   const alarm = await models.Alarm.create({
     type: req.body.alarmType,
     time: req.body.alarmTime
