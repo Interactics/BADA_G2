@@ -11,15 +11,13 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
 
-#include <std_msgs/Int8.h>
+#include <std_msgs/Int16.h>
 #include <std_msgs/Bool.h>
 
 #define bounceTimer 200                           // For button
 #define BUTTON 2                                  // For button
 
 #define D_ID 1                                    //Dynmixel ID
-
-u8 bounceCount = 0;                               // Bounce Coun바운스 변수 선언
 
 ros::NodeHandle nh;
 
@@ -45,23 +43,30 @@ long imuTimeInterval = 50;
 /*-------------------------- END OF IMU -------------- -------*/
 
 
+
+
 /*-------------------------- BUTTON --------------------------*/
-std_msgs::Int8 ButtonState_msg;
+std_msgs::Int16 ButtonState_msg;  // None - 0, N - 1, E - 2, W - 3, S - 4
 
-ros::Publisher pub_button("button", &ButtonState_msg);
+ros::Publisher pub_button("sensor/button", &ButtonState_msg);
 
-const int front_button_pin = 7;
-const int back_button_pin = 7;
-const int right_button_pin = 7;
-const int left_button_pin = 7;
+const uint8_t N_button_pin = 8;
+const uint8_t E_button_pin = 9;
+const uint8_t W_button_pin = 10;
+const uint8_t S_button_pin = 11;
 
 bool last_reading;
 long last_debounce_time = 0;
 long debounce_delay     = 50;
 bool published           = true;
 
+bool button_pressed = false;
+
 /*------------------------------------------------------------*/
 /*-------------------------- END_OF_BUTTON--------------------*/
+
+
+
 
 
 
@@ -74,7 +79,6 @@ DynamixelMotor motor(interface, D_ID);
 
 bool DXup = false;
 void DXcmdCB(const std_msgs::Bool& cmd);   //DX callback
-
 ros::Subscriber<std_msgs::Bool> Sub_cmdDX("sensor/DXup", &DXcmdCB);
 
 /*--------------------------------------------------------------*/
@@ -82,21 +86,23 @@ ros::Subscriber<std_msgs::Bool> Sub_cmdDX("sensor/DXup", &DXcmdCB);
 
 void setup() {
   ROSInit();
-  IMUInit();
-  DXInit();
+  //  IMUInit();
+  //  DXI/nit();
+  ButtonInit();
 }
 
 void loop() {
-  IMUcmdLoop();
-  DXcmdLoop();
+   IMUcmdLoop();
+  //  DXcmdLoop();
+  ButtoncmdLoop();
 }
 
 void ROSInit() {
   nh.initNode();
   nh.advertise(raw_imu);
   nh.advertise(raw_mag);
+  nh.advertise(pub_button);
   nh.subscribe(Sub_cmdDX);
-  
 }
 
 void DXInit() {
@@ -163,7 +169,7 @@ void pubIMU() {
   gyro.getEvent(&event);
 
   imu_msg.header.stamp       = current_time;
-  imu_msg.header.frame_id       = "bada/imu";
+  imu_msg.header.frame_id    = "bada/imu";
 
   imu_msg.angular_velocity.x = event.gyro.x;
   imu_msg.angular_velocity.y = event.gyro.y;
@@ -181,16 +187,60 @@ void pubIMU() {
   mag_msg.magnetic_field.z = mevent.magnetic.z;
   raw_mag.publish(&mag_msg);
   nh.spinOnce();
-  delay(50);
+  ///  delay(50);
 }
 
 void subDisplay() {
   ;
 }
 
+void ButtonInit() {
+  ButtonState_msg.data = 0;
+
+  pinMode(N_button_pin, INPUT_PULLUP);
+  pinMode(E_button_pin, INPUT_PULLUP);
+  pinMode(W_button_pin, INPUT_PULLUP);
+  pinMode(S_button_pin, INPUT_PULLUP);
+
+
+
+}
+
 void pubButtonClk() {
-  //  bool reading = ! digitalRead(button_pin);
-  //
+
+  if (digitalRead(N_button_pin) == LOW) {
+    ButtonState_msg.data = 1;
+    pub_button.publish(&ButtonState_msg);
+  }  // Pressed
+
+  else if (digitalRead(E_button_pin) == LOW) {
+    ButtonState_msg.data = 2;
+    pub_button.publish(&ButtonState_msg);
+  }
+
+  else if (digitalRead(W_button_pin) == LOW) {
+    ButtonState_msg.data = 3;
+    pub_button.publish(&ButtonState_msg);
+  }
+
+  else if (digitalRead(S_button_pin) == LOW) {
+    ButtonState_msg.data = 4;
+    pub_button.publish(&ButtonState_msg);
+  }
+  else {
+    ButtonState_msg.data = 0;
+    pub_button.publish(&ButtonState_msg);
+    digitalWrite(13, HIGH);
+
+  }
+
+
+  //  if (digitalRead(sw) == LOW) {
+  //    digitalWrite(led, HIGH); // Pressed
+  //  }
+  //  else {
+  //    digitalWrite(led, LOW);  // Not Pressed
+  //  }
   //  if (last_reading != reading) {
   //    last_debounce_time = millis();
   //    published = false;
@@ -207,4 +257,13 @@ void pubButtonClk() {
   //  }
   //
   //  last_reading = reading;
+}
+
+
+void ButtoncmdLoop() {
+  currentTime = millis();
+  if (currentTime - previousTime > 100) {
+    pubButtonClk();
+    previousTime = currentTime;
+  }
 }

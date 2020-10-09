@@ -1,5 +1,5 @@
 /* File        : bada_g2.ino
-   Date        : 2020.10.04.
+   Date        : 2020.10.09.
    Arthor      : Interactics
    Description :
    - This code is made for BADA_G2's Motor system control.
@@ -69,7 +69,6 @@ void velTarget(const float LinearV_X, const float AngularV_Z);
 void velTwist(float* L_X, float* A_Z);
 void Serial_Input_ISR();
 
-
 bool          t10ms_flag  = false;
 unsigned int  t10ms_index = 0;
 
@@ -82,48 +81,21 @@ DCMotor MotorL(L_MOTOR_ENCOD_A, L_MOTOR_ENCOD_B, L_MOTOR_DIR, L_MOTOR_PWM);
 DCMotor MotorR(R_MOTOR_ENCOD_A, R_MOTOR_ENCOD_B, R_MOTOR_DIR, R_MOTOR_PWM);
 
 ////////////////ROS/////////////////
-Adafruit_FXAS21002C gyro   = Adafruit_FXAS21002C(0x0021002C);
-Adafruit_FXOS8700 accelmag = Adafruit_FXOS8700(0x8700A, 0x8700B);
-
-nav_msgs::Odometry wheelOdom;
 geometry_msgs::Twist cmd_vel;
 geometry_msgs::Twist bada_vel;
-geometry_msgs::Vector3 bada_vel2;
-
-geometry_msgs::Quaternion odom_quat;
-geometry_msgs::TransformStamped odom_trans;
-
-sensor_msgs::Imu imu_msg;
-sensor_msgs::MagneticField mag_msg;
-std_msgs::Header header;
 
 ros::NodeHandle nh;
 
 void cmdvelCB(const geometry_msgs::Twist& Twist_msg);
 
 ros::Publisher vel_pub("bada/vel",         &bada_vel);
-ros::Publisher vel_pub2("bada/vel2",        &bada_vel2);
-
 ros::Subscriber<geometry_msgs::Twist> sub_cmdvel("bada/cmd_vel", &cmdvelCB);
 
-//tf::TransformBroadcaster odom_broadcaster;
-
-//ros::Publisher odom_pub("bada/wheel_odom", &wheelOdom);
-
-/*           IMU                 */
-ros::Publisher raw_imu("imu_bada_base",    &imu_msg);
-ros::Publisher raw_mag("mag_bada_base",    &mag_msg);
-
 //////////////////////////////////////
-
-//// IMU init////
-sensors_event_t aevent, mevent, event;
-
 
 void setup() {
   ardInit();
   rosInit();
-  imuInit();
 }
 
 void loop() {
@@ -167,13 +139,6 @@ void loop() {
         break;
       case 9:
         t10ms_index = 0;
-        //        motorVelShow();
-        //        Serial.print(" MotorR : ");
-        //        Serial.print(MotorR.ShowSpeed());
-        //
-        //        Serial.print(" MotorL : ");
-        //        Serial.println(MotorL.ShowSpeed());
-
         break;
       default:
         t10ms_index = 0;
@@ -206,7 +171,6 @@ void velTwist(float* L_X, float* A_Z) {
 }
 
 void motorVelShow() {
-
   float Linear_Vel;
   float Angular_Vel;
   int Vel_R = MotorR.ShowSpeed();
@@ -221,10 +185,7 @@ void motorVelShow() {
   Serial.println(Angular_Vel);
   Serial.print(" target: ");
   Serial.println(MotorL.showDebug(1));
-
   //Or Publish Twist
-
-
 }  //Motor's Twist display
 
 
@@ -290,23 +251,17 @@ void Serial_Input_ISR() { // Twist CMD
   int ANG = STR_SPD.indexOf(".");
   String LinVel = STR_SPD.substring(0, LIN);
   String AngVel = STR_SPD.substring(LIN + 1, ANG);
-  //  Serial1.print("ORGIN : ");
-  //  Serial1.print(STR_SPD);
-
 
   float LinVelIn = LinVel.toInt();
   float AngVelIn = AngVel.toInt();
   velTarget(LinVelIn, AngVelIn);
-  //  Serial1.print("LinVel : ");
-  //  Serial1.print(LinVelIn);
-  //  Serial1.print(" AngVel : ");
-  //  Serial1.println(AngVelIn);
+
 }
 
 void ardInit() {
 
-  MotorR.PIDgainSet(5.8, 0.2, 0.1);
-  MotorL.PIDgainSet(5.8, 0.2, 0.1);
+  MotorR.PIDgainSet(4.5, 0.6, 0);
+  MotorL.PIDgainSet(4.5, 0.6, 0);
   //
   Serial.begin(9600);
   //  Serial1.begin(115200);
@@ -324,36 +279,8 @@ void ardInit() {
 
 void rosInit() {
   nh.initNode();
-
-  //  nh.advertise(odom_pub);
   nh.advertise(vel_pub);
-  //nh.advertise(vel_pub2);
-
   nh.subscribe(sub_cmdvel);
-
-  //  odom_broadcaster.init(nh);
-
-  /* IMU ROS Init*/
-//  nh.advertise(raw_imu);
-//  nh.advertise(raw_mag);
-}
-
-void imuInit() {
-
-  if (!accelmag.begin(ACCEL_RANGE_4G)) {
-    /* There was a problem detecting the FXOS8700 ... check your connections */
-    nh.logwarn("Accel is not connected!");
-  }
-  /* Initialise the sensor */
-  if (!gyro.begin()) {
-    /* There was a problem detecting the FXAS21002C ... check your connections
-    */
-    nh.logwarn("Gyro is not connected!");
-  }
-
-  // put your setup code here, to run once:
-  gyro.begin();
-  accelmag.begin(ACCEL_RANGE_4G);
 }
 
 void velTarget(const float LinearV_X, const float AngularV_Z) {
@@ -376,12 +303,7 @@ void cmdvelCB(const geometry_msgs::Twist& Twist_msg) {
   Linear_X  = Twist_msg.linear.x * 1000;   // [mm/s]
   Angular_Z = Twist_msg.angular.z;         // [rad/s]
 
-
   velTarget(Linear_X, Angular_Z);
-  //  RIGHT_V = dx + dr * WHEELBASE / 2;
-  //  LEFT_V  = dx - dr * WHEELBASE / 2;
-  //  MotorL.SetUpSpd(LEFT_V);
-  //  MotorR.SetUpSpd(RIGHT_V);
 }
 
 void pubVelTwist() {
@@ -392,115 +314,10 @@ void pubVelTwist() {
 
   int Vel_R = MotorR.ShowSpeed();
   int Vel_L = MotorL.ShowSpeed();
-
   Linear_Vel  = float(Vel_R + Vel_L) / 2000;      // [m/sec]
   Angular_Vel = float(Vel_R - Vel_L) / WHEELBASE; // [rad/sec]
 
-  bada_vel.linear.x  = Linear_Vel; imuInit
+  bada_vel.linear.x  = Linear_Vel;
   bada_vel.angular.z = Angular_Vel;
-
   vel_pub.publish(&bada_vel);
-}
-
-
-void pubWheelOdometry() {
-  ros::Time current_time =  nh.now();
-
-  float Linear_Vel;
-  float Angular_Vel;
-
-  int Vel_R = MotorR.ShowSpeed();
-  int Vel_L = MotorL.ShowSpeed();
-
-  Linear_Vel  = float(Vel_R + Vel_L) / 2000;      // [m/sec]
-  Angular_Vel = float(Vel_R - Vel_L) / WHEELBASE; // [rad/sec]
-
-  static double x_final  = 0.0;
-  static double y_final  = 0.0;
-  static double th_final = 0.0;
-
-  current_time = nh.now();
-
-  double dt = 100; // [msec]
-  double delta_x = (Linear_Vel * cos(th_final)) * dt;
-  double delta_y = (Linear_Vel * sin(th_final)) * dt;
-  double delta_th = Angular_Vel * dt;
-
-  x_final += delta_x / 1000;      // [m/sec]
-  y_final += delta_y / 1000;      // [m/sec]
-  th_final += delta_th / 1000 ;    // [rad/sec]
-
-  char base[] = "/mobile_base";
-  char odom[] = "/odom";
-
-  geometry_msgs::Quaternion odom_quat;
-
-  odom_quat = tf::createQuaternionFromYaw(th_final);
-
-
-  // publish the transform over tf
-  geometry_msgs::TransformStamped odom_trans;
-  odom_trans.header.stamp = current_time;
-  odom_trans.header.frame_id = odom;
-  odom_trans.child_frame_id = base;
-
-  odom_trans.transform.translation.x = x_final;
-  odom_trans.transform.translation.y = y_final;
-  odom_trans.transform.translation.z = 0.0;
-  odom_trans.transform.rotation = odom_quat;
-
-  // send the transform
-  //  odom_broadcaster.sendTransform(odom_trans);
-
-
-  // publish the odometry message
-
-  wheelOdom.header.stamp    = current_time;
-  wheelOdom.header.frame_id = odom;
-
-
-  //set the position
-  wheelOdom.pose.pose.position.x = x_final;
-  wheelOdom.pose.pose.position.y = y_final;
-  wheelOdom.pose.pose.position.z = 0.0;
-  wheelOdom.pose.pose.orientation = odom_quat;
-
-  // set the vel
-  wheelOdom.child_frame_id  = base;
-  wheelOdom.twist.twist.linear.x  = Linear_Vel;
-  wheelOdom.twist.twist.linear.y  = 0;
-  wheelOdom.twist.twist.angular.z = Angular_Vel;
-
-
-  //  odom_pub.publish(&wheelOdom);
-}
-
-void pubIMU() {
-  ros::Time current_time =  nh.now();
-
-  accelmag.getEvent(&aevent, &mevent);
-  gyro.getEvent(&event);
-
-  // IMU
-
-  imu_msg.header.stamp       = current_time;
-  imu_msg.header.frame_id    = "imu_base";
-
-  imu_msg.angular_velocity.x = event.gyro.x;
-  imu_msg.angular_velocity.y = event.gyro.y;
-  imu_msg.angular_velocity.z = event.gyro.z;
-
-  imu_msg.linear_acceleration.x = aevent.acceleration.x;
-  imu_msg.linear_acceleration.y = aevent.acceleration.y;
-  imu_msg.linear_acceleration.z = aevent.acceleration.z;
-  raw_imu.publish(&imu_msg);
-
-  // MagneticField
-  mag_msg.header.stamp     = current_time;
-  mag_msg.header.frame_id  = "imu_base";
-
-  mag_msg.magnetic_field.x = mevent.magnetic.x;
-  mag_msg.magnetic_field.y = mevent.magnetic.y;
-  mag_msg.magnetic_field.z = mevent.magnetic.z;
-  raw_mag.publish(&mag_msg);
 }
