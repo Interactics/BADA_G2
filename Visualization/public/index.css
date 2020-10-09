@@ -15,9 +15,11 @@
   /*color : #4eaea1;*/
   text-shadow: 0px 3px 0 #2e2d2c, -3px 0 0 #2e2d2c, 3px 0 0 #2e2d2c, -3px -3px 0  #2e2d2c, 2px -3px 0 #2e2d2c;
   font-family: 'Anton', sans-serif; 
+  left: 530px;
+  
 }
 .title-container .sub_logo {
-  width: 100%;
+  width:320px;
   height : 27px;
   font-family: 'Anton', sans-serif;
   font-size: 19px;
@@ -25,6 +27,9 @@
   text-align: center;
   margin-top: 0;
   margin-bottom: 0;
+  background-color: #fefaef;
+  position: relative;
+  left:530px;
   /*text-shadow: 0px 2px 0 #040404, -2px 0 0 #040404, 2px 0 0 #040404, -2px -1px 0 #040404, 1px -2px 0 #040404;*/
 }
 .title-container .copyright {
@@ -97,6 +102,7 @@
     z-index: 10;
 }
   .cards .row .middle-section .history-col .card {
+    margin-top: 20px;
     background-color: transparent;
     box-shadow: none;
   }
