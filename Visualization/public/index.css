@@ -86,11 +86,13 @@
     background: transparent;
     border-radius: 20px;
     border-style: solid #000000;
-    
     height: 100px;
-    width: 100%;
+    width: 300px;
   }
-  
+  .cards .row .middle-section .clock-container .clock{
+    font-family:'Nanum Gothic', sans-serif;
+    
+  }
   .cards .row .middle-section .history-title{
     font-weight: bolder;
     width: 230px;

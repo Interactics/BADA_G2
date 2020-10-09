@@ -82,8 +82,7 @@ function shareKakaotalk(sig_name)
     var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `;
     return now;
   };
-
-
+  
 
 
 function Queue(){
@@ -234,8 +233,7 @@ var h = new Queue();
         hidx=hidx+1;       
         PrintHistory=h.toString();
     }
-    document.getElementById("history").innerHTML=PrintHistory;
-
+    document.getElementById("History").innerHTML=PrintHistory;
   });
 
   //ALARM Section
@@ -511,8 +509,8 @@ var audio_topic = new ROSLIB.Topic({
   messageType: 'std_msgs/String'
 });
 
-audio_topic.subscribe(function (m) {
-  str = m.data;
+audio_topic.subscribe(function (msg) {
+  str = msg.data;
   console.log(str);
   str = str.replace("\"", "").replace("\"", "");
   for(var i=0;i<100;i++) str = str.replace("\"","");
@@ -663,7 +661,7 @@ function tryConnectWebsocket() {
   
   
   
-    odom.subscribe(function (message) {
+    odom.subscribe(function(message) {
       // if (count) {
       //   console.log(message);
       // }
@@ -844,4 +842,22 @@ audio_topic.subscribe(function (m){
     document.getElementById("eighth_topic").innerHTML = str[7];
     document.getElementById("ninth_topic").innerHTML = str[8];
     document.getElementById("tenth_topic").innerHTML = str[9];
+});
+var clock_init = setInterval(function(){
+  var hh = addZero(today.getHours());
+  var mm = addZero(today.getMinutes());
+  var MM = today.getMonth()+1;
+  var dd = today.getDate();
+  var ap = "AM";
+  
+  if(hh>=12) ap="PM";
+  document.getElementById("hour").innerText=hh;
+  document.getElementById("minute").innerText=mm;
+  document.getElementById("month").innerText=MM;
+  document.getElementById("date").innerText=dd;
+  document.getElementById("noon").innerText=ap;
+  
+  function addZero(num) {
+    return (num < 10 ? '0'+num : ''+num)
+  }
 });
