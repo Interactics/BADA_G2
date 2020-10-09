@@ -26,8 +26,8 @@ var hsignal;
 var signal;
 var audio_topic;
 var odom;
-var PrintHistory = "Connection";
-
+var DBtype=[];
+var DBtime=[];
 const today = new Date();
 today.setTime(0);
 
@@ -266,8 +266,7 @@ function printClock() {
 
 
 };
-var DBtype=[];
-var DBtime=[];
+
 var water= new Queue();
 var h_element;
 var h = new Queue();
@@ -285,6 +284,24 @@ function loaddatabase(){
       }
       //console.log(DBtype);
       //console.log(DBtime);
+      for(var i=0; i<DBtype.length;i++)
+      {
+        sig_name=dic1[DBtype[i]];
+        h.enqueue([dic1[DBtype[i]],DBtime[i]]);
+        hidx=hidx+1;
+        PrintHistory=h.toString();
+    
+        //PrintHistory=h.toString();
+      }
+      console.log(document.getElementById("history"));
+      console.log(document);
+      document.getElementById("history").innerHTML = PrintHistory;
+
+      console.log("check queue data after loading db");
+      for(var j=0; j<h.dataStore.length;j++)
+      {    console.log(h.dataStore[i][0]);
+      }
+
       })
     .catch(function (error) {
       // handle error
@@ -294,16 +311,9 @@ function loaddatabase(){
       // always executed
     });
 
-    for(var i=0; i<DBtype.length;i++)
-    {
-      sig_name=dic1[DBtype[i]];
-      h.enqueue(sig_name,DBtime[i]);
-      hidx=hidx+1;    
-      PrintHistory=h.toString();
-    }
-    document.getElementById("history").innerHTML=PrintHistory;
+    
   }
-
+//loaddatabase();
 var cnt = 0;
 function search() {
 
@@ -379,6 +389,7 @@ function init() {
   console.log('initializing canvas and websocket');
   console.log(canvas);
   ctx = canvas.getContext('2d');
+  loaddatabase();
 
   // Start the first frame request
   window.requestAnimationFrame(loop);
@@ -496,7 +507,7 @@ function tryConnectWebsocket() {
     x = message.pose.pose.position.x
     y = message.pose.pose.position.y
     //console.log(message.pose.pose.position);
-    console.log(x, y);
+   // console.log(x, y);
     x = (x * 55) + 220;
     y = ((y * 55) + 380);
 
@@ -748,7 +759,7 @@ function writeAlarmTest(){
   console.log('writing data to db...');
       
   // Make a request for a user with a given ID
-  axios.put('/alarm', {alarmType:'knock', alarmTime: Date.now()} )
+  axios.put('/alarm', {alarmType:'Door', alarmTime: Date.now()} )
   .then(function (response) {
     // handle success
     console.log(response);  // should be 200 (succes
