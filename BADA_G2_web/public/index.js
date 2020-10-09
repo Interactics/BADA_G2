@@ -3,8 +3,9 @@ var data;
 var time;
 var sig_name;
 var viewtime;
-var PrintHistory= " ... ";
+var PrintHistory= "Connection";
 var uuid;
+
 var hidx=0;
 const FRAMES_PER_SECOND = 10;  // Valid values are 60,30,20,15,10...
 const FRAME_MIN_TIME = (1000 / 60) * (60 / FRAMES_PER_SECOND) - (1000 / 60) * 0.5;
@@ -31,7 +32,7 @@ var DBtime=[];
 const today = new Date();
 today.setTime(0);
 
-const dic1 = { 'Cry': '아기 우는 소리', 'Alarm': '화재 경보', 'Door': '노크', 'Boiling': '물 끓는 소리', 'Silence': '조용한', 'Water': '물소리', 'Bell': '초인종 소리' };
+const dic1 = {'Cry':'아기 우는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Boiling':'물 끓는 소리', 'Silence':'조용한', 'Water':'물소리', 'Bell':'초인종 소리', 'Silence':'...'};
   
 const KAKAO_REST_API_TOKEN="dbd9b580157dee2b3191671338533e46";
 const KAKAO_TOKEN="f09ecd64a934de6bfd02f6ff2f98c2b6";
@@ -48,6 +49,10 @@ Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
     }
   });*/
 
+const today = new Date();
+today.setTime(0);
+
+console.log("a4365158deb211d98898dba793c60acb");
 
 /*function setAuth() {
   Kakao.Auth.login({
@@ -61,7 +66,6 @@ Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
   });
 }
 setAuth();*/
-
 
 // Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
 
@@ -110,9 +114,10 @@ function auth_shareKakaotalk()
           object_type: 'text',
           text: "BADA 로그인 성공",
           link: {
-              web_url: 'http://192.168.137.1',
-              mobile_web_url: 'http://192.168.137.1',
+              web_url: 'http://192.168.0.193',
+              mobile_web_url: 'http://192.168.0.193',
             },
+            button_title : "BADA에서 확인하기"
         },
       },
       success: function(response) {
@@ -220,7 +225,7 @@ function printNow() {
   let hour = today.getHours();
   let minute = today.getMinutes();
   let second = today.getSeconds();
-  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const ampm = hour >= 12 ? '오후' : '오전';
 
   // 12시간제로 변경
   hour %= 12;
@@ -229,11 +234,27 @@ function printNow() {
   // 10미만인 분과 초를 2자리로 변경
   minute = minute < 10 ? '0' + minute : minute;
   second = second < 10 ? '0' + second : second;
-
-  var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `;
+  var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `
   return now;
 };
 
+var clock_init = setInterval(function(){
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const date = today.getDate();
+  let hour = today.getHours();
+  let minute = today.getMinutes();
+  const ampm = hour >= 12 ? '오후' : '오전';
+  hour %= 12;
+  hour = hour || 12; // 0 => 12
+  minute = minute < 10 ? '0' + minute : minute;
+  
+  document.getElementById("hour").innerText=hour;
+  document.getElementById("minute").innerText=minute;
+  document.getElementById("month").innerText=month;
+  document.getElementById("date").innerText=date;
+  document.getElementById("noon").innerText=ampm;
+});
 
 function printClock() {
 
@@ -464,16 +485,27 @@ function tryConnectWebsocket() {
 
   // If there is an error on the backend, an 'error' emit will be emitted.
   ros.on('error', function (error) {
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('connected').style.display = 'none';
+    // document.getElementById('closed').style.display = 'none';
+    // document.getElementById('error').style.display = 'inline';
     console.log(error);
   });
 
   // Find out exactly when we made a connection.
   ros.on('connection', function () {
     console.log('Connection made!');
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('error').style.display = 'none';
+    // document.getElementById('closed').style.display = 'none';
+    // document.getElementById('connected').style.display = 'inline';
   });
 
   ros.on('close', function () {
     console.log('Connection closed.');
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('connected').style.display = 'none';
+    // document.getElementById('closed').style.display = 'inline';
   });
 
   // Create a connection to the rosbridge WebSocket server.
@@ -795,9 +827,9 @@ function getAlarmTest(){
   .then(function () {
     // always executed
   });
+}
  
 
-}
 
 function readAlarmTest(){
   console.log('reading data from db...');
