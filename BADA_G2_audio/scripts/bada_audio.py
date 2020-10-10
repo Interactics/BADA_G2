@@ -2,13 +2,6 @@
 import sys
 print('python version: ',sys.version_info)
 
-import os
-
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-# os.chdir(dname+'/../..')
-os.chdir(dname)
-
 import pyaudio
 import numpy as np
 from matplotlib import pyplot as plt
@@ -20,43 +13,32 @@ import yamnet as yamnet_model
 
 import datetime
 import time
-print('version major: ', sys.version_info.major)
-if(sys.version_info.major==2):
-    import Queue as queue
-else:
-    import queue
-    from queue import Queue
+import queue
 
 import roslibpy
-
 import rospy
 import json
 
+import os
 
 from std_msgs.msg import String
 from std_msgs.msg import Empty
 from audio_common_msgs.msg import AudioData
 import tensorflow as tf
 
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 pub=''
 # keys=['Speech','Alarm','Door','Television', 'Silence', 'Water', 'Music']
 # target: door, water, fire alarm, bell, cry, boiling
 keys=['Alarm','Door','Bell', 'Silence', 'Cry', 'Water', 'Boiling']
-detectWindow={
-    'Alarm':10,
-    'Door':2,
-    'Bell':4,
-    'Silence':10,
-    'Cry':3,
-    'Water':20,
-    'Boiling':20
-}
 alarmKeys=['Alarm', 'Fire alarm', 'Alarm clock']
 doorKeys=['Door', 'Knock']
 bellKeys=['Beep, bleep', 'Doorbell'] # Bell, 'Ding-dong'
 cryKeys=['Crying, sobbing', 'Baby cry, infant cry']
-# boilKeys=['Boiling', 'Liquid', 'Water',] # 'Water', 'Pour', 'Drip'
-boilKeys=['Boiling', 'Steam'] # 'Water', 'Pour', 'Drip'
+boilKeys=['Boiling', 'Liquid', 'Water',] # 'Water', 'Pour', 'Drip'
 waterKeys=['Water tap, faucet', 'Sink (filling or washing)']
 signals=dict.fromkeys(keys, 0.0)
 picked=dict.fromkeys(keys, 0.0)
@@ -64,18 +46,7 @@ detected=dict.fromkeys(keys, False)
 detectThreshold=0.40
 checkThreshold=0.25
 resetThreshold=0.1
-shortKeys=['door', 'bell']
-longKeys=['alarm', 'cry', 'boil', 'water']
 
-kinds=len(keys)
-
-qs=[]
-qlens=[]
-for i in range(kinds):
-    curQ=Queue()
-    qs.append(curQ)
-
-    qlens.append(detectWindow[keys[i]])
 
 # Set up the YAMNet model.
 params.PATCH_HOP_SECONDS = 0.48  # 10 Hz scores frame rate. //0.1
@@ -97,10 +68,8 @@ frames=[]
 last5secFrames=[]
 old5secFrames=[]
 
-shortQ=Queue()
-longQ=Queue()
-shortQSize=0
-longQSize=0
+frameQ=queue.Queue()
+qsize=0
 pub = rospy.Publisher('/signal', String, queue_size=10)
 detectInfoPub = rospy.Publisher('/bada/audio/info', String, queue_size=10)
 checkPub = rospy.Publisher('/bada/audio/checker', Empty, queue_size=10)
@@ -109,7 +78,7 @@ audioPub = rospy.Publisher('/audio', String, queue_size=10)
 # yamnet._make_predict_function()
 
 #somewhere accessible to both:
-callback_queue = Queue()
+callback_queue = queue.Queue()
 
 def from_dummy_thread(func_to_call_from_main_thread):
     callback_queue.put(func_to_call_from_main_thread)
@@ -127,58 +96,32 @@ def from_main_thread_nonblocking():
         callback()
 
 def signal(msg):
-    global frames, shortQSize, longQSize, yamnet, graph, callback_queue, q, qs
+    global frames, qsize, yamnet, graph, callback_queue
     # read new data and update last 5 sec frames
-
-    
-    
-    # for i,q in enumerate(qs):
-    #     it('this q: ', qs[i])
-    #     it('this q len : ', qlens[i])
-    #     q.put(msg)
-        
-    #     if(q.qsize()>qlens[i]):
-    #         q.get()
-    #     it(list(q.queue))
-        
     old=time.time()
+    for i, v in enumerate(msg.data):
+        qsize+=1
+        frameQ.put(v)
 
-    for i, curv in enumerate(msg.data):
-        for j, q in enumerate(qs):
-            print(q)
-
-            q.put(curv)
-            
-            if(q.qsize()>qlens[j]):
-                q.get()
-            curList = list(q.queue)
-            print(len(curList))
-            
-        # console.log(v)
-
-        shortQSize+=1
-        shortQ.put(curv)
-
+    # frames+=[msg.data]
+    # if(len(frames)<=int(predictionPeriod/predictionRate)):
+    #     return
+    if(qsize<=int(sr*predictionPeriod/predictionRate*2)):
+        return
     current=[]
-    currentLong=[]
-
     for i in range(sr*2):
-        shortQSize-=1
-        current.append(shortQ.get())
-        if(shortQ.empty()): break
-
-    picked=dict.fromkeys(keys, 0.0)
-    # alarmSignals=dict.fromkeys(alarmKeys, 0.0)
-    # boilSignals=dict.fromkeys(boilKeys, 0.0)
-    # waterSignals=dict.fromkeys(waterKeys, 0.0)
-
+        qsize-=1
+        current.append(frameQ.get())
+        if(frameQ.empty()): break
     # print(current)
     waveform = np.frombuffer(bytearray(current), dtype=np.int16) / 32768.0
-    
+    # print(type(waveform))
+    # print(waveform.shape)
+
     old=time.time()
     scores, spectrogram = yamnet.predict(np.reshape(waveform, [1, -1]), steps=1)
     # outputs = model.predict(inputs)
-
+    # scores, spectrogram = yamnet.predict(np.reshape(waveform, [1, -1]), steps=1)
     # print('prediction time: ', time.time()-old)
     old=time.time()
 
@@ -193,41 +136,37 @@ def signal(msg):
     except:
         pass
     # hello_str = "hello world %s" % rospy.get_time()
-    
+    picked=dict.fromkeys(keys, 0.0)
     for _,v in enumerate(dat[0]):
         [key, prob]=v
         # SWITHC
 
-        if(key in doorKeys):
-            picked['Door']+=float(prob)
+        if(key in alarmKeys):
+            picked['Alarm']+=float(prob)*5.0
+        elif(key in doorKeys):
+            picked['Door']+=float(prob)*10.0
         elif(key in bellKeys):
-            picked['Bell']+=float(prob)
-        elif(key in alarmKeys):
-            picked['Alarm']+=float(prob)
-            # alarmSignals[key]+=float(prob)
+            picked['Bell']+=float(prob)*5.0
         elif(key in cryKeys):
             picked['Cry']+=float(prob)
         elif(key in boilKeys):
-            picked['Boiling']+=float(prob)
-            # boilSignals[key]+=float(prob)
+            picked['Boiling']+=float(prob)*6.0
         elif(key in waterKeys):
             picked['Water']+=float(prob)
-            # waterSignals[key]+=float(prob)
+        else:
+            # rospy.loginfo(key in keys)
+            picked[key]=float(prob)
+
+        #if(key not in cryKeys):
+        #    picked[key]=0
+    picked['Alarm']/=len(alarmKeys)*3.0
+    picked['Door']/=len(doorKeys)*5.0
+    picked['Bell']/=len(bellKeys)*4.0
+    picked['Cry']/=len(cryKeys)*5
+    picked['Boiling']/=len(boilKeys)*5.0
+    picked['Water']/=len(waterKeys)*5.0
+
     
-
-
-    picked['Alarm']/=len(alarmKeys)
-    picked['Cry']/=len(cryKeys)
-    picked['Boiling']/=len(boilKeys)
-    picked['Water']/=len(waterKeys)
-    picked['Door']/=len(doorKeys)
-    picked['Bell']/=len(bellKeys)
-
-
-
-
-
-
 
     # update 
     for _, v in enumerate(keys):
@@ -236,20 +175,23 @@ def signal(msg):
 
         if(v == 'Alarm'):
             #picked['Alarm']+=float(prob)
-            signals[v]=signals[v]*0.1+picked[v]*0.9
+            signals[v]=signals[v]*0.2+picked[v]*0.8
         elif(v == 'Door'):
-            signals[v]=signals[v]*0.1+picked[v]*0.9
+            signals[v]=signals[v]*0.05+picked[v]*0.95
         elif(v == 'Bell'):
-            signals[v]=signals[v]*0.1+picked[v]*0.9
+            signals[v]=signals[v]*0.05+picked[v]*0.95
         elif(v == 'Cry'):
-            signals[v]=signals[v]*0.1+picked[v]*0.9
+            signals[v]=signals[v]*0.4+picked[v]*0.8
         elif(v == 'Boiling'):
-            signals[v]=signals[v]*0.1+picked[v]*0.9
+            signals[v]=signals[v]*0.45+picked[v]*0.55
         elif(v == 'Water'):
-            signals[v]=signals[v]*0.1+picked[v]*0.9
+            signals[v]=signals[v]*0.45+picked[v]*0.55
 
-    print(picked)
+        # rospy.loginfo(signals[v])
+        # signals[v]=signals[v]*0.3+picked[v]*0.7
+        print(v+' ' +str(round(signals[v], 2)) + ' ' + str(detected[v]))
 
+    # detect
     detectAny=False
     for _, v in enumerate(keys):
         detectInfoPub.publish('key ' + v + str(signals[v]))
@@ -266,9 +208,10 @@ def signal(msg):
         print('check : ' + str(datetime.datetime.now()))
         checkPub.publish()
     
+    print('prediction: ', dat)
 
 def callback(msg):
-    global frames, shortQSize, yamnet, graph, callback_queue
+    global frames, qsize, yamnet, graph, callback_queue
 
     from_dummy_thread(lambda: signal(msg))
 
@@ -285,20 +228,6 @@ def respeaker_node():
         # print('spinning')
         # rospy.spin()
         time.sleep(0.1)
-
-def data_listener():
-    rospy.init_node('data_read_node', anonymous=True)
-    rospy.loginfo('starting')
-
-    rospy.Subscriber("/audio", AudioData, callback)
-
-    while(not rospy.is_shutdown()):
-        # from_main_thread_blocking()
-        from_main_thread_nonblocking()
-        # print('spinning')
-        # rospy.spin()
-        time.sleep(0.1)
-    
 
 if __name__ == '__main__':
     respeaker_node()
