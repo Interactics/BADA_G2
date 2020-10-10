@@ -44,9 +44,11 @@
   top: 50px;
   left: 1150px;
   width: 200px;
+  text-align: center;
 }
 .clock-container .clock{
   font-family: 'Nanum Gothic', sans-serif;
+  text-align: center;
 }
 
 .cards{
