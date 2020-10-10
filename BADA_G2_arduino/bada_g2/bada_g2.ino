@@ -260,8 +260,8 @@ void Serial_Input_ISR() { // Twist CMD
 
 void ardInit() {
 
-  MotorR.PIDgainSet(4.5, 0.6, 0);
-  MotorL.PIDgainSet(4.5, 0.6, 0);
+  MotorR.PIDgainSet(3.8, 0.3, 0);
+  MotorL.PIDgainSet(3.8, 0.3, 0);
   //
   Serial.begin(9600);
   //  Serial1.begin(115200);
