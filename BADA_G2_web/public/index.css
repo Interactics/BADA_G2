@@ -1,7 +1,6 @@
 .title-container {
   position: relative;
-  align-content: top, center;
-  height: 130px;
+  height: 140px;
   width : 100%;
   margin-top: 20px;
 }
@@ -10,42 +9,31 @@
   position: relative;
   height: 83px;
   width: 100%;
-  font-size: 70px;
   text-align: center;
+  
+  font-size: 70px;
   color: #f3c452;
-  /*color : #4eaea1;*/
   text-shadow: 0px 3px 0 #2e2d2c, -3px 0 0 #2e2d2c, 3px 0 0 #2e2d2c, -3px -3px 0  #2e2d2c, 2px -3px 0 #2e2d2c;
   font-family: 'Anton', sans-serif; 
-  left: 530px;
   
 }
 .title-container .sub_logo_wrapper{
-  position: relative; 
-  top: 118px;
-  align-content: center;
-  width: 100%;
+  text-align: center;
 }
 .title-container .sub_logo_wrapper .sub_logo {
-  position: absolute;
-  width:320px;
-  height : 27px;
+  position: relative;
+  
+  background-color:transparent;
   font-family: 'Anton', sans-serif;
   font-size: 19px;
   color: #2e2d2c;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 0;
-  background-color: #fefaef;
-  position: relative;
-  left:530px;
-  /*text-shadow: 0px 2px 0 #040404, -2px 0 0 #040404, 2px 0 0 #040404, -2px -1px 0 #040404, 1px -2px 0 #040404;*/
 }
-.title-container .sub_logo_wrapper .title-bar{
-  z-index:-10;
-  color:#000000; 
+.line {
+  width: 95.5%;
+  position: absolute;
+  border:1px solid black;
 }
 .title-container .copyright {
-  margin-top: 0px;
   text-align: center;
   font-family:'Nanum Myeongjo', serif;
   font-size : 13px;
