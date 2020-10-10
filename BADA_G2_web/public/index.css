@@ -99,7 +99,7 @@
     z-index: 10;
 }
   .cards .row .middle-section .history-col .card {
-    margin-top: 0;
+    margin-top: 20px;
     background-color: transparent;
     box-shadow: none;
     height: 100%;

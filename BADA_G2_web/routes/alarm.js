@@ -28,7 +28,7 @@ router.get('/', async function(req, res){
   console.log('getting alarms');
   
   //const alarms = await models.Alarm.findAll({ });
-  const alarms = await models.Alarm.findAll({limit:10, order: [['createdAt', 'DESC']]});
+  const alarms = await models.Alarm.findAll({limit:10, order: [['createdAt', 'ASC']]});
   console.log(alarms);
   res.json(alarms);
 })

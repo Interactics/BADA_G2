@@ -1,12 +1,11 @@
 
 var data;
 var time;
-var sig_name;
-var viewtime;
-var PrintHistory= "Connection";
+var sig_name='';
+var PrintHistory = "Connection";
 var uuid;
 
-var hidx=0;
+var hidx = 0;
 const FRAMES_PER_SECOND = 10;  // Valid values are 60,30,20,15,10...
 const FRAME_MIN_TIME = (1000 / 60) * (60 / FRAMES_PER_SECOND) - (1000 / 60) * 0.5;
 var lastFrameTime = 0;  // the last frame time
@@ -21,21 +20,20 @@ var theta;
 var str;
 var data;
 var time;
-var sig_name;
 var viewtime;
 var hsignal;
 var signal;
 var audio_topic;
 var odom;
-var DBtype=[];
-var DBtime=[];
+var DBtype = [];
+var DBtime = [];
 const today = new Date();
 today.setTime(0);
 
-const dic1 = {'Cry':'아기 우는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Boiling':'물 끓는 소리', 'Silence':'조용한', 'Water':'물소리', 'Bell':'초인종 소리', 'Silence':'...'};
-  
-const KAKAO_REST_API_TOKEN="dbd9b580157dee2b3191671338533e46";
-const KAKAO_TOKEN="f09ecd64a934de6bfd02f6ff2f98c2b6";
+const dic1 = { 'Cry': '아기 우는 소리', 'Alarm': '화재 경보', 'Door': '노크', 'Boiling': '물 끓는 소리', 'Silence': '조용한', 'Water': '물소리', 'Bell': '초인종 소리', 'Silence': '...' };
+
+const KAKAO_REST_API_TOKEN = "dbd9b580157dee2b3191671338533e46";
+const KAKAO_TOKEN = "f09ecd64a934de6bfd02f6ff2f98c2b6";
 
 Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
 /*  Kakao.Auth.createLoginButton({
@@ -49,23 +47,22 @@ Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
     }
   });*/
 
-const today = new Date();
-today.setTime(0);
+
 
 console.log("a4365158deb211d98898dba793c60acb");
 
-/*function setAuth() {
+function setAuth() {
   Kakao.Auth.login({
-    scope: 'talk_message,friends',
+    scope: 'talk_message,friends,profile',
     success: function (response) {
-      console.log(response);
+      console.log("kakao_auth_success");
     },
     fail: function (error) {
       console.log(error);
     }
   });
 }
-setAuth();*/
+setAuth();
 
 // Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
 
@@ -87,17 +84,14 @@ function dequeue() {
   return this.dataStore.shift();
 }
 
-function loadfriendlist()
-{
+function loadfriendlist() {
   Kakao.API.request({
     url: '/v1/api/talk/friends',
-    success: function(response) {
+    success: function (response) {
       console.log("this is kakao friends token");
       console.log(response);
-      console.log(response.uuid);
-      uuid=response.result_id;
     },
-    fail: function(error) {
+    fail: function (error) {
       console.log(error);
     }
   });
@@ -105,30 +99,29 @@ function loadfriendlist()
 loadfriendlist();
 
 
-function auth_shareKakaotalk()
-{
-    Kakao.API.request({
-      url: '/v2/api/talk/memo/default/send',
-      data: {
-        template_object: {
-          object_type: 'text',
-          text: "BADA 로그인 성공",
-          link: {
-              web_url: 'http://192.168.0.193',
-              mobile_web_url: 'http://192.168.0.193',
-            },
-            button_title : "BADA에서 확인하기"
+function auth_shareKakaotalk() {
+  Kakao.API.request({
+    url: '/v2/api/talk/memo/default/send',
+    data: {
+      template_object: {
+        object_type: 'text',
+        text: "BADA 로그인 성공",
+        link: {
+          web_url: 'http://192.168.0.193',
+          mobile_web_url: 'http://192.168.0.193',
         },
+        button_title: "BADA에서 확인하기"
       },
-      success: function(response) {
-        console.log(response);
-      },
-      fail: function(error) {
-        console.log(error);
-      },
-    });
-  }
- 
+    },
+    success: function (response) {
+      //console.log(response);
+    },
+    fail: function (error) {
+      //console.log(error);
+    },
+  });
+}
+
 
 /*function auth_shareKakaotalk() 
 {
@@ -159,31 +152,44 @@ function auth_shareKakaotalk()
       },
     });
   }*/
- auth_shareKakaotalk();
+auth_shareKakaotalk();
 
- function shareKakaotalk(sig_name)
- {
-     Kakao.API.request({
-       url: '/v2/api/talk/memo/default/send',
-       data: {
-         template_object: {
-           object_type: 'text',
-           text: sig_name+"가 발생한 것 같아요!",
-           link: {
-               web_url: 'http://192.168.0.193',
-               mobile_web_url: 'http://192.168.0.193',
-             },
-             button_title : "BADA에서 확인하기"
-         },
-       },
-       success: function(response) {
-         console.log(response);
-       },
-       fail: function(error) {
-         console.log(error);
-       },
-     });
-   }
+function shareKakaotalk(sig_name) {
+  var q=new Date();
+  axios.put('/alarm', { alarmType: sig_name, alarmTime: q })
+    .then(function (response) {
+      console.log('writing data to db...');
+
+      Kakao.API.request({
+        url: '/v2/api/talk/memo/default/send',
+        data: {
+          template_object: {
+            object_type: 'text',
+            text: dic1[sig_name] + "가 발생한 것 같아요!",
+            link: {
+              web_url: 'http://192.168.0.193',
+              mobile_web_url: 'http://192.168.0.193',
+            },
+            button_title: "BADA에서 확인하기"
+          },
+        },
+        success: function (response) {
+          console.log(response);
+        },
+        fail: function (error) {
+          console.log(error);
+        },
+      });
+      // handle success
+    })
+    .catch(function (error) {
+      // handle error
+      console.error(error);
+    })
+    .then(function () {
+      // always executed
+    });
+}
 /*function shareKakaotalk(sig_name)
 {
     Kakao.API.request({
@@ -214,8 +220,8 @@ function auth_shareKakaotalk()
 */
 
 
-function printNow() {
-  const today = new Date();
+function printNow(ddate) {
+  const today = ddate;
 
   // getDay: 해당 요일(0 ~ 6)를 나타내는 정수를 반환한다.
 
@@ -237,8 +243,11 @@ function printNow() {
   var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `
   return now;
 };
+var a=new Date();
+var b=printNow(a);
+console.log(b);
 
-var clock_init = setInterval(function(){
+var clock_init = setInterval(function () {
   const today = new Date();
   const month = today.getMonth() + 1;
   const date = today.getDate();
@@ -248,12 +257,12 @@ var clock_init = setInterval(function(){
   hour %= 12;
   hour = hour || 12; // 0 => 12
   minute = minute < 10 ? '0' + minute : minute;
-  
-  document.getElementById("hour").innerText=hour;
-  document.getElementById("minute").innerText=minute;
-  document.getElementById("month").innerText=month;
-  document.getElementById("date").innerText=date;
-  document.getElementById("noon").innerText=ampm;
+
+  document.getElementById("hour").innerText = hour;
+  document.getElementById("minute").innerText = minute;
+  document.getElementById("month").innerText = month;
+  document.getElementById("date").innerText = date;
+  document.getElementById("noon").innerText = ampm;
 });
 
 function printClock() {
@@ -288,42 +297,40 @@ function printClock() {
 
 };
 
-var water= new Queue();
+var water = new Queue();
 var h_element;
 var h = new Queue();
 
-function loaddatabase(){
-    console.log("load database");
+function loaddatabase() {
+  console.log("load database");
 
-    axios.get('/alarm')
+  axios.get('/alarm')
     .then(function (response) {
       // handle success
-      console.log(response);   // should be 200 (success)
-      for(var i=0; i<response.data.length;i++){
-          DBtype[i]=response.data[i].type;
-          DBtime[i]=response.data[i].time;
+      console.log("In loaddatabase function:getting database");
+      console.log(response)   // should be 200 (success)
+      for (var i = 0; i < response.data.length; i++) {
+        DBtype[i] = response.data[i].type;
+        DBtime[i] = printNow(new Date( Date.parse(response.data[i].time)));//data[i].time=>new date()        printNow()매개변수는 NEW DATE
       }
-      //console.log(DBtype);
-      //console.log(DBtime);
-      for(var i=0; i<DBtype.length;i++)
-      {
-        sig_name=dic1[DBtype[i]];
-        h.enqueue([dic1[DBtype[i]],DBtime[i]]);
-        hidx=hidx+1;
-        PrintHistory=h.toString();
-    
-        //PrintHistory=h.toString();
+      console.log(DBtype);
+      console.log(DBtime);
+      for (var i = 0; i < DBtype.length; i++) {
+        sig_name = dic1[DBtype[i]];
+        h.enqueue([dic1[DBtype[i]], DBtime[i]]);
+        hidx = hidx + 1;
+        PrintHistory = h.toString();
+
       }
-      console.log(document.getElementById("history"));
-      console.log(document);
+
       document.getElementById("history").innerHTML = PrintHistory;
 
       console.log("check queue data after loading db");
-      for(var j=0; j<h.dataStore.length;j++)
-      {    console.log(h.dataStore[i][0]);
+      for (var j = 0; j < h.dataStore.length; j++) {
+        console.log(h.dataStore[j][0]);
       }
 
-      })
+    })
     .catch(function (error) {
       // handle error
       console.error(error);
@@ -332,8 +339,8 @@ function loaddatabase(){
       // always executed
     });
 
-    
-  }
+
+}
 //loaddatabase();
 var cnt = 0;
 function search() {
@@ -407,8 +414,8 @@ w_remove = setInterval(function () {
 
 function init() {
   canvas = document.getElementById('canvas');
-  console.log('initializing canvas and websocket');
-  console.log(canvas);
+  //console.log('initializing canvas and websocket');
+  //console.log(canvas);
   ctx = canvas.getContext('2d');
   loaddatabase();
 
@@ -539,7 +546,7 @@ function tryConnectWebsocket() {
     x = message.pose.pose.position.x
     y = message.pose.pose.position.y
     //console.log(message.pose.pose.position);
-   // console.log(x, y);
+    // console.log(x, y);
     x = (x * 55) + 220;
     y = ((y * 55) + 380);
 
@@ -563,18 +570,20 @@ function tryConnectWebsocket() {
   });
 
   hsignal.subscribe(function (m) {
-  
+
     sig_name = dic1[m.data];
     console.log("NOW SIGNAL : " + sig_name);
-  
+
+
   
     time = today.getTime();
-    viewtime = printNow();
-  
+    var a= new Date();
+    viewtime = printNow(a);
+
     if (h.dataStore.length >= 17) {
       h.dequeue();
     }
-  
+
     if (sig_name == dic1['Water']) {
       //먼저 검색해 
       if (water.search()) {
@@ -583,7 +592,7 @@ function tryConnectWebsocket() {
           water.dequeue();
         }
         cnt = 0;
-        shareKakaotalk(sig_name);
+        shareKakaotalk(m.data);
         h.enqueue([sig_name, viewtime]);
         hidx = hidx + 1;
         PrintHistory = h.toString();
@@ -595,50 +604,51 @@ function tryConnectWebsocket() {
     }
     else if (sig_name != dic1["Silence"]) {
       console.log('signame!!::', sig_name);
-      shareKakaotalk(sig_name);
+      shareKakaotalk(m.data);
       h.enqueue([sig_name, viewtime]);
       hidx = hidx + 1;
       PrintHistory = h.toString();
     }
     document.getElementById("history").innerHTML = PrintHistory;
-  
+    document.getElementById("alarm").innerHTML = sig_name;
+
   });
+}
+  // signal = new ROSLIB.Topic({
+  //   ros: ros,
+  //   name: '/signal',
+  //   messageType: 'std_msgs/String'
+  // });
 
-  signal = new ROSLIB.Topic({
-    ros: ros,
-    name: '/signal',
-    messageType: 'std_msgs/String'
-  });
-
-  signal.subscribe(function (m) {
-    sig_name = dic1[m.data];
-
-
-    //console.log("NOW SIGNAL : "+sig_name);
-    document.getElementById("signal").innerHTML = sig_name;
-    time = today.getTime();
+  // signal.subscribe(function (m) {
+  //   sig_name = dic1[m.data];
 
 
-    if (sig_name == 'Water') {
-      //먼저 검색해 
-      if (water.search()) {
-        //총 3번 이상 발생했다면
-        for (var i = 1; i <= 3; i++) {
-          water.dequeue();
-        }
+  //   //console.log("NOW SIGNAL : "+sig_name);
+  //   document.getElementById("signal").innerHTML = sig_name;
+  //   time = today.getTime();
 
-        cnt = 0;
-        shareKakaotalk(sig_name);
-      }
-      else {
-        //발생한적없다면
-        water.enqueue(time);
-      }
-    }
-    else if (sig_name != "Silence") {
-      shareKakaotalk(sig_name);
-    }
-  });
+
+  //   if (sig_name == 'Water') {
+  //     //먼저 검색해 
+  //     if (water.search()) {
+  //       //총 3번 이상 발생했다면
+  //       for (var i = 1; i <= 3; i++) {
+  //         water.dequeue();
+  //       }
+
+  //       cnt = 0;
+  //       shareKakaotalk(sig_name);
+  //     }
+  //     else {
+  //       //발생한적없다면
+  //       water.enqueue(time);
+  //     }
+  //   }
+  //   else if (sig_name != "Silence") {
+  //     shareKakaotalk(sig_name);
+  //   }
+  // });
   /////////////////////////////////////////////////
 
   // audio_topic = new ROSLIB.Topic({
@@ -646,7 +656,7 @@ function tryConnectWebsocket() {
   //   name: '/audio',
   //   messageType: 'std_msgs/String'
   // });
-  
+
   // audio_topic.subscribe(function (m) {
   //   str = m.data;
   //   console.log(str);
@@ -668,188 +678,193 @@ function tryConnectWebsocket() {
   //   str = str.slice(0, -1);
   //   str = str.split(",");
   //   //console.log(str);
-  
+
   //   document.getElementById("first_topic_name").innerHTML = str;
   //   document.getElementById("first_topic_proba").innerHTML = str[1];
   //   document.getElementById("second_topic_name").innerHTML = str[2];
   //   document.getElementById("second_topic_proba").innerHTML = str[3];
   //   document.getElementById("third_topic_name").innerHTML = str[4];
   //   document.getElementById("third_topic_proba").innerHTML = str[5];
-  
-
-
-  audio_topic = new ROSLIB.Topic({
-    ros: ros,
-    name: '/signal',
-    // name: '/bada_audio/audio',
-    messageType: 'std_msgs/String'
-  });
-  
-  audio_topic.subscribe(function (m) {
-  
-    str = m.data;
-  
-    for (var i = 0; i < 100; i++) str = str.replace("\"", "");
-    str = str.substring(1);
-    str = str.substring(1);
-    str = str.slice(0, -1);
-    str = str.slice(0, -1);
-    for (var i = 0; i < 100; i++) str = str.replace(",", "");
-    for (var i = 0; i < 100; i++) str = str.replace("[", "");
-    str = str.split("]");
-  
-    document.getElementById("first_topic").innerHTML = str[0];
-    document.getElementById("second_topic").innerHTML = str[1];
-    document.getElementById("third_topic").innerHTML = str[2];
-    document.getElementById("fourth_topic").innerHTML = str[3];
-    document.getElementById("fifth_topic").innerHTML = str[4];
-    document.getElementById("sixth_topic").innerHTML = str[5];
-    document.getElementById("seventh_topic").innerHTML = str[6];
-    document.getElementById("eighth_topic").innerHTML = str[7];
-    document.getElementById("ninth_topic").innerHTML = str[8];
-    document.getElementById("tenth_topic").innerHTML = str[9];
-  });
-  
-
-};
-
-function writeAlarmTest() {
-  console.log('writing data to db...');
-
-  // Make a request for a user with a given ID
-  axios.put('/alarm', { alarmType: 'knock', alarmTime: Date.now() })
-    .then(function (response) {
-      // handle success
-      // console.log(response);
-      console.log(response.status);   // should be 200 (success)
-
-
-    })
-    .catch(function (error) {
-      // handle error
-      console.error(error);
-    })
-    .then(function () {
-      // always executed
-    });
-
-}
-
-
-function draw(timestamp) {
-  // if (!start) start = timestamp;
-  // var progress = timestamp - start;
-
-  //Draw number to the screen
-
-
-  const radius = 1500;
-  const startangle = theta - 1 / 16 * Math.PI;
-  const endangle = theta + 1 / 16 * Math.PI;
-  ctx.fillStyle = 'rgba(248,206,105,0.7)';
-
-  ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
-  ctx.moveTo(x, y);
-  ctx.arc(x, y, radius, startangle, endangle);
-  ctx.lineTo(x, y);
-  ctx.fill(); // or context.fill()
-
-  ctx.beginPath();//ADD THIS 
-  ctx.fillStyle = '#d45d54';//#DC143C
-  ctx.strokeStyle = "#black";
-  ctx.lineWidth = "10";
-  ctx.arc(x, y, 7, 0, 2 * Math.PI);
-  ctx.stroke();
-  ctx.fill(); // or context.fill()*/
-}
+  //}
 
 
 
-function readAlarmTest() {
-  console.log('reading data from db...');
-
-  // Make a request for a user with a given ID
-  axios.get('/alarm', { data: 'what' })
-    .then(function (response) {
-      // handle success
-      // console.log(response);
-      console.log(response.status);   // should be 200 (success)
 
 
-    })
-    .catch(function (error) {
-      // handle error
-      console.error(error);
-    })
-    .then(function () {
-      // always executed
-    });
 
-}
+  //*************************SHOW "REAL TIME TOPIC" **************************
 
-function writeAlarmTest(){
-  console.log('writing data to db...');
-      
-  // Make a request for a user with a given ID
-  axios.put('/alarm', {alarmType:'Door', alarmTime: Date.now()} )
-  .then(function (response) {
-    // handle success
-    console.log(response);  // should be 200 (succes
+  // audio_topic = new ROSLIB.Topic({
+  //   ros: ros,
+  //   name: '/signal',
+  //   // name: '/bada_audio/audio',
+  //   messageType: 'std_msgs/String'
+  // });
 
-  })
-  .catch(function (error) {
-    // handle error
-    console.error(error);
-  })
-  .then(function () {
-    // always executed
-  });
+  //   audio_topic.subscribe(function (m) {
 
-}
+  //     str = m.data;
 
-function getAlarmTest(){
-  console.log('getting data from db...');
-      
-  // Make a request for a user with a given ID
-  axios.get('/alarm')
-  .then(function (response) {
-    // handle success
-    console.log(response);
-    console.log(response.data[0].type);
+  //     for (var i = 0; i < 100; i++) str = str.replace("\"", "");
+  //     str = str.substring(1);
+  //     str = str.substring(1);
+  //     str = str.slice(0, -1);
+  //     str = str.slice(0, -1);
+  //     for (var i = 0; i < 100; i++) str = str.replace(",", "");
+  //     for (var i = 0; i < 100; i++) str = str.replace("[", "");
+  //     str = str.split("]");
 
-  
-     // should be 200 (success)
-  })
-  .catch(function (error) {
-    // handle error
-    console.error(error);
-  })
-  .then(function () {
-    // always executed
-  });
-}
- 
+  //     document.getElementById("first_topic").innerHTML = str[0];
+  //     document.getElementById("second_topic").innerHTML = str[1];
+  //     document.getElementById("third_topic").innerHTML = str[2];
+  //     document.getElementById("fourth_topic").innerHTML = str[3];
+  //     document.getElementById("fifth_topic").innerHTML = str[4];
+  //     document.getElementById("sixth_topic").innerHTML = str[5];
+  //     document.getElementById("seventh_topic").innerHTML = str[6];
+  //     document.getElementById("eighth_topic").innerHTML = str[7];
+  //     document.getElementById("ninth_topic").innerHTML = str[8];
+  //     document.getElementById("tenth_topic").innerHTML = str[9];
+  //   });
 
 
-function readAlarmTest(){
-  console.log('reading data from db...');
-   
-  // Make a request for a user with a given ID
-  axios.get('/alarm', {data:'what'} )
-  .then(function (response) {
-    // handle success
-    // console.log(response);
-    console.log(response.status);   // should be 200 (success)
+  // };
+
+  // function writeAlarmTest() {
+  //   console.log('writing data to db...');
+
+  //   // Make a request for a user with a given ID
+  //   axios.put('/alarm', { alarmType: 'knock', alarmTime: Date.now() })
+  //     .then(function (response) {
+  //       // handle success
+  //       // console.log(response);
+  //       console.log(response.status);   // should be 200 (success)
 
 
-  })
-  .catch(function (error) {
-    // handle error
-    console.error(error);
-  })
-  .then(function () {
-    // always executed
-    
-  });
+  //     })
+  //     .catch(function (error) {
+  //       // handle error
+  //       console.error(error);
+  //     })
+  //     .then(function () {
+  //       // always executed
+  //     });
 
-}
+  // }
+
+
+  function draw(timestamp) {
+    // if (!start) start = timestamp;
+    // var progress = timestamp - start;
+
+    //Draw number to the screen
+
+
+    const radius = 1500;
+    const startangle = theta - 1 / 16 * Math.PI;
+    const endangle = theta + 1 / 16 * Math.PI;
+    ctx.fillStyle = 'rgba(248,206,105,0.7)';
+
+    ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
+    ctx.moveTo(x, y);
+    ctx.arc(x, y, radius, startangle, endangle);
+    ctx.lineTo(x, y);
+    ctx.fill(); // or context.fill()
+
+    ctx.beginPath();//ADD THIS 
+    ctx.fillStyle = '#d45d54';//#DC143C
+    ctx.strokeStyle = "#black";
+    ctx.lineWidth = "10";
+    ctx.arc(x, y, 7, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill(); // or context.fill()*/
+  }
+
+
+
+// function readAlarmTest() {
+//   console.log('reading data from db...');
+
+//   // Make a request for a user with a given ID
+//   axios.get('/alarm', { data: 'what' })
+//     .then(function (response) {
+//       // handle success
+//       // console.log(response);
+//       console.log(response.status);   // should be 200 (success)
+
+
+//     })
+//     .catch(function (error) {
+//       // handle error
+//       console.error(error);
+//     })
+//     .then(function () {
+//       // always executed
+//     });
+
+// }
+
+// function writeAlarmTest(){
+//   console.log('writing data to db...');
+
+//   // Make a request for a user with a given ID
+//   axios.put('/alarm', {alarmType:'Door', alarmTime: Date.now()} )
+//   .then(function (response) {
+//     // handle success
+//     console.log(response);  // should be 200 (succes
+
+//   })
+//   .catch(function (error) {
+//     // handle error
+//     console.error(error);
+//   })
+//   .then(function () {
+//     // always executed
+//   });
+
+// }
+
+// function getAlarmTest(){
+//   console.log('getting data from db...');
+
+//   // Make a request for a user with a given ID
+//   axios.get('/alarm')
+//   .then(function (response) {
+//     // handle success
+//     console.log(response);
+//     console.log(response.data[0].type);
+
+
+//      // should be 200 (success)
+//   })
+//   .catch(function (error) {
+//     // handle error
+//     console.error(error);
+//   })
+//   .then(function () {
+//     // always executed
+//   });
+// }
+
+
+
+// function readAlarmTest(){
+//   console.log('reading data from db...');
+
+//   // Make a request for a user with a given ID
+//   axios.get('/alarm', {data:'what'} )
+//   .then(function (response) {
+//     // handle success
+//     // console.log(response);
+//     console.log(response.status);   // should be 200 (success)
+
+
+//   })
+//   .catch(function (error) {
+//     // handle error
+//     console.error(error);
+//   })
+//   .then(function () {
+//     // always executed
+
+//   });
+// }
