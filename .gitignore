@@ -6,3 +6,5 @@ logs
 *.pyc
 .catkin_tools
 *.bak
+config.json
+node_modules

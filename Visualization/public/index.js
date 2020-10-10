@@ -26,10 +26,10 @@ var PrintHistory = "Connection";
 const today = new Date();
 today.setTime(0);
 
+console.log("a4365158deb211d98898dba793c60acb");
 
 
-
-Kakao.init("b886eede39b9d47bc9d3cb6e91483799");   // 사용할 앱의 JavaScript 키를 설정
+// Kakao.init("a4365158deb211d98898dba793c60acb");   // 사용할 앱의 JavaScript 키를 설정
 
 function shareKakaotalk(sig_name)
 {
@@ -54,31 +54,58 @@ function shareKakaotalk(sig_name)
       },
     });
   }
-  function shareauthKakaotalk()
-{
-    Kakao.API.request({
-      url: '/v2/api/talk/memo/default/send',
-      data: {
-        template_object: {
-          object_type: 'text',
-          text: "BADA 인증이 완료되었습니다",
-          link: {
-              web_url: 'http://192.168.0.193',
-              mobile_web_url: 'http://192.168.0.193',
-            },
-            button_title : "BADA에서 확인하기"
+  // function shareauthKakaotalk()
+  // {
+  //   Kakao.API.request({
+  //     url: '/v2/api/talk/memo/default/send',
+  //     data: {
+  //       template_object: {
+  //         object_type: 'text',
+  //         text: "BADA 인증이 완료되었습니다",
+  //         link: {
+  //             web_url: 'http://192.168.0.193',
+  //             mobile_web_url: 'http://192.168.0.193',
+  //           },
+  //           button_title : "BADA에서 확인하기"
 
-        },
-      },
-      success: function(response) {
-        console.log(response);
-      },
-      fail: function(error) {
-        console.log(error);
-      },
-    });
-  }
-  shareauthKakaotalk();
+  //       },
+  //     },
+  //     success: function(response) {
+  //       console.log(response);
+  //     },
+  //     fail: function(error) {
+  //       console.log(error);
+  //     },
+  //   });
+  // }
+  // shareauthKakaotalk();
+
+
+
+  function printNow() {
+    const today = new Date();
+  
+    // getDay: 해당 요일(0 ~ 6)를 나타내는 정수를 반환한다.
+  
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const date = today.getDate();
+    let hour = today.getHours();
+    let minute = today.getMinutes();
+    let second = today.getSeconds();
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+  
+    // 12시간제로 변경
+    hour %= 12;
+    hour = hour || 12; // 0 => 12
+  
+    // 10미만인 분과 초를 2자리로 변경
+    minute = minute < 10 ? '0' + minute : minute;
+    second = second < 10 ? '0' + second : second;
+  
+    var now = `${year}.${month}.${date}    ${ampm} ${hour}:${minute}:${second} `;
+    return now;
+  };
 
 
   function printClock() {
@@ -123,7 +150,7 @@ function Queue(){
     this.enqueue = enqueue;
     this.dequeue = dequeue;
     this.search=search;
-    this.stoString=stoString;
+    this.toString=toString;
 }
 
 function enqueue(element)
@@ -160,7 +187,7 @@ function search(){
     }
   }
   
-  function stoString() {
+  function toString() {
     var retStr = "";
     for (var i = this.dataStore.length-1;i >=0; i-- )    {
         retStr +="  "+ this.dataStore[i]+"\n";
@@ -248,10 +275,10 @@ var h = new Queue();
           water.dequeue();
         }
         cnt=0;
-        shareKakaotalk(sig_name);
+        // shareKakaotalk(sig_name);
         h.enqueue([sig_name, viewtime]);
         hidx=hidx+1;     
-        PrintHistory=h.stoString();
+        PrintHistory=h.toString();
       }
       else
       {
@@ -261,12 +288,12 @@ var h = new Queue();
     }
     else if(sig_name!=dic1["Silence"])
     {
-        shareKakaotalk(sig_name);
+        // shareKakaotalk(sig_name);
         h.enqueue([sig_name, viewtime]);
         hidx=hidx+1;       
-        PrintHistory=h.stoString();
+        PrintHistory=h.toString();
     }
-    document.getElementById("History").innerHTML=PrintHistory;
+    document.getElementById("history").innerHTML=PrintHistory;
 
   });
 
@@ -284,6 +311,7 @@ var h = new Queue();
   // Find out exactly when we made a connection.
   ros.on('connection', function () {
       console.log('Connection made!');
+      init();
   });
   
   ros.on('close', function () {
@@ -321,7 +349,7 @@ var h = new Queue();
      // name : '/bada_audio/signal',
       messageType : 'std_msgs/String'
     });
-    const dic1={'Speech':'말하는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Television':'티비 소리', 'Silence':'조용해요', 'Water':'물소리', 'Music':'휴대폰 벨소리'};
+    // const dic1={'Speech':'말하는 소리', 'Alarm':'화재 경보', 'Door':'노크', 'Television':'티비 소리', 'Silence':'조용해요', 'Water':'물소리', 'Music':'휴대폰 벨소리'};
   
     signal.subscribe(function(m){
       sig_name=dic1[m.data];
@@ -332,7 +360,7 @@ var h = new Queue();
 //from index.js
 
 //KAKAO_TOKEN="adwnM5UYyKBlm7Pg-9OC9BjoDwdUOUo8dCY9DgopyV4AAAFyI3fYdQ";
-Kakao.init("b886eede39b9d47bc9d3cb6e91483799");   // 사용할 앱의 JavaScript 키를 설정
+// Kakao.init("b886eede39b9d47bc9d3cb6e91483799");   // 사용할 앱의 JavaScript 키를 설정
 
  
   // 카카오 로그인 버튼을 생성합니다. 
@@ -371,7 +399,7 @@ Kakao.init("b886eede39b9d47bc9d3cb6e91483799");   // 사용할 앱의 JavaScript
     });
   
   }
-  shareKakaotalk("BADA 인증 완료");
+  // shareKakaotalk("BADA 인증 완료");
 
 function Queue(){
 
@@ -453,7 +481,7 @@ var water= new Queue();
   });
 
   // Create a connection to the rosbridge WebSocket server.
-  ros.connect('ws://10.211.55.4:9090');
+  ros.connect('ws://localhost:9090');
 
   // Like when publishing a topic, we first create a Topic object with details of the topic's name
   // and message type. Note that we can call publish or subscribe on the same topic object.
@@ -525,7 +553,7 @@ var water= new Queue();
         }
       
         cnt=0;
-        shareKakaotalk(sig_name);
+        // shareKakaotalk(sig_name);
       }
       else
       {
@@ -535,7 +563,7 @@ var water= new Queue();
     }
     else if(sig_name!="Silence")
     {
-        shareKakaotalk(sig_name);
+        // shareKakaotalk(sig_name);
     }
   });
 /////////////////////////////////////////////////
@@ -589,6 +617,7 @@ audio_topic.subscribe(function (m) {
 
 function init() {
   canvas = document.getElementById('canvas');
+  console.log('initializing canvas and websocket');
   console.log(canvas);
   ctx = canvas.getContext('2d');
 

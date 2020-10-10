@@ -1,0 +1,142 @@
+.viewport-container {
+  height: 90%;
+  width: 90%;
+  margin: auto;
+}
+
+
+.title-container {
+  /* align-content: top, center; */
+  /* float: left; */
+  /* display: block; */
+  justify-content: space-between;
+  height: 130px;
+  width : 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.title-container .logo {
+  color : #2b2a27;
+  height: 83px;
+  float: left;
+  width: 70%;
+  font-family: 'Anton', sans-serif;
+  font-size: 70px;
+  text-align: left;
+  /* flex-grow: 1; */
+  /* flex: 1 1 1500px */
+}
+
+.title-container .logo .sub_logo {
+  width: 100%;
+  height: min-content;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 30px;
+  font-weight: 100;
+  color :#2b2a27;
+  text-align: left;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.title-container .clock-container {
+  /* position: relative; */
+  float : left;
+  font-family: 'Nanum Gothic', sans-serif;
+  text-align: center;
+
+  background: transparent;
+  border-radius: 20px;
+  border-style: solid #000000;
+  
+  height: 100px;
+  width: 30%;
+}
+
+.title-container .clock-container .clock-icon {
+  font-size: 150px;
+}
+
+
+.cards {
+      background: #fefaef;
+      /* display: flex; */
+    }
+
+.cards .card {
+  flex: 1 1 auto;
+  margin: 10px;
+}
+    
+  .cards .row {
+      width: 100%;
+      display: flex;
+  }
+  .cards .row .alarm-col {
+    /* left : 40px; */
+    /* position: relative; */
+    font-family: 'Nanum Gothic', sans-serif;
+    color : #2b2a27;
+    text-align: center;
+    float: left;
+
+    background: transparent;
+    
+    border-radius: 20px;
+    border: 2px solid #000000;
+    height: 600px;
+    /* width: 30%; */
+  }
+
+  .cards .row .middle-section {
+    float : left;
+    /* position: relative; */
+    /* left : 360px; */
+    /* width : 40%; */
+    border-radius: 20px;
+    border: 2px solid #000000;
+  }
+
+  .cards .row .middle-section .history-col {
+    /* position: relative; */
+    font-family: 'Nanum Gothic', sans-serif;
+    color : #2b2a27;
+
+    background: transparent;
+
+    /* float: left; */
+    text-align: center;
+  
+    /*padding-right: 20px; */
+    height: 478px;
+    width: 100%;
+
+  }
+  
+  .cards .row .map-col {
+    position: relative;
+    float: right;
+    background: #feeba7;
+    border-radius: 20px;
+    border: 2px solid #000000;
+    
+    margin-right: 20px;
+    height: 600px;
+    /* width: 30%; */
+  }
+
+  .cards .row .map-col .map-canvas {
+    width: 100%;
+  }
+
+  .alarm-contents-block {
+    text-align: center;
+    align-content: center;
+    padding-top: 20px;
+  }
+  .now {font-size: 24px;}
+  .signal {font: 45px; color: #b00020;}
+  .hear {font-size: 24px;}
+
+  .history-title { font-size: 24px;}
