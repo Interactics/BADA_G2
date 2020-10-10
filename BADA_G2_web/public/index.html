@@ -1,112 +1,9 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/>
-       
-    
-        <script type="text/javascript" src="http://static.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
-        <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-        <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-        <script type="text/javascript" src="http://static.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
-        <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-        <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        
-        <link rel="stylesheet" href="index.css"/>
-        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
-        <!-- <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/> -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-        <script type="text/javascript" src="index.js"></script>
-        
-    </head>
-    
-    <style>
-    body{
-        background-color: #fefaef;
-        margin-top: 30px;
-    }    
-    </style>
-    
-    <body>
-        <!-- title section  -->
-        
-        <div class = "title-container">
-            <div class= "logo">BADA</div>
-            <div class = "sub_logo">
-                BUDDY FOR AUDITORY DETECTION ASSISTANCE
-            </div>
-            <div class ="copyright">
-                © 2020.Hanyang univ.Robotics 사과가 쿵!
-            </div>
-        </div>
-    <hr style="color:#000000; width: 94.5%; position: absolute; top: 118px;z-index:-10;left: 2.75%;">
-    <div class = "container cards">
-               <div class = "row">
-
-                    <!-- left section -->
-                    <div class = "alarm-col">
-                        <div class = "card">
-                            <div class = "alarm-contents-block">
-                                    <h1 class = "now" style = "margin-bottom: 20px;">지금,</h1>
-                                        <div id="alarm" style="font-size: 40px;color: #8B0000;font-weight: bold;"></div>
-                                    <h2 class = "can hear" style="margin-top: 25px;">소리가 들려요!</h2>
-                                    <div id="sign_language">
-                                        <img id="sign_language_gif" style="width: 250px; border:1px; border-radius: 20px;">
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- middle section -->
-                    <div class =  "middle-section">  
-                        <!-- clock -->
-                        <div class = "clock-container">
-                            <div id="its">지금은,</div>
-                            <div id="clock">
-                                <span class="txt_lg" id="month"></span>
-                                <span class="mark">월</span>
-                                <span class="txt_lg" id="date"></span>
-                                <span class="mark">일</span>
-                                <span class="txt_lg" id="ampm"></span>
-                                <span class="txt_lg" id="hour"></span>
-                                <span class="mark">시</span>
-                                <span class="txt_lg" id="minute"></span>
-                                <span class="mark">분</span>
-                            </div>
-                        <div class = "history-title">몇 시에 어떤 소리가 ?</div>
-                    </div>
-                        <!-- history section -->
-                        <div class = "history-col">
-                            <div class = "card">
-                                <div class = "history-contents-block">
-                                    <div id="History"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- map = right section -->                 
-                    <div class = "map-col">
-                            <div class = "card">
-                                <div class = "map-contents-block">
-                                    <img id = "maping" src="./finalmap.png" width="400">
-                                    <canvas id = "canvas" width="500" height="610"></canvas>
-                                </div>
-                            </div>
-                    </div>
-           </div>
-    </body>
-</html>
 
 <head>
   <meta charset="utf-8" />
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.min.js"></script>
 
   <script type="text/javascript" src="http://static.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
   <script type="text/javascript"
@@ -123,6 +20,8 @@
     href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Nanum+Gothic:wght@400;700;800&display=swap"
     rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
   <!-- <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -133,201 +32,79 @@
 <style>
   body {
     background-color: #fefaef;
+    margin-top: 30px;
   }
 </style>
 
 <body>
   <!-- title section  -->
-  <div class="viewport-container">
-
-    <div class="title-container">
-      <div class="logo">BADA
-        <div class="sub_logo">
-          BUDDY FOR AUDITORY DETECTION ASSISTANCE
-        </div>
-      </div>
-
-      <!-- clock -->
-      <div class="row clock-container row">
-        <div class="col s3" id="clock_description">지금 시각</div>
-        <div class="col s6" id="clock_icon">
-          <i class="meterial-icons"></i>
-          <span class="material-icons clock-icon">
-            schedule
-          </span>
-        </div>
-        <div class="col s3" id="date_and_clock">
-          <div>dates</div>
-          <div>times</div>
-        </div>
-      </div>
+  <div class="title-container">
+    <div class="logo">BADA</div>
+    <div class="sub_logo">
+      BUDDY FOR AUDITORY DETECTION ASSISTANCE
     </div>
-    <div class="divider"></div>
+    <div class="copyright">
+      © 2020.Hanyang univ.Robotics 사과가 쿵!
+    </div>
+  </div>
+   <!-- clock -->
+   <div class = "clock-container">
+      <div id="its">지금 시각,</div>
+      <div id="clock">
+          <span class="txt_lg" id="month"></span>
+          <span class="mark">월</span>
+          <span class="txt_lg" id="date"></span>
+          <span class="mark">일</span>
+          <br>
+          <span class="txt_lg" id="ampm"></span>
+          <span class="txt_lg" id="hour"></span>
+          <span class="mark">시</span>
+          <span class="txt_lg" id="minute"></span>
+          <span class="mark">분</span>
+      </div>
+  </div>
+  <hr style="color:#000000; width: 94.5%; position: absolute; top: 118px;z-index:-10;left: 2.75%;">
+  <div class="container cards">
+    <div class="row">
 
-
-    <div class="cards">
-      <div class="row">
-
-        <!-- left section -->
-        <div class="col s3 alarm-col card">
+      <!-- left section -->
+      <div class="alarm-col">
+        <div class="card">
           <div class="alarm-contents-block">
-            <h1 class="now">지금,</h1>
-            <div id="signal"></div>
-            <h2 class="can hear">소리가 들려요!</h2>
-            <div id="sign_language_gif"></div>
-          </div>
-        </div>
-
-        <!-- middle section -->
-        <div class="col s5 middle-section card">
-
-          <!-- history section -->
-          <div class="history-col">
-            <div class="history-contents-block">
-              <h1 class="history-title">몇 시에 어떤 소리가 ?</h1>
-              <div id="history"></div>
+            <h1 class="now" style="margin-bottom: 20px;">지금,</h1>
+            <div id="alarm" style="font-size: 40px;color: #8B0000;font-weight: bold;"></div>
+            <h2 class="can hear" style="margin-top: 25px;">소리가 들려요!</h2>
+            <div id="sign_language">
+              <img id="sign_language_gif" style="width: 250px; border:1px; border-radius: 20px;">
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- map = right section -->
-        <div class="col s5 map-col card">
-          <div class="map-contents-block">
-            <img class="map-canvas" id="maping" src="./finalmap.png" width="400">
-            <canvas class="map-canvas" id="canvas" width="500" height="610"></canvas>
+      <!-- middle section -->
+      <div class="middle-section">
+        <div class="history-title">몇 시에 어떤 소리가 ?</div>
+        <!-- history section -->
+        <div class="history-col">
+          <div class="card">
+            <div class="history-contents-block">
+              <div id="History"></div>
+            </div>
           </div>
-          <script>
-
-                                      // const KAKAO_TOKEN='token';
-                                      // Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
-                                      // init();
-                                      // /*  Kakao.Auth.createLoginButton({
-                                      //     container: '#kakao-login-btn',
-                                      //     size : 'small',
-                                      //     success: function (authObj) {
-                                      //       alert(JSON.stringify(authObj));
-                                      //     },
-                                      //     fail: function (err) {
-                                      //       alert(JSON.stringify(err));
-                                      //     }
-                                      //   });*/
-
-                                      //   function setAuth() {
-                                      //     Kakao.Auth.login({
-                                      //       scope: 'talk_message,friends',
-                                      //       success: function (response) {
-                                      //         console.log(response);
-                                      //       },
-                                      //       fail: function (error) {
-                                      //         console.log(error);
-                                      //       }
-                                      //     });
-                                      //   }
-                                      //   setAuth();
-          </script>
         </div>
+      </div>
 
+      <!-- map = right section -->
+      <div class="map-col">
+        <div class="card">
+          <div class="map-contents-block">
+            <img id="maping" src="./finalmap.png" width="400">
+            <canvas id="canvas" width="500" height="610"></canvas>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+    <script>document.onload = init();</script>
 </body>
-
-</html>
-
-
-
-
-<!DOCTYPE html>
-<html>
-
-<head>
-  <meta charset="utf-8" />
-  <script type="text/javascript" src="http://static.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
-  <script type="text/javascript"
-    src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-  <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-  <script type="text/javascript" src="http://static.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
-  <link rel="stylesheet" href="index.css">
-  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-
-</head>
-
-<body>
-  <h1>Simple Map Example</h1>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Anton', sans-serif;
-    }
-  </style>
-  </head>
-
-  <body>
-    <header style="text-align: center;">
-      <p style="font-size:83px;">BADA</p>
-      <p style="font-size:25px;">real-time visual web</p>
-    </header>
-    <br>
-
-
-
-    <div>
-      <a id="kakao-login-btn"></a>
-      <button id="btn_srch" onclick="setAuth()">인증</button>
-
-      <button class="temp" onclick="init()">draw</button>
-      <button class="temp" onclick="tryConnectWebsocket()">connect</button>
-      <button class="write-test" onclick="writeAlarmTest()">write-alarm-to-database-test</button>
-      <button class="read-test" onclick="readAlarmTest()">read-alarm-from-database-test</button>
-      <button class="get-test" onclick="getAlarmTest()">get-alarm-from-database-test</button>
-    </div>
-
-    <div id="map">
-      <canvas id="canvas" width="640" height="480">
-      </canvas>
-    </div>
-
-    <div style="color:black; font-weight:light; font-size: 45px; width:33%; padding:50px;">
-      <span id="signal"></span>
-    </div>
-
-
-    <div style="color:black; font-weight:light; font-size: 30px; width:33%; padding:50px;">
-      <span id="History"></span>
-    </div>
-    <script>
-      Kakao.Auth.createLoginButton({
-        container: '#kakao-login-btn',
-        success: function (authObj) {
-          alert(JSON.stringify(authObj));
-        },
-        fail: function (err) {
-          alert(JSON.stringify(err));
-        }
-      });
-
-      function setAuth() {
-        Kakao.Auth.login({
-          scope: 'talk_message,friends',
-          success: function (response) {
-            console.log(response);
-          },
-          fail: function (error) {
-            console.log(error);
-          }
-        });
-      }
-
-      document.onload=init();
-      
-    </script>
-
-
-  </body>
 
 </html>
