@@ -612,6 +612,14 @@ function tryConnectWebsocket() {
     document.getElementById("history").innerHTML = PrintHistory;
     document.getElementById("alarm").innerHTML = sig_name;
 
+    if(m.data=='Speech') document.getElementById("sign_language_gif").src='./말소리';
+    else if(m.data=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
+    else if(m.data=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
+    else if(m.data=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
+    else if(m.data=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
+    else if(m.data=='Bell') document.getElementById("sign_language_gif").src='.초인종.gif';
+    else if(m.data=='Water') document.getElementById("sign_language_gif").src='./물.gif';
+
   });
 }
   // signal = new ROSLIB.Topic({
