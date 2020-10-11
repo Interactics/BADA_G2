@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script type="text/javascript" src="http://static.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
   <script type="text/javascript"
@@ -38,10 +38,11 @@
 
 <body>
   <!-- title section  -->
+  <div id="line"></div>
   <div class="title-container">
     <div class="logo">BADA</div>
-    <div class="sub_logo">
-      BUDDY FOR AUDITORY DETECTION ASSISTANCE
+    <div id=sub_logo_wrapper>
+      <div id="sub_logo" style="text-align: center;">BUDDY FOR AUDITORY DETECTION ASSISTANCE</div>
     </div>
     <div class="copyright">
       © 2020.Hanyang univ.Robotics 사과가 쿵!
@@ -62,7 +63,7 @@
           <span class="txt_lg" id="minute"></span>
       </div>
   </div>
-  <hr style="color:#000000; width: 94.5%; position: absolute; top: 118px;z-index:-10;left: 2.75%;">
+  
   <div class="container cards">
     <div class="row">
 
