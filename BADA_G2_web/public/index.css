@@ -1,5 +1,5 @@
 .title-container {
-  position: relative;
+  position: absolute;
   height: 140px;
   width : 100%;
   margin-top: 20px;
@@ -18,50 +18,65 @@
   
 }
 .title-container .sub_logo_wrapper{
-  text-align: center;
+  width: 100%;
 }
 .title-container .sub_logo_wrapper .sub_logo {
   position: relative;
-  
-  background-color:transparent;
+  width: 350px;
+  background-color:#fefaef;
+  left:510px;
+  text-align: center;
   font-family: 'Anton', sans-serif;
   font-size: 19px;
   color: #2e2d2c;
 }
 .line {
-  width: 95.5%;
   position: absolute;
-  border:1px solid black;
+  border-bottom: 1px solid black;
+  height: 118px;
+  z-index: -10;
+  width: 83%;
+  left: 7.5%;
 }
 .title-container .copyright {
   text-align: center;
   font-family:'Nanum Myeongjo', serif;
   font-size : 13px;
 }
-
-.clock-container {
-  background: transparent;
-  position: fixed;
-  top: 50px;
-  left: 1150px;
-  width: 200px;
+.cards .row .middle-section .clock-title {
+  font-weight: bolder;
+  width: 130px;
+  height: 33px;
   text-align: center;
+  background-color:#fefaef;
+  position: relative;
+  left: 130px;
+  top: -18px;
+  z-index: 10;
+  font-size: 24px;
 }
-.clock-container .clock{
-  font-family: 'Nanum Gothic', sans-serif;
+
+.cards .row .middle-section .clock {
+  background: transparent;
+  position: relative;
+  width: 100%;
   text-align: center;
+  z-index: -7px;
+  font-family: 'Nanum Gothic', sans-serif;
+  font-size: 24px;
 }
 
 .cards{
       background: transparent;
-      margin-top: 30px;
+      position: absolute;
+      top:190px;
+      width:100%;
 }
   .cards .row {
       width: 100%;
       margin-top: 20px;
   }
   .cards .row .alarm-col {
-    left : 40px;
     position: absolute;
     font-family: 'Nanum Gothic', sans-serif;
     color : #2b2a27;
@@ -69,70 +84,87 @@
     background: transparent;
     border-radius: 20px;
     border: 1px solid #000000;
-    height: 520px;
+    height: 480px;
     width: 300px;
+    left:113px;
   }
-
+  .card .row .alarm-col .card {
+      margin-top: 0px;
+      background-color: transparent;
+      position: absolute;
+      border-bottom: 1px solid black;
+      height: 10px;
+      z-index: -10;
+      width:100%
+  }
+  .cards .row .alarm-col .alarm-contents-block {
+    background: transparent;
+  }
   .cards .row .alarm-col .alarm-contents-block .sign_language {
     align-content: center;
-    margin-top: 100px;
+    margin-top: 20px;
+    background: transparent;
   }
-
+s
   .cards .row .alarm-col .card{
     border: none;
     background-color: transparent;
     box-shadow: none;
   }
   .cards .row .middle-section {
-    float : left;
     position: absolute;
-    left : 360px;
-    width : 572px;
+    left: 428px;
+    width : 400px;
   }
-  
+  .cards .row .middle-section .history-title-bar {
+    position: absolute;
+    border-bottom: 1px solid black;
+    height: 1px;
+    z-index: 10;
+    width: 100%;
+  }
   .cards .row .middle-section .history-title{
     font-weight: bolder;
-    width: 230px;
-    text-align: center;
+    width: 220px;
     height: 33px;
-    position: absolute;
-    top: -17px;
-    left: 170px;
+    text-align: center;
     background-color:#fefaef;
+    position: relative;
+    left: 90px;
+    top: -17px;
     z-index: 10;
+  }
+.cards .row .middle-section .history-col {
+  top:0;
+  position: absolute;
+  font-family: 'Nanum Gothic', sans-serif;
+  color : #2b2a27;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 20px;
+  border: 1px solid #000000;
+  text-align: center;
+  /*padding-right: 20px; */
+  height: 480px;
+  width: 100%;
+  margin-top: 0;
 }
   .cards .row .middle-section .history-col .card {
-    margin-top: 20px;
+    top:80px;
     background-color: transparent;
     box-shadow: none;
     height: 100%;
   }
   
-  .cards .row .middle-section .history-col {
-    position: relative;
-    font-family: 'Nanum Gothic', sans-serif;
-    color : #2b2a27;
-    box-shadow: none;
-    background: transparent;
-    border-radius: 20px;
-    border: 1px solid #000000;
-    float: left;
-    text-align: center;
-    /*padding-right: 20px; */
-    height: 520px;
-    width: 100%;
-    margin-top: 0;
-  }
+  
   .cards .row .map-col {
     position: absolute;
-    right: 20px;
-    float: right;
+    left:843px;
+
     background: #feeba7;
     border-radius: 20px;
     border: 1px solid #000000;
-    
-    margin-right: 20px;
-    height: 520px;
+    height: 480px;
     width: 400px;
   }
 
