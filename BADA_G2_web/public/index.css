@@ -192,3 +192,219 @@ s
   .hear {font-size: 24px;}
 
   .history-title { font-size: 24px;}
+
+  /**********************************mobile**********************************/
+  @media(max-width:360px){
+  
+    .title-container {
+    position: absolute;
+    height: 140px;
+    width : 100%;
+    margin-top: 0;
+  }
+  
+  .title-container .logo {
+    position: relative;
+    height: 83px;
+    width: 100%;
+    text-align: center;
+    
+    font-size: 70px;
+    color: #f3c452;
+    text-shadow: 0px 3px 0 #2e2d2c, -3px 0 0 #2e2d2c, 3px 0 0 #2e2d2c, -3px -3px 0  #2e2d2c, 2px -3px 0 #2e2d2c;
+    font-family: 'Anton', sans-serif; 
+    
+  }
+  .title-container .sub_logo_wrapper{
+    width: 100%;
+  }
+  .title-container .sub_logo_wrapper .sub_logo {
+    position: relative;
+    width: 100%;
+    background-color:#fefaef;
+    font-family: 'Anton', sans-serif;
+    font-size: 19px;
+    color: #2e2d2c;
+    left:4px;
+  }
+  .line {
+    position: absolute;
+    border-bottom: 2px solid black;
+    height: 118px;
+    z-index: -10;
+    width: 100%;
+    top: -7px;
+    left:0;
+  }
+  
+  .title-container .copyright {
+    text-align: center;
+    font-family:'Nanum Myeongjo', serif;
+    font-size : 13px;
+  }
+  
+  
+  .cards{
+        background: transparent;
+        position: absolute;
+        top:190px;
+        width:100%;
+  }
+    .cards .row {
+        width: 100%;
+        margin-top: 20px;
+    }
+    .cards .row .alarm-col {
+      position: absolute;
+      font-family: 'Nanum Gothic', sans-serif;
+      color : #2b2a27;
+      text-align: center;
+      background: transparent;
+      border-radius: 20px;
+      border: 1px solid #000000;
+      height: 380px;
+      width: 90%;
+      left: 10%;
+      margin-top: 0;
+    }
+    .card .row .alarm-col .card {
+        margin-top: 0px;
+        background-color: transparent;
+        position: absolute;
+        border-bottom: 1px solid black;
+        height: 10px;
+        z-index: -10;
+        width:100%
+    }
+    
+    .cards .row .alarm-col .alarm-contents-block {
+      background: transparent;
+    }
+    .cards .row .alarm-col .alarm-contents-block .now{
+      background: transparent;
+      margin-bottom: 5px;
+      margin-top: 0;
+
+    }
+    .cards .row .alarm-col .alarm-contents-block .hear{
+      background: transparent;
+      margin-bottom: 0;
+      margin-top: 5px;
+
+    }
+    
+    .cards .row .alarm-col .alarm-contents-block .sign_language {
+      align-content: center;
+      margin-top: 20px;
+      background: transparent;
+    }
+  s
+    .cards .row .alarm-col .card{
+      border: none;
+      background-color: transparent;
+      box-shadow: none;
+    }
+    .cards .row .middle-section {
+      position: absolute;
+      left: 428px;
+      width : 400px;
+    }
+    .cards .row .middle-section .clock-title {
+      font-weight: bolder;
+      width: 130px;
+      height: 33px;
+      text-align: center;
+      background-color:#fefaef;
+      position: relative;
+      left: 130px;
+      top: -18px;
+      z-index: 10;
+      font-size: 24px;
+    }
+    
+    .cards .row .middle-section .clock {
+      background: transparent;
+      position: relative;
+      width: 100%;
+      text-align: center;
+      z-index: -7px;
+      font-family: 'Nanum Gothic', sans-serif;
+      font-size: 24px;
+    }
+    .cards .row .middle-section .history-title-bar {
+      position: absolute;
+      border-bottom: 1px solid black;
+      height: 1px;
+      z-index: 10;
+      width: 100%;
+    }
+    .cards .row .middle-section .history-title{
+      font-weight: bolder;
+      width: 220px;
+      height: 33px;
+      text-align: center;
+      background-color:#fefaef;
+      position: relative;
+      left: 90px;
+      top: -17px;
+      z-index: 10;
+    }
+  .cards .row .middle-section .history-col {
+    top:0;
+    position: absolute;
+    font-family: 'Nanum Gothic', sans-serif;
+    color : #2b2a27;
+    box-shadow: none;
+    background: transparent;
+    border-radius: 20px;
+    border: 1px solid #000000;
+    text-align: center;
+    /*padding-right: 20px; */
+    height: 480px;
+    width: 100%;
+    margin-top: 0;
+  }
+    .cards .row .middle-section .history-col .card {
+      top:80px;
+      background-color: transparent;
+      box-shadow: none;
+      height: 100%;
+    }
+    
+    
+    .cards .row .map-col {
+      position: absolute;
+      left:843px;
+  
+      background: #feeba7;
+      border-radius: 20px;
+      border: 1px solid #000000;
+      height: 480px;
+      width: 400px;
+    }
+  
+    .cards .row .map-col .card {
+      position: relative;
+      margin: .5rem 0 1rem 0;
+      background-color: transparent;
+      border : none;
+      transition: none;
+      box-shadow: none;
+      -webkit-box-shadow : none;
+    }
+  
+    .cards .row .map-col .card .map-contents-block {
+      margin-top: 40px;
+    }
+  
+    .alarm-contents-block {
+      text-align: center;
+      align-content: center;
+      padding-top: 20px;
+    }
+    .now {font-size: 24px;}
+    .signal {font: 45px; color: #b00020;}
+    .hear {font-size: 24px;}
+  
+    .history-title { font-size: 24px;}
+  }

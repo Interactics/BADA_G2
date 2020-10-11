@@ -443,11 +443,11 @@ function loop(timeStamp) {
   var fps = Math.round(10 / secondsPassed) / 10;
 
   //Draw number to the screen
-  ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, 200, 100);
+  //ctx.fillStyle = '#fefaef';
+  //ctx.fillRect(0, 0, 200, 100);
   ctx.font = '25px Arial';
   ctx.fillStyle = 'black';
-  ctx.fillText("FPS: " + fps, 10, 30);
+  //ctx.fillText("FPS: " + fps, 10, 30);
 
   draw(timeStamp);
 
