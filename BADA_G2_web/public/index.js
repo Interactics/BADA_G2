@@ -315,7 +315,7 @@ function loaddatabase() {
       }
       console.log(DBtype);
       console.log(DBtime);
-      for (var i = 0; i < DBtype.length; i++) {
+      for (var i = DBtype.length-1; i >=0; i--) {
         sig_name = dic1[DBtype[i]];
         h.enqueue([dic1[DBtype[i]], DBtime[i]]);
         hidx = hidx + 1;
