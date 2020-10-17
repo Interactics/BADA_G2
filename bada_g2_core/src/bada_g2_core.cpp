@@ -130,7 +130,7 @@ bool bada_rounding()
 	// geometry_msgs::Quaternion initial_angle = CURRENT_ROBOT_POSITION.pose.pose.orientation;        // 현재 각도 정보를 저장
 	//http://docs.ros.org/melodic/api/nav_msgs/html/msg/Odometry.html
 
-	msg.angular.z = (3.14f / 4.0f); // 회전하도록하기
+	msg.angular.z = (3.14f / 25.0f); // 회전하도록하기
 
 	bada_open_eyes_cmd(true); // 눈 뜨기. (정보 받기 시작)
 	ros::Rate rate(5);		  // ROS Rate at 5Hz 0.2 sec
@@ -236,7 +236,7 @@ void bada_go_to_pepl()
 {
 	// while
 	bada_go_destination_blocking(
-		30.0,
+		80.0,
 		SAVED_HUMAN_POSITION.x,
 		SAVED_HUMAN_POSITION.y,
 		SAVED_HUMAN_POSITION.orien_w,
@@ -260,22 +260,36 @@ void bada_go_to_pepl()
 
 void bada_aligned_pepl()
 {
+	ros::Rate loop_rate(10);
+	ROS_INFO("Head up");
 	bada_head_UP_cmd(true); // 2m 에 도달하면 카메라 위로 들기
+	ros::Duration(0.1).sleep();
 	bada_open_eyes_cmd(true);
-	float AngleV = 3.14f / 4.0f;
+	ros::Duration(0.1).sleep();
+
+	float AngleV = 3.14f / 25.0f;
+	int cnt=0;
 	while (ros::ok())
 	{
+		cnt++;
+		loop_rate.sleep();
 		ros::spinOnce();
-		ROS_INFO("%f", PPL_ANGLE);
-		if (abs(PPL_ANGLE) < 80)
+		if(cnt%2==0){
+			ROS_INFO("%f", PPL_ANGLE);
+		}
+		if (abs(PPL_ANGLE) < 90)
 		{
 			if (PPL_ANGLE < 0)
 				bada_vel_cmd(0, AngleV); // CCW   Object is on Left side
 			else
 				bada_vel_cmd(0, -AngleV); // CW,   Object is on right side
 		}
-		if (abs(PPL_ANGLE) < (5 * PI / 180.0))
+		if (abs(PPL_ANGLE) < (10 * PI / 180.0))
 		{
+			ROS_INFO("stop aligned pepl");
+			ros::Duration(0.2).sleep();
+			bada_vel_cmd(0, 0);
+			ros::Duration(0.1).sleep();
 			bada_vel_cmd(0, 0);
 			break;
 		}
@@ -294,7 +308,7 @@ void bada_go_until_touch()
 		pub_cmdvel.publish(msg); // 앞으로 전진
 		ros::spinOnce();
 	} while (ros::ok() && !SWITCH_CHECK);
-	SWITCH_CHECK = false;
+	SWITCH_CHECK = 0;
 	
 	msg.linear.x = 0.0;
 	pub_cmdvel.publish(msg); //스탑
@@ -336,7 +350,7 @@ void sub_odometry_callback(const nav_msgs::Odometry &msg)
 
 void bada_go_to_soundPT()
 { //사람 데리고 가는용
-	bada_go_destination_blocking(30, SAVED_SOUND_POSITION.x, SAVED_SOUND_POSITION.y, SAVED_SOUND_POSITION.orien_z, SAVED_SOUND_POSITION.orien_w);
+	bada_go_destination_blocking(80.0, SAVED_SOUND_POSITION.x, SAVED_SOUND_POSITION.y, SAVED_SOUND_POSITION.orien_z, SAVED_SOUND_POSITION.orien_w);
 }
 void bada_display_inform()
 {
@@ -394,8 +408,8 @@ Position bada_get_robot_pos()
 	tf::StampedTransform transform;
 	try
 	{
-		listener.waitForTransform("map","base_link",ros::Time(0),ros::Duration(1.0));
-		listener.lookupTransform("map", "base_link", ros::Time(0), transform);
+		listener.waitForTransform("map","base_footprint_link",ros::Time(0),ros::Duration(3.0));
+		listener.lookupTransform("map", "base_footprint_link", ros::Time(0), transform);
 		CURRENT_ROBOT_POSITION.pose.pose.position.x = transform.getOrigin().x();
 		CURRENT_ROBOT_POSITION.pose.pose.position.y = transform.getOrigin().y();
 		CURRENT_ROBOT_POSITION.pose.pose.orientation.z = transform.getRotation().getZ();
@@ -429,6 +443,7 @@ void bada_open_eyes_cmd(bool status)
 
 void bada_head_UP_cmd(bool status)
 {
+	ROS_INFO("hamsu head");
 	std_msgs::Bool BoolStatus;
 	BoolStatus.data = status;
 	pub_head_up.publish(BoolStatus);
@@ -447,6 +462,7 @@ void bada_vel_cmd(const float XLineVel, const float ZAngleVel)
 	geometry_msgs::Twist msg;
 	msg.linear.x = XLineVel;
 	msg.angular.z = ZAngleVel;
+	
 	pub_cmdvel.publish(msg);
 }
 
@@ -458,7 +474,7 @@ void sub_pepl_checker_callback(const geometry_msgs::Point &msg)
 	ROS_INFO("PPL_CHECK");
 }
 
-void sub_switch_checker_callback(const std_msgs::Bool &msgs)
+void sub_switch_checker_callback(const std_msgs::Int16 &msgs)
 {
 	SWITCH_CHECK = msgs.data;
 }
@@ -480,7 +496,7 @@ bool bada_go_to_sound2()
 	move_base_msgs::MoveBaseGoal sound_goal;
 	move_base_msgs::MoveBaseGoal sound_goal2;
 
-	sound_goal.target_pose.header.frame_id = "base_link";
+	sound_goal.target_pose.header.frame_id = "base_footprint_link";
 	sound_goal.target_pose.header.stamp = ros::Time::now();
 
 	sound_goal.target_pose.pose.position.x = 0;
@@ -489,7 +505,7 @@ bool bada_go_to_sound2()
 	actionClient->sendGoal(sound_goal);
 	actionClient->waitForResult(ros::Duration(30.0));
 
-	sound_goal2.target_pose.header.frame_id = "base_link";
+	sound_goal2.target_pose.header.frame_id = "base_footprint_link";
 	sound_goal2.target_pose.header.stamp = ros::Time::now();
 
 	sound_goal2.target_pose.pose.position.x = 1.0;

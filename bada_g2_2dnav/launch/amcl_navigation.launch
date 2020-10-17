@@ -1,0 +1,19 @@
+<launch>
+
+  <arg name="use_map_topic" default="false"/>
+  <arg name="scan_topic" default="scan_filtered" />
+
+  <!-- Run the map server -->
+ <arg name="map_file" default="$(find bada_g2_2dnav)/maps/112map.yaml"/>
+ <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+  <!--- Run AMCL -->
+  <include file="$(find bada_g2_2dnav)/launch/amcl.launch">
+    <arg name="use_map_topic" value="$(arg use_map_topic)" />
+    <arg name="scan_topic"    value="$(arg scan_topic)" />
+  </include>
+
+  <!--- Run Move Base -->
+ <include file="$(find bada_g2_2dnav)/launch/move_base.launch" />
+
+</launch>

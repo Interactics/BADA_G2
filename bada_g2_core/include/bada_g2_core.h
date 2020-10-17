@@ -117,7 +117,7 @@ ros::Subscriber sub_sound_localization;
 void sub_pepl_checker_callback(const geometry_msgs::Point &msg);
 void sub_odometry_callback(const nav_msgs::Odometry &msg);
 void sub_sig_checker_callback(const std_msgs::Empty &msg);					 // Roaming 단계에서 사용. 소리가 발생할 경우에 쓸모가 있다.
-void sub_switch_checker_callback(const std_msgs::Bool &msgs);				 // Roaming 단계에서 사용. 소리가 발생할 경우에 쓸모가 있다.
+void sub_switch_checker_callback(const std_msgs::Int16 &msgs);				 // Roaming 단계에서 사용. 소리가 발생할 경우에 쓸모가 있다.
 void sub_signal_callback(const std_msgs::String &msg);						 //
 void sub_sound_localization_callback(const geometry_msgs::PoseStamped &msg); //
 
@@ -126,7 +126,7 @@ void sub_sound_localization_callback(const geometry_msgs::PoseStamped &msg); //
 //사람이 일정 ROI에 들어오는 것을 검사함. 만약 ROI에 들어온다면, Checker는 True로 바뀜.
 
 bool SIG_CHECK = false;	   // Roaming 단계에서 사용.
-bool SWITCH_CHECK = false; // is Switch on?  T/F
+int SWITCH_CHECK = 0; // is Switch on?  T/F
 bool PPL_CHECK = false;	   // Is there PPL?
 float PPL_ANGLE = -90;	   // Angle of PPL respect to camera
 float PPL_DIST = -1.0;	   // Distnace to PPL from
@@ -140,12 +140,12 @@ std_msgs::String SIGNAL;
 std_msgs::String LastSignal;
 
 Position SAVED_SOUND_POSITION = {0.0f, 1.0f, 2.0f, 3.0f};
-Position SAVED_HUMAN_POSITION = {0, 1, 2, 3};
+Position SAVED_HUMAN_POSITION = {2.708f, 1.183f, 0.294f, 0.956f};
 
 double wayPoint[][4] = {
-	{3.293, 1.023, 0.028, 1.000}, //way1
-	{-0.097, 0.548, 1.000, -0.006},	//way2
-	{-0.854, -1.400, -0.716, 0.699}	//way3
+	{1.339, 0.384, 0.973, 0.231}, //way1
+	{3.0021, 1.837, 0.807, 0.509},	//way2
+	{4.606, -0.649, 0.406, 0.914}	//way3
 };									//roaming 장소 저장
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;

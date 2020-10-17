@@ -8,11 +8,10 @@ int main(int argc, char **argv)
 	ROS_INFO("starting bada_g2_core... 06010352");
 
 	ros::NodeHandle nh;
-	pub_cmdvel      	= nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-	pub_camera      	= nh.advertise<std_msgs::Bool>("/bada/duino/camera_cmd", 1);
+	pub_cmdvel      	= nh.advertise<geometry_msgs::Twist>("/bada/cmd_vel", 1);
 	pub_eyes_open   	= nh.advertise<std_msgs::Bool>("/bada/eyes/open", 1);
-	pub_head_up    		= nh.advertise<std_msgs::Bool>("/bada/duino/camera_cmd", 1);
-	pub_display_cmd 	= nh.advertise<std_msgs::Int16>("/bada/duino/display_cmd", 1);
+	pub_head_up    		= nh.advertise<std_msgs::Bool>("/sensor/DXup", 1);
+	pub_display_cmd 	= nh.advertise<std_msgs::Int16>("/sensor/Display", 1);
 	pub_logger 			= nh.advertise<std_msgs::String>("/bada/log", 1);
 	// pub_pose = nh.advertise<geometry_msgs::PoseStamped>("/bada/pose", 1);
 
@@ -20,7 +19,7 @@ int main(int argc, char **argv)
 	sub_pepl_checker	= nh.subscribe("/bada/eyes/distance", 1, sub_pepl_checker_callback); //TODO: FIX CALLBACK FUNCTION
 	sub_sig_checker 	= nh.subscribe("/bada/audio/checker", 1, sub_sig_checker_callback);
 	sub_signal 			= nh.subscribe("/bada/audio/signal", 1, sub_signal_callback);
-	sub_switch_checker 	= nh.subscribe("Button_State", 1, sub_switch_checker_callback);
+	sub_switch_checker 	= nh.subscribe("/sensor/button", 1, sub_switch_checker_callback);
 	sub_sound_localization = nh.subscribe("/bada/audio/localization_filtered", 1, sub_sound_localization_callback);
 
 	bada_log("bada started");
@@ -30,15 +29,17 @@ int main(int argc, char **argv)
 	bool is_there_pepl 	= false;
 	bool is_sound_same 	= false;
 
+	ros::Rate loop_rate(20);
 	int current = 0;
 	int target;
 			// bool finding_pepl_fail = false;
 	//bada_aligned_pepl(); // 사람의 위치고 로봇 사람을 가운데로
-	//waitSec(2);
+	waitSec(2);
+
 	
 	// bada_roaming();
 	// return 0;
-
+	
 	while (ros::ok())
 	{
 		switch (state)
@@ -127,6 +128,7 @@ int main(int argc, char **argv)
 				// }
 			waitSec(1);
 			bada_aligned_pepl(); // 사람의 위치고 로봇 사람을 가운데로
+
 			ROS_INFO("align ppl done");
 			bada_go_until_touch(); // 버튼 눌리기 전까지 전진하기
 			ROS_INFO("touched. moving back.");
