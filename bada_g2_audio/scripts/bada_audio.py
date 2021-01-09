@@ -1,10 +1,18 @@
 #!/usr/bin/env python
+
 import sys
 print('python version: ',sys.version_info)
+
+import os
+
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 
 import pyaudio
 import numpy as np
 from matplotlib import pyplot as plt
+
 
 import soundfile as sf
 
@@ -19,16 +27,13 @@ import roslibpy
 import rospy
 import json
 
-import os
 
 from std_msgs.msg import String
+from std_msgs.msg import Int16
 from std_msgs.msg import Empty
 from audio_common_msgs.msg import AudioData
 import tensorflow as tf
 
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-os.chdir(dname)
 
 pub=''
 # keys=['Speech','Alarm','Door','Television', 'Silence', 'Water', 'Music']
@@ -43,9 +48,9 @@ waterKeys=['Water tap, faucet', 'Sink (filling or washing)']
 signals=dict.fromkeys(keys, 0.0)
 picked=dict.fromkeys(keys, 0.0)
 detected=dict.fromkeys(keys, False)
-detectThreshold=0.40
-checkThreshold=0.25
-resetThreshold=0.1
+detectThreshold=0.65
+checkThreshold=0.40
+resetThreshold=0.05
 
 
 # Set up the YAMNet model.
@@ -70,7 +75,8 @@ old5secFrames=[]
 
 frameQ=queue.Queue()
 qsize=0
-pub = rospy.Publisher('/signal', String, queue_size=10)
+pub = rospy.Publisher('/bada/audio/signal', String, queue_size=10)
+displayPub = rospy.Publisher('/sensor/Display', Int16, queue_size=10)
 detectInfoPub = rospy.Publisher('/bada/audio/info', String, queue_size=10)
 checkPub = rospy.Publisher('/bada/audio/checker', Empty, queue_size=10)
 audioPub = rospy.Publisher('/audio', String, queue_size=10)
@@ -142,17 +148,17 @@ def signal(msg):
         # SWITHC
 
         if(key in alarmKeys):
-            picked['Alarm']+=float(prob)*5.0
+            picked['Alarm']+=float(prob)*6.0
         elif(key in doorKeys):
-            picked['Door']+=float(prob)*10.0
+            picked['Door']+=float(prob)*4.0
         elif(key in bellKeys):
-            picked['Bell']+=float(prob)*5.0
+            picked['Bell']+=float(prob)*3.0
         elif(key in cryKeys):
-            picked['Cry']+=float(prob)
+            picked['Cry']+=float(prob)*6.0
         elif(key in boilKeys):
-            picked['Boiling']+=float(prob)*6.0
+            picked['Boiling']+=float(prob)*4.0
         elif(key in waterKeys):
-            picked['Water']+=float(prob)
+            picked['Water']+=float(prob)*4.0
         else:
             # rospy.loginfo(key in keys)
             picked[key]=float(prob)
@@ -162,10 +168,9 @@ def signal(msg):
     picked['Alarm']/=len(alarmKeys)*3.0
     picked['Door']/=len(doorKeys)*5.0
     picked['Bell']/=len(bellKeys)*4.0
-    picked['Cry']/=len(cryKeys)*5
-    picked['Boiling']/=len(boilKeys)*5.0
-    picked['Water']/=len(waterKeys)*5.0
-
+    picked['Cry']/=len(cryKeys)*5.0
+    picked['Boiling']/=len(boilKeys)*2.0
+    picked['Water']/=len(waterKeys)*2.0
     
 
     # update 
@@ -175,13 +180,13 @@ def signal(msg):
 
         if(v == 'Alarm'):
             #picked['Alarm']+=float(prob)
-            signals[v]=signals[v]*0.2+picked[v]*0.8
+            signals[v]=signals[v]*0.3+picked[v]*0.7
         elif(v == 'Door'):
-            signals[v]=signals[v]*0.05+picked[v]*0.95
+            signals[v]=signals[v]*0.10+picked[v]*0.90
         elif(v == 'Bell'):
-            signals[v]=signals[v]*0.05+picked[v]*0.95
+            signals[v]=signals[v]*0.10+picked[v]*0.90
         elif(v == 'Cry'):
-            signals[v]=signals[v]*0.4+picked[v]*0.8
+            signals[v]=signals[v]*0.4+picked[v]*0.6
         elif(v == 'Boiling'):
             signals[v]=signals[v]*0.45+picked[v]*0.55
         elif(v == 'Water'):
@@ -198,15 +203,30 @@ def signal(msg):
         if(signals[v]> checkThreshold):
             if(v != 'Silence'):
                 detectAny=True
+            else:
+                displayPub.publish(0)
             if(detected[v]==False):
                 detected[v]=True
                 rospy.loginfo('publish:'+v)
                 pub.publish(v)
+                ### keys=['Alarm','Door','Bell', 'Silence', 'Cry', 'Water', 'Boiling']
+                if(v=='Bell'):
+                    displayPub.publish(2)
+                elif(v=='Alarm'):
+                    displayPub.publish(3)
+                elif(v=='Cry'):
+                    displayPub.publish(4)
+                elif(v=='Door'):
+                    displayPub.publish(5)
+                elif(v=='Water' or v=='Boiling'):
+                    displayPub.publish(6)
         if(detected[v]==True and signals[v]<resetThreshold):
             detected[v]=False
+            displayPub.publish(0)
     if(detectAny):
         print('check : ' + str(datetime.datetime.now()))
         checkPub.publish()
+
     
     print('prediction: ', dat)
 

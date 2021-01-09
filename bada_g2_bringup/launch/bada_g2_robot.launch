@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+
+	<include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch"> </include>
+	<include file="$(find laser_filters)/examples/angular_bound_filter.launch"> </include>
+	<include file="$(find bada_g2_description)/launch/rviz.launch"> </include>
+	<include file="$(find bada_g2_mobilerobot)/launch/mobilerobot.launch"> </include>
+	<include file="$(find bada_g2_mobilerobot)/launch/imu_filter.launch"> </include>
+	<include file="$(find robot_localization)/launch/bada_ekf.launch"> </include>
+	
+	<node name="bada_eyes" pkg="bada_eyes" type="bada_eyes.py" />
+
+</launch>

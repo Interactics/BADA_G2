@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="bada_g2_mobilerobot" type="bada_odom_node" name="bada_odom_node"/>
+</launch>

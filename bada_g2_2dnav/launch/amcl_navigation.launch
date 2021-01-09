@@ -4,14 +4,24 @@
   <arg name="scan_topic" default="scan_filtered" />
 
   <!-- Run the map server -->
- <arg name="map_file" default="$(find bada_g2_2dnav)/maps/112map.yaml"/>
+ <arg name="map_file" default="$(find bada_g2_2dnav)/maps/testmap.yaml"/>
  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
   <!--- Run AMCL -->
-  <include file="$(find bada_g2_2dnav)/launch/amcl.launch">
+  <!-- <include file="$(find bada_g2_2dnav)/launch/amcl.launch">
     <arg name="use_map_topic" value="$(arg use_map_topic)" />
     <arg name="scan_topic"    value="$(arg scan_topic)" />
-  </include>
+  </include> -->
+<!-- 
+  <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher_node" output="screen">
+    <remap from="scan" to="scan_filtered"/>
+    <param name="base_frame" value="base_footprint_link"/>
+    <param name="fixed_frame" value="odom"/>
+    <param name="use_alpha_beta" value="true"/>
+    <param name="max_iterations" value="10"/>
+    <param name="publish_tf" value="false"/>
+    <param name="publish_pose_stamped" value="true"/>
+  </node> -->
 
   <!--- Run Move Base -->
  <include file="$(find bada_g2_2dnav)/launch/move_base.launch" />

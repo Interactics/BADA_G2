@@ -44,6 +44,27 @@ void bada_send_destination(double x, double y, double orien_z, double orien_w)
 	return;
 }
 
+// send simple goal
+void bada_send_destination_demo(double x, double y, double orien_z, double orien_w)
+{ //맵 위치 x,y quaternion z,w 를 설정해주고 그 위치로 이동
+	//- ACTION MSG 퍼블리시한다.
+	ROS_INFO("waiting for move base");
+	actionClient->waitForServer();
+	ROS_INFO("connected to move base");
+	move_base_msgs::MoveBaseGoal goal;
+
+	goal.target_pose.header.frame_id = "odom";
+	goal.target_pose.header.stamp = ros::Time::now();
+
+	goal.target_pose.pose.position.x = x;
+	goal.target_pose.pose.position.y = y;
+	goal.target_pose.pose.orientation.z = orien_z;
+	goal.target_pose.pose.orientation.w = orien_w;
+
+	actionClient->sendGoal(goal);
+	return;
+}
+
 void bada_go_destination_blocking(double duration, double x, double y, double orien_z, double orien_w)
 { //맵 위치 x,y quaternion z,w 를 설정해주고 그 위치로 이동
 	//- ACTION MSG 퍼블리시한다.
@@ -70,9 +91,46 @@ void bada_go_destination_blocking(double duration, double x, double y, double or
 		actionlib::SimpleClientGoalState state = actionClient->getState();
 		ROS_INFO("Action finished: %s", state.toString().c_str());
 	}
-	else
+	else{
 		ROS_INFO("Action did not finish before the time out.");
+		//-  배회 중단. 액션 메시지 취소 보내기
+		actionClient->cancelGoal();
+	}
+	return;
+}
 
+
+void bada_go_destination_blocking_demo(double duration, double x, double y, double orien_z, double orien_w)
+{ //맵 위치 x,y quaternion z,w 를 설정해주고 그 위치로 이동
+	//- ACTION MSG 퍼블리시한다.
+	// ROS_INFO("waiting for move base");
+	actionClient->waitForServer();
+	// ROS_INFO("connected to move base");
+	move_base_msgs::MoveBaseGoal goal;
+
+	goal.target_pose.header.frame_id = "odom";
+	goal.target_pose.header.stamp = ros::Time::now();
+
+	goal.target_pose.pose.position.x = x;
+	goal.target_pose.pose.position.y = y;
+	goal.target_pose.pose.orientation.z = orien_z;
+	goal.target_pose.pose.orientation.w = orien_w;
+
+	actionClient->sendGoal(goal);
+
+	//http://wiki.ros.org/actionlib_tutorials/Tutorials/SimpleActionClient
+	bool finished_before_timeout = actionClient->waitForResult(ros::Duration(duration));
+
+	if (finished_before_timeout)
+	{
+		actionlib::SimpleClientGoalState state = actionClient->getState();
+		ROS_INFO("Action finished: %s", state.toString().c_str());
+	}
+	else{
+		ROS_INFO("Action did not finish before the time out.");
+		//-  배회 중단. 액션 메시지 취소 보내기
+		actionClient->cancelGoal();
+	}
 	return;
 }
 
@@ -130,7 +188,7 @@ bool bada_rounding()
 	// geometry_msgs::Quaternion initial_angle = CURRENT_ROBOT_POSITION.pose.pose.orientation;        // 현재 각도 정보를 저장
 	//http://docs.ros.org/melodic/api/nav_msgs/html/msg/Odometry.html
 
-	msg.angular.z = (3.14f / 25.0f); // 회전하도록하기
+	msg.angular.z = (3.14f / 10.0f); // 회전하도록하기
 
 	bada_open_eyes_cmd(true); // 눈 뜨기. (정보 받기 시작)
 	ros::Rate rate(5);		  // ROS Rate at 5Hz 0.2 sec
@@ -151,7 +209,7 @@ bool bada_rounding()
 			//BOOKMARK1
 			// TODO : USE ROBOT POSITION
 			ROS_INFO("get ROBOT pose");
-			SAVED_HUMAN_POSITION = bada_get_robot_pos();
+			SAVED_HUMAN_POSITION = bada_get_robot_pos_demo();
 			ROS_INFO("get ROBOT pose done");
 			/** TODO : 각도와 거리를 이용하여 포인트를 저장한다.  **/
 			// ~~맵에 사람의 위치 포인트를 저장하는 방법, 즉 데이터타입이 무엇인지 알아볼 것. ~~<<-- 사람 위치 저장하지 말 것
@@ -160,17 +218,32 @@ bool bada_rounding()
 			// init values
 			PPL_ANGLE = -90;	   // Angle of PPL respect to camera
 			PPL_DIST = -1.0;	   // Distnace to PPL from
+
 			break;
 		}
 		rate.sleep(); // 6헤르츠가 적당할 듯. 연산 과부화 방지용.
 		time++;
 		Ang_Position = (time * 0.2) * msg.angular.z;
 		// ROS_INFO("%f",Ang_Position);
-	} while (ros::ok() && Ang_Position < 6.28); //한바퀴 돌았는지?
+	} while (ros::ok() && Ang_Position < 6.28); //한바퀴 돌았는지? 6.28
 	bada_open_eyes_cmd(false);
 
 	msg.angular.z = 0.0;
 	pub_cmdvel.publish(msg); //스탑
+	waitSec(0.2);
+	pub_cmdvel.publish(msg); //스탑
+	waitSec(0.2);
+
+	bada_display_cmd(DISP_EVENT::EXCLAMATION);
+	waitSec(0.3);
+	pub_cmdvel.publish(msg); //스탑
+	bada_display_cmd(DISP_EVENT::NOTHING);
+	waitSec(0.3);
+	pub_cmdvel.publish(msg); //스탑
+	bada_display_cmd(DISP_EVENT::EXCLAMATION);
+	waitSec(0.3);
+	bada_display_cmd(DISP_EVENT::NOTHING);
+
 	if (PPL_CHECK){
 		ROS_INFO("Person CHECKED");
 		PPL_CHECK = false;	   // Is there PPL?
@@ -204,7 +277,52 @@ void bada_roaming()
 		// TODO : Investigate why while lo op breaks..
 		ROS_INFO("SENDING DESTINATION");
 		t=0;
-		while (ros::ok() && t<30)
+		while (ros::ok() && t<100)
+		{
+			t++;
+			loop_rate.sleep();
+			ros::spinOnce(); //소리 검사 결과 받기.
+			//ROS_INFO("roaming");
+			if (SIG_CHECK)
+			{
+				SIG_CHECK = false;
+				ROS_INFO("sig check");
+
+				// bada_save_sound_odom();	                    //- robot pos 정보 오도메트리 저장하기.
+				//-  배회 중단. 액션 메시지 취소 보내기
+				actionClient->cancelGoal();
+				return;
+			}
+			if (actionClient->getState() == actionlib::SimpleClientGoalState::SUCCEEDED /*--목표도착-- ACTION*/)
+			{
+				ROS_INFO("%d goal reach", CURRENT_POINT);
+				// bada_go_destination_blocking();			//다음 지점으로 이동하기.
+				break;
+			}
+		}
+		if(!ros::ok()) break;
+	}
+	ROS_INFO("roaming done");
+}
+
+
+void bada_roaming_demo()
+{	//현재위치에서 마지막 지점까지 이동
+	// bada_go_destination_blocking();			        //다음 지점으로 이동하기.
+
+	ros::Rate loop_rate(1);
+	int t=0;
+	CURRENT_POINT += 1;
+	for (; CURRENT_POINT <= 2; CURRENT_POINT++)
+	{
+		CURRENT_POINT %= 2;
+
+		//while(ros::Duration(30))
+		bada_send_destination_demo(wayPoint[CURRENT_POINT][0], wayPoint[CURRENT_POINT][1], wayPoint[CURRENT_POINT][2], wayPoint[CURRENT_POINT][3]);
+		// TODO : Investigate why while lo op breaks..
+		ROS_INFO("SENDING DESTINATION");
+		t=0;
+		while (ros::ok() && t<100)
 		{
 			t++;
 			loop_rate.sleep();
@@ -236,11 +354,11 @@ void bada_go_to_pepl()
 {
 	// while
 	bada_go_destination_blocking(
-		80.0,
+		100.0,
 		SAVED_HUMAN_POSITION.x,
 		SAVED_HUMAN_POSITION.y,
-		SAVED_HUMAN_POSITION.orien_w,
-		SAVED_HUMAN_POSITION.orien_z); //사람에게 가기.
+		SAVED_HUMAN_POSITION.orien_z,
+		SAVED_HUMAN_POSITION.orien_w); //사람에게 가기.
 									   // FUTURE: what if the person gone??
 
 	//예전 알고리즘
@@ -258,6 +376,20 @@ void bada_go_to_pepl()
 	// return;
 } // END
 
+
+void bada_go_to_pepl_demo()
+{
+	// while
+	bada_go_destination_blocking_demo(
+		100.0,
+		SAVED_HUMAN_POSITION.x,
+		SAVED_HUMAN_POSITION.y,
+		SAVED_HUMAN_POSITION.orien_z,
+		SAVED_HUMAN_POSITION.orien_w); //사람에게 가기.
+									   // FUTURE: what if the person gone??
+} // END
+
+
 void bada_aligned_pepl()
 {
 	ros::Rate loop_rate(10);
@@ -267,7 +399,7 @@ void bada_aligned_pepl()
 	bada_open_eyes_cmd(true);
 	ros::Duration(0.1).sleep();
 
-	float AngleV = 3.14f / 25.0f;
+	float AngleV = 3.14f /10.0f;
 	int cnt=0;
 	while (ros::ok())
 	{
@@ -284,13 +416,16 @@ void bada_aligned_pepl()
 			else
 				bada_vel_cmd(0, -AngleV); // CW,   Object is on right side
 		}
-		if (abs(PPL_ANGLE) < (10 * PI / 180.0))
+		if (abs(PPL_ANGLE) < (15 * PI / 180.0))
 		{
 			ROS_INFO("stop aligned pepl");
-			ros::Duration(0.2).sleep();
+			bada_vel_cmd(0, 0);
 			bada_vel_cmd(0, 0);
 			ros::Duration(0.1).sleep();
 			bada_vel_cmd(0, 0);
+			ros::Duration(0.2).sleep();
+			bada_vel_cmd(0, 0);
+			ros::Duration(0.1).sleep();
 			break;
 		}
 	} //가운데로 맞추기
@@ -302,11 +437,38 @@ void bada_go_until_touch()
 { // 버튼 눌리기 전까지 전진하기
 	geometry_msgs::Twist msg;
 	msg.linear.x = 0.1;
+	PPL_ANGLE=-90.0;
+
+	ros::Rate loop_rate(10);
+	ROS_INFO("Head up");
+	bada_head_UP_cmd(false); // 2m 에 도달하면 카메라 위로 들기
+	ros::Duration(0.1).sleep();
+	bada_open_eyes_cmd(false);
+	ros::Duration(0.1).sleep();
+
+	float AngleV = 3.14f /10.0f;
+	int cnt=0;
 
 	do
 	{
 		pub_cmdvel.publish(msg); // 앞으로 전진
+		ros::Duration(0.1).sleep();
 		ros::spinOnce();
+
+
+		loop_rate.sleep();
+		// ros::spinOnce();
+		// if(cnt%2==0){
+		// 	ROS_INFO("%f", PPL_ANGLE);
+		// }
+		// if (abs(PPL_ANGLE) < 90)
+		// {
+		// 	if (PPL_ANGLE < 0)
+				
+		// 		bada_vel_cmd(0.1, AngleV); // CCW   Object is on Left side
+		// 	else
+		// 		bada_vel_cmd(0.1, -AngleV); // CW,   Object is on right side
+		// }
 	} while (ros::ok() && !SWITCH_CHECK);
 	SWITCH_CHECK = 0;
 	
@@ -316,27 +478,39 @@ void bada_go_until_touch()
 
 void bada_change_pos(float LinePos, float AnglePos)
 {
-	ros::Rate loop_rate(20);
+	// ros::Rate loop_rate(20);
 
-	int t = 0;
-	float vel = 0;
-	float target = (abs(LinePos) > abs(AnglePos)) ? LinePos : AnglePos;
-	do
-	{
-		t++;
-		if (abs(LinePos) > abs(AnglePos))
-		{
-			bada_vel_cmd(-0.15, 0);
-			vel = -0.15;
-		}
-		else
-		{
-			bada_vel_cmd(0, PI / 4.0f);
-			vel = PI / 4.0f;
-		}
-		loop_rate.sleep();
-	} while (ros::ok() && float(t) * 0.05 * abs(vel) <= abs(target));
+	// int t = 0;
+	// float vel = 0;
+	// float target = (abs(LinePos) > abs(AnglePos)) ? LinePos : AnglePos;
+	// do
+	// {
+	// 	t++;
+	// 	if (abs(LinePos) > abs(AnglePos))
+	// 	{
+	// 		bada_vel_cmd(-0.15, 0);
+	// 		vel = -0.15;
+	// 	}
+	// 	else
+	// 	{
+	// 		bada_vel_cmd(0, PI / 4.0f);
+	// 		vel = PI / 4.0f;
+	// 	}
+	// 	loop_rate.sleep();
+	// 	ros::spinOnce();
+
+	// } while (ros::ok() && float(t) * 0.05 * abs(vel) <= abs(target));
+	
+	bada_vel_cmd(-0.1,0);
+	waitSec(0.2);
+	bada_vel_cmd(-0.1,0);
+	waitSec(0.2);
+	bada_vel_cmd(-0.1,0);
+	waitSec(4);
 	bada_vel_cmd(0,0);
+	waitSec(0.2);
+	bada_vel_cmd(0,0);
+	
 }
 
 void sub_odometry_callback(const nav_msgs::Odometry &msg)
@@ -350,10 +524,27 @@ void sub_odometry_callback(const nav_msgs::Odometry &msg)
 
 void bada_go_to_soundPT()
 { //사람 데리고 가는용
-	bada_go_destination_blocking(80.0, SAVED_SOUND_POSITION.x, SAVED_SOUND_POSITION.y, SAVED_SOUND_POSITION.orien_z, SAVED_SOUND_POSITION.orien_w);
+	bada_go_destination_blocking(100.0, SAVED_SOUND_POSITION.x, SAVED_SOUND_POSITION.y, SAVED_SOUND_POSITION.orien_z, SAVED_SOUND_POSITION.orien_w);
 }
-void bada_display_inform()
+
+void bada_go_to_soundPT_demo()
+{ //사람 데리고 가는용
+	bada_go_destination_blocking_demo(100.0, SAVED_SOUND_POSITION.x, SAVED_SOUND_POSITION.y, SAVED_SOUND_POSITION.orien_z, SAVED_SOUND_POSITION.orien_w);
+}
+
+void bada_display_inform(DISP_EVENT status)
 {
+	bada_display_cmd(status);
+	waitSec(0.3);
+	bada_display_cmd(DISP_EVENT::NOTHING);
+	waitSec(0.5);
+	bada_display_cmd(status);
+	waitSec(0.3);
+	bada_display_cmd(DISP_EVENT::NOTHING);
+	waitSec(0.5);
+	bada_display_cmd(status);
+	waitSec(0.3);
+	bada_display_cmd(DISP_EVENT::NOTHING);
 }
 
 void bada_emotion()
@@ -426,9 +617,39 @@ Position bada_get_robot_pos()
 	return pos;
 }
 
+Position bada_get_robot_pos_demo()
+{
+	tf::TransformListener listener;
+	tf::StampedTransform transform;
+	try
+	{
+		listener.waitForTransform("odom","base_footprint_link",ros::Time(0),ros::Duration(3.0));
+		listener.lookupTransform("odom", "base_footprint_link", ros::Time(0), transform);
+		CURRENT_ROBOT_POSITION.pose.pose.position.x = transform.getOrigin().x();
+		CURRENT_ROBOT_POSITION.pose.pose.position.y = transform.getOrigin().y();
+		CURRENT_ROBOT_POSITION.pose.pose.orientation.z = transform.getRotation().getZ();
+		CURRENT_ROBOT_POSITION.pose.pose.orientation.w = transform.getRotation().getW();
+	}
+	catch (tf::TransformException ex)
+	{
+		ROS_ERROR("%s", ex.what());
+		ROS_INFO("tf ERROR");
+		ros::Duration(1.0).sleep();
+	}
+
+	Position pos = {CURRENT_ROBOT_POSITION.pose.pose.position.x, CURRENT_ROBOT_POSITION.pose.pose.position.y, CURRENT_ROBOT_POSITION.pose.pose.orientation.z, CURRENT_ROBOT_POSITION.pose.pose.orientation.w};
+	return pos;
+}
+
 void bada_save_sound_odom()
 {
 	Position pos = bada_get_robot_pos();
+	SAVED_SOUND_POSITION = pos;
+}
+
+void bada_save_sound_odom_demo()
+{
+	Position pos = bada_get_robot_pos_demo();
 	SAVED_SOUND_POSITION = pos;
 }
 //https://opentutorials.org/module/2894/16661
@@ -450,7 +671,7 @@ void bada_head_UP_cmd(bool status)
 	waitSec(1);
 } // True -> UP, False -> DOWN
 
-void bada_display_cmd(DISP_EVNT status)
+void bada_display_cmd(DISP_EVENT status)
 {
 	std_msgs::Int16 IntStatus;
 	IntStatus.data = int(status);

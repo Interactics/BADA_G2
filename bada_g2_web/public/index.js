@@ -9,7 +9,8 @@ var hidx = 0;
 const FRAMES_PER_SECOND = 10;  // Valid values are 60,30,20,15,10...
 const FRAME_MIN_TIME = (1000 / 60) * (60 / FRAMES_PER_SECOND) - (1000 / 60) * 0.5;
 var lastFrameTime = 0;  // the last frame time
-
+var frameCount = 0;
+var connectState = 0;
 var canvas;
 var ctx;
 var start;
@@ -29,7 +30,7 @@ var DBtype = [];
 var DBtime = [];
 const today = new Date();
 today.setTime(0);
-
+// zbnYtN-AsYeyhLeEsIi65dHp0OfR4b7Mqc6n1KDFt9K26Y_umPeF7Jj9opPMrcGt8pf51IHSjfvIPg
 const dic1 = { 'Cry': '아기 우는 소리', 'Alarm': '화재 경보', 'Door': '노크', 'Boiling': '물 끓는 소리', 'Silence': '조용한', 'Water': '물소리', 'Bell': '초인종 소리', 'Silence': '...' };
 
 const KAKAO_REST_API_TOKEN = "dbd9b580157dee2b3191671338533e46";
@@ -107,8 +108,8 @@ function auth_shareKakaotalk() {
         object_type: 'text',
         text: "BADA 로그인 성공",
         link: {
-          web_url: 'http://192.168.0.193',
-          mobile_web_url: 'http://192.168.0.193',
+          web_url: 'http://bada.epikem.com/static',
+          mobile_web_url: 'http://bada.epikem.com/static',
         },
         button_title: "BADA에서 확인하기"
       },
@@ -137,8 +138,8 @@ function auth_shareKakaotalk() {
           object_type: 'text',
           text: "BADA 로그인이 성공했어요",
           link: {
-              web_url: 'http://192.168.0.193',
-              mobile_web_url: 'http://192.168.0.193',
+              web_url: 'http://172.17.225.74',
+              mobile_web_url: 'http://172.17.225.74',
             },
             button_title : "BADA에서 확인하기"
         },
@@ -167,8 +168,8 @@ function shareKakaotalk(sig_name) {
             object_type: 'text',
             text: dic1[sig_name] + "가 발생한 것 같아요!",
             link: {
-              web_url: 'http://192.168.0.193',
-              mobile_web_url: 'http://192.168.0.193',
+              web_url: 'http://bada.epikem.com/static',
+              mobile_web_url: 'http://bada.epikem.com/static',
             },
             button_title: "BADA에서 확인하기"
           },
@@ -190,34 +191,33 @@ function shareKakaotalk(sig_name) {
       // always executed
     });
 }
-/*function shareKakaotalk(sig_name)
-{
-    Kakao.API.request({
-      url: '/v1/api/talk/friends/message/default/send',
-      data: {
-        receiver_uuids: ['7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
-        // 팀원 UUID 목록
-        //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
-        //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
-        template_object: {
-          object_type: 'text',
-          text: sig_name+"가 발생했어요",
-          link: {
-              web_url: 'http://192.168.0.193',
-              mobile_web_url: 'http://192.168.0.193',
-            },
-            button_title : "BADA에서 확인하기"
-        },
-      },
-      success: function(response) {
-        console.log(response);
-      },
-      fail: function(error) {
-        console.log(error);
-      },
-    });
-  }
-*/
+// function shareKakaotalk(sig_name)
+// {
+//     Kakao.API.request({
+//       url: '/v1/api/talk/friends/message/default/send',
+//       data: {
+//         receiver_uuids: ['7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+//         // 팀원 UUID 목록
+//         //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
+//         //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
+//         template_object: {
+//           object_type: 'text',
+//           text: sig_name+"가 발생했어요",
+//           link: {
+//               web_url: 'http://172.17.225.74',
+//               mobile_web_url: 'http://172.17.225.74',
+//             },
+//             button_title : "BADA에서 확인하기"
+//         },
+//       },
+//       success: function(response) {
+//         console.log(response);
+//       },
+//       fail: function(error) {
+//         console.log(error);
+//       },
+//     });
+//   }
 
 
 function printNow(ddate) {
@@ -315,7 +315,7 @@ function loaddatabase() {
       }
       console.log(DBtype);
       console.log(DBtime);
-      for (var i = 0; i < DBtype.length; i++) {
+      for (var i = DBtype.length-1; i >=0; i--) {
         sig_name = dic1[DBtype[i]];
         h.enqueue([dic1[DBtype[i]], DBtime[i]]);
         hidx = hidx + 1;
@@ -424,7 +424,11 @@ function init() {
   tryConnectWebsocket();
 }
 
+
 function loop(timeStamp) {
+
+  
+
 
   // Keep requesting new frames
   if (timeStamp - lastFrameTime < FRAME_MIN_TIME) { //skip the frame if the call is too early
@@ -432,6 +436,93 @@ function loop(timeStamp) {
     return; // return as there is nothing to do
   }
   lastFrameTime = timeStamp; // remember the time of the rendered frame
+  frameCount += 1;
+
+  if(frameCount % 20 == 0){
+    if(connectState==-1){
+
+      console.log('get robot');
+
+      axios.get('/alarm')
+        .then(function(response){
+          console.log('get alarm');
+          console.log(response);
+          
+          const sig=response.data.signal;
+          sig_name = dic1[sig];
+          console.log("NOW SIGNAL : " + sig_name);
+
+          time = today.getTime();
+          var a= new Date();
+          viewtime = printNow(a);
+
+          if (h.dataStore.length >= 17) {
+            h.dequeue();
+          }
+
+          if (sig_name == dic1['Water']) {
+            //먼저 검색해 
+            if (water.search()) {
+              //총 3번 이상 발생했다면
+              for (var i = 1; i <= 3; i++) {
+                water.dequeue();
+              }
+              cnt = 0;
+              shareKakaotalk(sig);
+              h.enqueue([sig_name, viewtime]);
+              hidx = hidx + 1;
+              PrintHistory = h.toString();
+            }
+            else {
+              //발생한적없다면
+              water.enqueue(time);
+            }
+          }
+          else if (sig_name != dic1["Silence"]) {
+            console.log('signame!!::', sig_name);
+            shareKakaotalk(sig);
+            h.enqueue([sig_name, viewtime]);
+            hidx = hidx + 1;
+            PrintHistory = h.toString();
+          }
+          document.getElementById("history").innerHTML = PrintHistory;
+          document.getElementById("alarm").innerHTML = sig_name;
+
+          if(sig=='Speech') document.getElementById("sign_language_gif").src='./말소리';
+          else if(sig=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
+          else if(sig=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
+          else if(sig=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
+          else if(sig=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
+          else if(sig=='Bell') document.getElementById("sign_language_gif").src='./초인종.gif';
+          else if(sig=='Water') document.getElementById("sign_language_gif").src='./물.gif';
+
+        })
+        .catch(function(err){
+          console.error(err);
+        })
+      
+      axios.get('/robot')
+      .then(function( response){
+          console.log('polling robot state');
+          console.log(response);
+
+          const {rx, ry, rd} = response.data;
+          x=rx;
+          y=ry;
+          theta=rd;
+
+        })
+      .catch(function(err){
+        console.error(err);
+      })
+    } else {
+      console.log('put robot');
+
+      
+    }
+    
+
+  }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -443,11 +534,11 @@ function loop(timeStamp) {
   var fps = Math.round(10 / secondsPassed) / 10;
 
   //Draw number to the screen
-  ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, 200, 100);
+  //ctx.fillStyle = '#fefaef';
+  //ctx.fillRect(0, 0, 200, 100);
   ctx.font = '25px Arial';
   ctx.fillStyle = 'black';
-  ctx.fillText("FPS: " + fps, 10, 30);
+  //ctx.fillText("FPS: " + fps, 10, 30);
 
   draw(timeStamp);
 
@@ -492,6 +583,7 @@ function tryConnectWebsocket() {
 
   // If there is an error on the backend, an 'error' emit will be emitted.
   ros.on('error', function (error) {
+    connectState = -1;
     // document.getElementById('connecting').style.display = 'none';
     // document.getElementById('connected').style.display = 'none';
     // document.getElementById('closed').style.display = 'none';
@@ -502,6 +594,7 @@ function tryConnectWebsocket() {
   // Find out exactly when we made a connection.
   ros.on('connection', function () {
     console.log('Connection made!');
+    connectState=1
     // document.getElementById('connecting').style.display = 'none';
     // document.getElementById('error').style.display = 'none';
     // document.getElementById('closed').style.display = 'none';
@@ -510,13 +603,14 @@ function tryConnectWebsocket() {
 
   ros.on('close', function () {
     console.log('Connection closed.');
+    connectState = -1
     // document.getElementById('connecting').style.display = 'none';
     // document.getElementById('connected').style.display = 'none';
     // document.getElementById('closed').style.display = 'inline';
   });
 
   // Create a connection to the rosbridge WebSocket server.
-  ros.connect('ws://localhost:9090');
+  ros.connect('ws://socket.bada.epikem.com:80');
 
   // Like when publishing a topic, we first create a Topic object with details of the topic's name
   // and message type. Note that we can call publish or subscribe on the same topic object.
@@ -533,7 +627,7 @@ function tryConnectWebsocket() {
 
   odom = new ROSLIB.Topic({
     ros: ros,
-    name: '/t265/odom/sample/',
+    name: '/bada/filtered_odom',
     messageType: 'nav_msgs/Odometry'
   });
 
@@ -545,26 +639,36 @@ function tryConnectWebsocket() {
     // }
     x = message.pose.pose.position.x
     y = message.pose.pose.position.y
-    //console.log(message.pose.pose.position);
-    // console.log(x, y);
-    x = (x * 55) + 220;
-    y = ((y * 55) + 380);
+    // console.log(message.pose.pose.position);
+    console.log(x, y);
+    x = (x * 2) + 230;
+    y = ((y * 2) + 180);
 
-    // X=(x*150) +280
+    // X=(x*150) +280THREE
     // 280, 230 = X*590
     //x=x*400;
-    //y=y*400;
+    //y=y*400; 
 
     var quaternion = new THREE.Quaternion(message.pose.pose.orientation.x, message.pose.pose.orientation.y, message.pose.pose.orientation.z, message.pose.pose.orientation.w);
     var euler = new THREE.Euler();
     euler.setFromQuaternion(quaternion, 'XYZ');
     theta = euler.z;
+
+    if(frameCount % 20 == 0){
+      axios.put('/robot', {x,y,dir:theta})
+      .then(function(response){
+        console.log('put robot position');
+      })
+      .catch(function(err){
+        console.error(err);
+      })
+    }
     //   console.log(theta);
   });
 
   hsignal = new ROSLIB.Topic({
     ros: ros,
-    name: '/signal',
+    name: '/bada/audio/signal',
     //name : '/bada_audio/signal',
     messageType: 'std_msgs/String'
   });
@@ -617,7 +721,7 @@ function tryConnectWebsocket() {
     else if(m.data=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
     else if(m.data=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
     else if(m.data=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
-    else if(m.data=='Bell') document.getElementById("sign_language_gif").src='.초인종.gif';
+    else if(m.data=='Bell') document.getElementById("sign_language_gif").src='./초인종.gif';
     else if(m.data=='Water') document.getElementById("sign_language_gif").src='./물.gif';
 
   });

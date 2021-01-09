@@ -32,19 +32,20 @@ enum STATE
 	MOVING_WITH_PEPL
 };
 
-enum DISP_EVNT
+enum DISP_EVENT
 {
 	NOTHING = 0,
-	A_UP,
-	A_DOWN,
-	A_LEFT,
-	A_RIGHT,
-	FIRE_EVENT,
-	WATER_EVENT,
-	DOOR_EVENT,
-	BELL_EVENT,
-	BOILING_EVENT,
-	CRYING_EVENT
+	LOGO = 1,
+	BELL_EVENT = 2,
+	FIRE_EVENT = 3,
+	CRYING_EVENT = 4,
+	DOOR_EVENT = 5,
+	WATER_EVENT = 6,
+	EXCLAMATION = 7,
+	A_UP = 8,
+	A_DOWN = 9,
+	A_LEFT = 10,
+	A_RIGHT = 11,
 };
 
 struct Position
@@ -80,7 +81,7 @@ void bada_go_to_pepl();
 void bada_go_until_touch();
 void bada_save_sound_PT(); //로봇의 현재 위치와 소리나는 방향 저장하기.
 void bada_go_to_soundPT(); // 소리가 발생한 지점으로 이동하기.
-void bada_display_inform();
+void bada_display_inform(DISP_EVENT status);
 void bada_emotion();
 
 void bada_wait_button();
@@ -90,7 +91,7 @@ void bada_go_to_sound(); //소리 발생하는 방향으로 충분히 이동하�
 Position bada_get_robot_pos();
 
 void bada_open_eyes_cmd(bool Status);									// Open Eyes Function.
-void bada_display_cmd(DISP_EVNT status);								// Display Command
+void bada_display_cmd(DISP_EVENT status);								// Display Command
 void bada_vel_cmd(const float XLineVel = 0, const float ZAngleVel = 0); // commendation of Publishing Velocity
 void bada_log(std::string str1);										// commendation of Publishing Velocity
 bool bada_go_to_sound2();												//로봇 base_link 기준, 소리 나는 방향보고 1m 전진
@@ -112,6 +113,16 @@ ros::Subscriber sub_switch_checker;
 ros::Subscriber sub_signal;
 ros::Subscriber sub_sound_localization;
 
+// demo
+void bada_roaming_demo();
+void bada_go_to_pepl_demo();
+Position bada_get_robot_pos_demo();
+void bada_save_sound_odom_demo();
+void bada_send_destination_demo(double x, double y, double orien_z, double orien_w);
+void bada_go_destination_blocking_demo(double duration, double x, double y, double orien_z, double orien_w);
+void bada_go_to_soundPT_demo();
+
+
 /*--------------------------------------Callback----------------------------------------------*/
 
 void sub_pepl_checker_callback(const geometry_msgs::Point &msg);
@@ -131,7 +142,7 @@ bool PPL_CHECK = false;	   // Is there PPL?
 float PPL_ANGLE = -90;	   // Angle of PPL respect to camera
 float PPL_DIST = -1.0;	   // Distnace to PPL from
 
-int CURRENT_POINT = 0;		//ROAMING CURRNET POINT
+int CURRENT_POINT = -1;		//ROAMING CURRNET POINT
 
 //geometry_msgs::Pose2D PERSON_POSITION;
 nav_msgs::Odometry CURRENT_ROBOT_POSITION;
@@ -143,9 +154,9 @@ Position SAVED_SOUND_POSITION = {0.0f, 1.0f, 2.0f, 3.0f};
 Position SAVED_HUMAN_POSITION = {2.708f, 1.183f, 0.294f, 0.956f};
 
 double wayPoint[][4] = {
-	{1.339, 0.384, 0.973, 0.231}, //way1
-	{3.0021, 1.837, 0.807, 0.509},	//way2
-	{4.606, -0.649, 0.406, 0.914}	//way3
+	{-1, 0, 1, 0.015}, //way1
+	{0, 0, -0.019, 1},	//way2
+	{-3.001, -0.268, -0.683, 0.730}	//way3
 };									//roaming 장소 저장
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;

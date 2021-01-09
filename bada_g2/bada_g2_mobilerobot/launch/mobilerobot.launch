@@ -1,6 +1,0 @@
-<launch>
-    <group ns="ne">
-        <include file="$(find bada_g2_mobilerobot)/launch/rosserial.launch"/>
-        <include file="$(find bada_g2_mobilerobot)/launch/odom.launch"/>
-    </group>
-</launch>

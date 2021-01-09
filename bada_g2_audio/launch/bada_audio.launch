@@ -1,7 +1,9 @@
 <launch>
 
-  <!-- <node pkg="bada_audio" name="bada_audio" type="bada_audio.py"/> -->
+  <node pkg="bada_audio" name="bada_audio" type="bada_audio.py"/>
   <node name="respeaker_node" pkg="respeaker_ros" type="respeaker_node.py"
+	output="screen"/>
+  <node name="filtered_localization_node" pkg="bada_audio" type="filtered_localization_node.py"
 	output="screen"/>
 <!--   
   <node name="baselink_to_respeaker" pkg="tf" type="static_transform_publisher"
