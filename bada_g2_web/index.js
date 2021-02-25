@@ -3,10 +3,12 @@ var bodyParser = require('body-parser');
 var express = require('express');
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/config/config.json')[env];
+const cookieParser = require('cookie-parser')
 
 
 var app = express();
 app.use(bodyParser.json());
+app.use(cookieParser())
 
 var staticPath = path.join(__dirname, '/public');
 
@@ -32,6 +34,8 @@ models.sequelize.sync({force: config.forceSync})
     console.log('✗ DB connection error. Please make sure DB is running.');
     process.exit();
   });
+
+require('./ros')
 
 app.listen(3000, function() {
   console.log('listening');
