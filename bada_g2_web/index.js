@@ -10,18 +10,14 @@ app.use(bodyParser.json());
 
 var staticPath = path.join(__dirname, '/public');
 
-var indexRouter = require('./routes/index');
-var alarmRouter = require('./routes/alarm');
-var robotRouter = require('./routes/robot');
+var api = require('./api');
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 app.use('/static', express.static(staticPath));
 
-app.use('/', indexRouter);
-app.use('/alarm', alarmRouter);
-app.use('/robot', robotRouter);
+app.use('/api', api);
 
 
 // connect To DB
