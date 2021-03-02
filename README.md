@@ -1,8 +1,8 @@
 # BADA_G2 : The social Robot for Hearing-impaired people.
 
-### 2020 Korea Capstone Design Fair 
+### Period 2020. 06. ~ 2020. 11.
 
-### Project Team : [사과가 쿵!]
+### Project Team : [사과가 쿵!(Dropped Apple)]
 
 Member : 유호연, 김민우, 배종학, 이현우, 최수진, 황지원
 
