@@ -11,13 +11,13 @@ Advisor : Prof. 한재권(Jeakweon Han)
 ### Abstract 
 
 Bada is a social robot that can interact with individuals with the deaf. It resembles the appearance of a robotic vacuum cleaner and its signaling of abnormal circumstances at home was modeled after the behavior of hearing dogs. Bada effectively reduce the loss of information during delivery by relaying messages in various ways including web service, text messages, visual representation, and haptic interface. We have developed Bada’s interaction process through several tests. Its behavior, interface, and interaction model would fairly contribute to the robotic accessibility technology.
+
+## Workflow
  
- 
+## Specification
+
 ## Hardware Architecture
-
-![KakaoTalk_20200812_220511180](https://user-images.githubusercontent.com/56077549/91383658-a2deb000-e867-11ea-8e3f-9ff4dd3d646e.png)
-
 
 ## Software Architecture
 
-
+## Reference
