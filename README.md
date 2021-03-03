@@ -1,20 +1,16 @@
-# BADA_G2 : The social Robot for Hearing-impaired people.
+# BADA_G2 : The social Robot Accessible to the Deaf
 
 ### Period 2020. 06. ~ 2020. 11.
 
 ### Project Team : [사과가 쿵!(Dropped Apple)]
 
-Member : 유호연, 김민우, 배종학, 이현우, 최수진, 황지원
+Member : 유호연(Hoyeon Yu), 김민우(Minwoo Kim), 배종학(Jonghak Hae), 이현우(Hyunwoo Lee), 최수진(Soojin Choi), 황지원(Jiwon Hwang)
 
-Directed by Prof. 한재권
+Advisor : Prof. 한재권(Jeakweon Han)
 
-### Overview
+### Abstract 
 
-Home has become a more important place for us. It provides its own comfort, however, the hearing-impaired only feel that the house is a space having another hazard. They can easily get in trouble and dangerous situation because they can not recognize any sound in their home. To address this problem, we can easily find a lot of assistive technology devices such as delivering sound information devices by wearable types or installable tools and assistance dogs such as hearing dogs. However, those things have definite limits. In order to solve those limits and trouble, we create a social robot 'BADA'.
-
- BADA is derived from the Korean first assistive dog's name and the initial alphabet of " Buddy for Auditory Detection Assistance". BADA  is able to detect sound in the house through machine learning technology and delivery the auditory information to users through web service, message, and robots' bump which reduces the loss of information from the delivery process.
- 
- BADA is designed to provide comfort to users, so we create this by focusing on Human-Robot Interaction. Moreover, BADA is not only a helper robot but a robot designed to allow industry robots to enter the home without resistance from users at home. Therefore it will also play a role in the popularization of social robots in the era of the fourth industrial revolution.
+Bada is a social robot that can interact with individuals with the deaf. It resembles the appearance of a robotic vacuum cleaner and its signaling of abnormal circumstances at home was modeled after the behavior of hearing dogs. Bada effectively reduce the loss of information during delivery by relaying messages in various ways including web service, text messages, visual representation, and haptic interface. We have developed Bada’s interaction process through several tests. Its behavior, interface, and interaction model would fairly contribute to the robotic accessibility technology.
  
  
 ## Hardware Architecture
