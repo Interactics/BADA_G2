@@ -48,7 +48,7 @@ Bada is a social robot that can interact with individuals with the deaf. It rese
 
 ### Requirements
 
-Install ROS packages: 
+#### Install
 - rplidar
 - laserfilter
 - realsense
@@ -56,25 +56,44 @@ Install ROS packages:
 - robot localization package 
   - `sudo apt-get install libgeographic-dev`
 
-### On real world
-- change robot xacro -> rplidar joint rpy  
-- change gazebo xacro parameter to real world
+#### Launch
 
+1. object detection
 ```
-$ roslaunch realsense2_camera rs_aligned_depth.launch 
-  # -> serial_no, camera = "d435_camera"
-$ roslaunch laser_filters angular_bound_filter.launch 
-$ roslaunch bada_g2_description rviz.launch 
-$ roslaunch bada_g2_2dnav bada_g2_rtabmap.launch localization:=true
+# (on coral_ws/devel)
+source ./setup.bash
+roslaunch coral_usb edgetpu_object_detector.launch
 ```
 
-### On simulation
-- change robot xacro -> rplidar joint rpy
-
+2. bringup
 ```
-$ roslaunch bada_g2_description spawn.launch
-$ roslaunch bada_g2_description rviz.launch sim_time:=true
-$ roslaunch bada_g2_2dnav bada_g2_rtabmap.launch simulation:=true localization:=true
+# (on catkin_ws) 
+roslaunch bada_g2_bringup bada_g2_robot.launch
+```
+
+3. audio
+```
+source catkin_ws/venv/bin/activate
+roslaunch bada_audio bada_audio.launch
+```
+
+4. navigation
+```
+# (on catkin_ws) 
+roslaunch bada_g2_2dnav amcl_navigation.launch
+```
+
+5. core
+```
+# (on catkin_ws)
+rosrun bada_g2_core bada_g2_core_node 
+```
+
+6. web bridge 
+```
+# (on BADA_G2_web)
+npm run watch
+rosrun rosbridge_server rosbridge_websocket
 ```
 
 
