@@ -23,3 +23,37 @@ Bada is a social robot that can interact with individuals with the deaf. It rese
 ## Software Architecture
 
 ## Reference
+
+## How to run
+
+### Requirements
+
+1. Install ROS packages: 
+- rplidar
+- laserfilter
+- realsense
+- move_base
+- robot localization package 
+  - `sudo apt-get install libgeographic-dev`
+
+### Real world
+- change robot xacro -> rplidar joint rpy  
+		change gazebo xacro parameter to real world 
+
+```
+roslaunch realsense2_camera rs_aligned_depth.launch 
+	-> serial_no, camera = "d435_camera"
+roslaunch laser_filters angular_bound_filter.launch 
+roslaunch bada_g2_description rviz.launch 
+roslaunch bada_g2_2dnav bada_g2_rtabmap.launch localization:=true
+```
+
+### Simulation
+- change robot xacro -> rplidar joint rpy
+
+```  
+roslaunch bada_g2_description spawn.launch
+roslaunch bada_g2_description rviz.launch sim_time:=true
+roslaunch bada_g2_2dnav bada_g2_rtabmap.launch simulation:=true localization:=true
+```
+
