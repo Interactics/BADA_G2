@@ -12,6 +12,7 @@ Member :
 Advisor : Prof. 한재권(Jeakweon Han)
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204757-28e34f80-7eb8-11eb-98a9-d3e21b99f3b1.png">
+![image](https://user-images.githubusercontent.com/8192081/110204924-01d94d80-7eb9-11eb-9a37-b7e870064c48.png)
 
 ## Abstract 
 
@@ -20,7 +21,8 @@ Bada is a social robot that can interact with individuals with the deaf. It rese
 ## Workflow
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204639-78754b80-7eb7-11eb-8d6f-a56144f09912.png">
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204649-8aef8500-7eb7-11eb-890b-070cf4be60e9.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204939-1fa6b280-7eb9-11eb-837c-49a4b73f251f.png">
+
  
 ## Specification
 
