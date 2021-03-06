@@ -12,24 +12,24 @@ Member :
 Advisor : Prof. 한재권(Jeakweon Han)
 
 <img width="600" alt="bada image" src="https://user-images.githubusercontent.com/8192081/110204118-b2911e00-7eb4-11eb-9132-36eb60858c53.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204522-d7869080-7eb6-11eb-90b9-6476aa998ec4.png">
+
 
 ## Abstract 
 
 Bada is a social robot that can interact with individuals with the deaf. It resembles the appearance of a robotic vacuum cleaner and its signaling of abnormal circumstances at home was modeled after the behavior of hearing dogs. Bada effectively reduce the loss of information during delivery by relaying messages in various ways including web service, text messages, visual representation, and haptic interface. We have developed Bada’s interaction process through several tests. Its behavior, interface, and interaction model would fairly contribute to the robotic accessibility technology.
 
 ## Workflow
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204639-78754b80-7eb7-11eb-8d6f-a56144f09912.png">
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110203720-131f5b80-7eb3-11eb-85a6-80bdb933b6af.png">
-
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110203602-73fa6400-7eb2-11eb-8c3b-11acf7623ab1.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204649-8aef8500-7eb7-11eb-890b-070cf4be60e9.png">
  
 ## Specification
 
 ## Hardware
 
 ### Design
-
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110203461-c0916f80-7eb1-11eb-9a33-e04cbc1846bc.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204684-aeb2cb00-7eb7-11eb-8e38-6b0ca99e834d.png">
 
 ### Architecture
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110203415-77d9b680-7eb1-11eb-8307-e42c7f26e110.png">
@@ -39,11 +39,11 @@ Bada is a social robot that can interact with individuals with the deaf. It rese
 ### Interfaces
 
 #### Web & Mobile
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110203548-25e56080-7eb2-11eb-9a86-d26cc903761f.png">
-
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204668-9f338200-7eb7-11eb-9b19-1a0a533b09e3.png">
 
 #### Robot Display
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204160-fdab3100-7eb4-11eb-91e7-a3b505738397.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204577-0a308900-7eb7-11eb-9e15-4fd5337a3d36.png">
+
 
 ## How to run
 
