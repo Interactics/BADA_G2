@@ -29,21 +29,21 @@ Bada is a social robot that can interact with individuals with the deaf. It rese
 ## Hardware
 
 ### Design
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204684-aeb2cb00-7eb7-11eb-8e38-6b0ca99e834d.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110205039-a491cc00-7eb9-11eb-810b-7d63c0103d3b.png">
 
 ### Architecture
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110203415-77d9b680-7eb1-11eb-8307-e42c7f26e110.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110205095-e6227700-7eb9-11eb-89c0-ccc490c7822b.png">
 
 ## Software
 
 ### Interfaces
 
 #### Web & Mobile
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204668-9f338200-7eb7-11eb-9b19-1a0a533b09e3.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110205053-ba06f600-7eb9-11eb-81ca-d9f68979eda9.png">
 
 #### Robot Display
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204577-0a308900-7eb7-11eb-9e15-4fd5337a3d36.png">
-
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110205057-be331380-7eb9-11eb-9da2-1d24f205c928.png">
 
 ## How to run
 
