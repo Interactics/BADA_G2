@@ -14,21 +14,9 @@ Advisor : Prof. 한재권(Jeakweon Han)
 
 Bada is a social robot that can interact with individuals with the deaf. It resembles the appearance of a robotic vacuum cleaner and its signaling of abnormal circumstances at home was modeled after the behavior of hearing dogs. Bada effectively reduce the loss of information during delivery by relaying messages in various ways including web service, text messages, visual representation, and haptic interface. We have developed Bada’s interaction process through several tests. Its behavior, interface, and interaction model would fairly contribute to the robotic accessibility technology.
 
-## Workflow
- 
-## Specification
-
-## Hardware Architecture
-
-## Software Architecture
-
-## Reference
-
-## How to run
-
 ### Requirements
 
-1. Install ROS packages: 
+Install ROS packages: 
 - rplidar
 - laserfilter
 - realsense
@@ -56,4 +44,18 @@ roslaunch bada_g2_description spawn.launch
 roslaunch bada_g2_description rviz.launch sim_time:=true
 roslaunch bada_g2_2dnav bada_g2_rtabmap.launch simulation:=true localization:=true
 ```
+
+
+
+## Workflow
+ 
+## Specification
+
+## Hardware Architecture
+
+## Software Architecture
+
+## Reference
+
+## How to run
 
