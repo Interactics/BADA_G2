@@ -11,8 +11,8 @@ Member :
 
 Advisor : Prof. 한재권(Jeakweon Han)
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204757-28e34f80-7eb8-11eb-98a9-d3e21b99f3b1.png">
-![image](https://user-images.githubusercontent.com/8192081/110204924-01d94d80-7eb9-11eb-9a37-b7e870064c48.png)
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204961-4a910680-7eb9-11eb-8ca4-7737fa386115.png">
+
 
 ## Abstract 
 
