@@ -1,15 +1,12 @@
 # BADA G2 : The social Robot Accessible to the Deaf
 
+## Project Team : [사과가 쿵!(Dropped Apple)]
 
-### Development Period : 2020. 06. ~ 2020. 11.
-
-### Project Team : [사과가 쿵!(Dropped Apple)]
-
-Member :
-
+### Member :
 유호연(Hoyeon Yu), 김민우(Minwoo Kim), 배종학(Jonghak Hae), 이현우(Hyunwoo Lee), 최수진(Soojin Choi), 황지원(Jiwon Hwang)
 
-Advisor : Prof. 한재권(Jeakweon Han)
+### Advisor : 
+Prof. 한재권(Jeakweon Han)
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204961-4a910680-7eb9-11eb-8ca4-7737fa386115.png">
 
