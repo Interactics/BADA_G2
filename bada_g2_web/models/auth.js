@@ -1,11 +1,9 @@
 const { Sequelize } = require("sequelize");
 
 module.exports = function (sequelize, DataTypes) {
-  const robot = sequelize.define('Robot', {
-    id: { field: 'id', type: DataTypes.INTEGER(11), unique: true, primaryKey: true, allowNull: false },
-    x: { field: 'x', type: DataTypes.DOUBLE, unique: false, allowNull: true },
-    y: { field: 'y', type: DataTypes.DOUBLE, allowNull: true, defaultValue:Sequelize.NOW },
-    dir: { field: 'dir', type: DataTypes.DOUBLE, unique: false, allowNull: true }
+  const auth = sequelize.define('Auth', {
+    access_token: { field: 'access_token', type: DataTypes.STRING(200), unique: false, allowNull: true },
+    refresh_token: { field: 'refresh_token', type: DataTypes.STRING(200), unique: false, allowNull: true },
   }, {
     // don't use camelcase for automatically added attributes but underscore style
     // so updatedAt will be updated_at
@@ -21,11 +19,12 @@ module.exports = function (sequelize, DataTypes) {
     freezeTableName: true,
 
     // define the table's name
-    tableName: 'robot'
+    tableName: 'auth'
   });
 
-  return robot;
+  return auth;
 };
+
 
 /*
  Sequelize 참고

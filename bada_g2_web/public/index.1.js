@@ -9,13 +9,13 @@ const FRAMES_PER_SECOND = 10;  // Valid values are 60,30,20,15,10...
 const FRAME_MIN_TIME = (1000 / 60) * (60 / FRAMES_PER_SECOND) - (1000 / 60) * 0.5;
 var lastFrameTime = 0;  // the last frame time
 var frameCount = 0;
-var connectState = -1;
+var connectState = 0;
 var canvas;
 var ctx;
 var start;
 var oldTimeStamp;
-var robotX;
-var robotY;
+var x;
+var y;
 var theta;
 var str;
 var data;
@@ -32,36 +32,37 @@ today.setTime(0);
 // zbnYtN-AsYeyhLeEsIi65dHp0OfR4b7Mqc6n1KDFt9K26Y_umPeF7Jj9opPMrcGt8pf51IHSjfvIPg
 const dic1 = { 'Cry': '아기 우는 소리', 'Alarm': '화재 경보', 'Door': '노크', 'Boiling': '물 끓는 소리', 'Silence': '조용한', 'Water': '물소리', 'Bell': '초인종 소리', 'Silence': '...' };
 
-// Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
-// /*  Kakao.Auth.createLoginButton({
-//     container: '#kakao-login-btn',
-//     size : 'small',
-//     success: function (authObj) {
-//       alert(JSON.stringify(authObj));
-//     },
-//     fail: function (err) {
-//       alert(JSON.stringify(err));
-//     }
-//   });*/
+Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
+/*  Kakao.Auth.createLoginButton({
+    container: '#kakao-login-btn',
+    size : 'small',
+    success: function (authObj) {
+      alert(JSON.stringify(authObj));
+    },
+    fail: function (err) {
+      alert(JSON.stringify(err));
+    }
+  });*/
 
 
 
-// console.log("a4365158deb211d98898dba793c60acb");
+console.log("a4365158deb211d98898dba793c60acb");
 
-// function setAuth() {
-//   Kakao.Auth.login({
-//     scope: 'talk_message,friends,profile',
-//     success: function (response) {
-//       console.log("kakao_auth_success");
-//     },
-//     fail: function (error) {
-//       console.log(error);
-//     }
-//   });
-// }
-// setAuth();
+function setAuth() {
+  Kakao.Auth.login({
+    scope: 'talk_message,friends,profile',
+    success: function (response) {
+      console.log("kakao_auth_success");
+    },
+    fail: function (error) {
+      console.log(error);
+    }
+  });
+}
+setAuth();
 
-// // Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
+// Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
+
 
 function Queue() {
 
@@ -92,34 +93,101 @@ function loadfriendlist() {
     }
   });
 }
-// loadfriendlist();
+loadfriendlist();
 
 
-// function auth_shareKakaotalk() {
-//   Kakao.API.request({
-//     url: '/v2/api/talk/memo/default/send',
-//     data: {
-//       template_object: {
-//         object_type: 'text',
-//         text: "BADA 로그인 성공",
-//         link: {
-//           web_url: 'http://bada.epikem.com/static',
-//           mobile_web_url: 'http://bada.epikem.com/static',
-//         },
-//         button_title: "BADA에서 확인하기"
-//       },
-//     },
-//     success: function (response) {
-//       //console.log(response);
-//     },
-//     fail: function (error) {
-//       //console.log(error);
-//     },
-//   });
-// }
+function auth_shareKakaotalk() {
+  Kakao.API.request({
+    url: '/v2/api/talk/memo/default/send',
+    data: {
+      template_object: {
+        object_type: 'text',
+        text: "BADA 로그인 성공",
+        link: {
+          web_url: 'http://bada.epikem.com/static',
+          mobile_web_url: 'http://bada.epikem.com/static',
+        },
+        button_title: "BADA에서 확인하기"
+      },
+    },
+    success: function (response) {
+      //console.log(response);
+    },
+    fail: function (error) {
+      //console.log(error);
+    },
+  });
+}
 
 
-// /*function auth_shareKakaotalk() 
+/*function auth_shareKakaotalk() 
+{
+    Kakao.API.request({
+      url: '/v1/api/talk/friends/message/default/send',
+      data: {
+        receiver_uuids: ['7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+        // 팀원 UUID 목록
+        //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
+        //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
+
+        template_object: {
+          object_type: 'text',
+          text: "BADA 로그인이 성공했어요",
+          link: {
+              web_url: 'http://172.17.225.74',
+              mobile_web_url: 'http://172.17.225.74',
+            },
+            button_title : "BADA에서 확인하기"
+        },
+        button_title: "BADA에서 확인하기"
+      },
+      success: function(response) {
+        console.log(response);
+      },
+      fail: function(error) {
+        console.log(error);
+      },
+    });
+  }*/
+auth_shareKakaotalk();
+
+function shareKakaotalk(sig_name) {
+  var q=new Date();
+  axios.put('/alarm', { alarmType: sig_name, alarmTime: q })
+    .then(function (response) {
+      console.log('writing data to db...');
+
+      Kakao.API.request({
+        url: '/v2/api/talk/memo/default/send',
+        data: {
+          template_object: {
+            object_type: 'text',
+            text: dic1[sig_name] + "가 발생한 것 같아요!",
+            link: {
+              web_url: 'http://bada.epikem.com/static',
+              mobile_web_url: 'http://bada.epikem.com/static',
+            },
+            button_title: "BADA에서 확인하기"
+          },
+        },
+        success: function (response) {
+          console.log(response);
+        },
+        fail: function (error) {
+          console.log(error);
+        },
+      });
+      // handle success
+    })
+    .catch(function (error) {
+      // handle error
+      console.error(error);
+    })
+    .then(function () {
+      // always executed
+    });
+}
+// function shareKakaotalk(sig_name)
 // {
 //     Kakao.API.request({
 //       url: '/v1/api/talk/friends/message/default/send',
@@ -128,17 +196,15 @@ function loadfriendlist() {
 //         // 팀원 UUID 목록
 //         //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
 //         //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
-
 //         template_object: {
 //           object_type: 'text',
-//           text: "BADA 로그인이 성공했어요",
+//           text: sig_name+"가 발생했어요",
 //           link: {
 //               web_url: 'http://172.17.225.74',
 //               mobile_web_url: 'http://172.17.225.74',
 //             },
 //             button_title : "BADA에서 확인하기"
 //         },
-//         button_title: "BADA에서 확인하기"
 //       },
 //       success: function(response) {
 //         console.log(response);
@@ -147,72 +213,7 @@ function loadfriendlist() {
 //         console.log(error);
 //       },
 //     });
-//   }*/
-// auth_shareKakaotalk();
-
-// function shareKakaotalk(sig_name) {
-//   var q=new Date();
-//   axios.put('/api/alarm', { alarmType: sig_name, alarmTime: q })
-//     .then(function (response) {
-//       console.log('writing data to db...');
-
-//       Kakao.API.request({
-//         url: '/v2/api/talk/memo/default/send',
-//         data: {
-//           template_object: {
-//             object_type: 'text',
-//             text: dic1[sig_name] + "가 발생한 것 같아요!",
-//             link: {
-//               web_url: 'http://bada.epikem.com/static',
-//               mobile_web_url: 'http://bada.epikem.com/static',
-//             },
-//             button_title: "BADA에서 확인하기"
-//           },
-//         },
-//         success: function (response) {
-//           console.log(response);
-//         },
-//         fail: function (error) {
-//           console.log(error);
-//         },
-//       });
-//       // handle success
-//     })
-//     .catch(function (error) {
-//       // handle error
-//       console.error(error);
-//     })
-//     .then(function () {
-//       // always executed
-//     });
-// }
-// // function shareKakaotalk(sig_name)
-// // {
-// //     Kakao.API.request({
-// //       url: '/v1/api/talk/friends/message/default/send',
-// //       data: {
-// //         receiver_uuids: ['7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
-// //         // 팀원 UUID 목록
-// //         //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
-// //         //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
-// //         template_object: {
-// //           object_type: 'text',
-// //           text: sig_name+"가 발생했어요",
-// //           link: {
-// //               web_url: 'http://172.17.225.74',
-// //               mobile_web_url: 'http://172.17.225.74',
-// //             },
-// //             button_title : "BADA에서 확인하기"
-// //         },
-// //       },
-// //       success: function(response) {
-// //         console.log(response);
-// //       },
-// //       fail: function(error) {
-// //         console.log(error);
-// //       },
-// //     });
-// //   }
+//   }
 
 
 function printNow(ddate) {
@@ -295,15 +296,13 @@ function printClock() {
 var water = new Queue();
 var h_element;
 var h = new Queue();
-var current_signal = 'Silence';
 
 function loaddatabase() {
   console.log("load database");
 
-  axios.get('/api/alarm')
+  axios.get('/alarm')
     .then(function (response) {
       // handle success
-      h = new Queue();
       console.log("In loaddatabase function:getting database");
       console.log(response)   // should be 200 (success)
       for (var i = 0; i < response.data.length; i++) {
@@ -322,31 +321,11 @@ function loaddatabase() {
 
       document.getElementById("history").innerHTML = PrintHistory;
 
-      const sig = DBtype[0]
-      console.log(sig)
-
-      function setGIF(sigName) {
-        if(sigName != current_signal){
-          current_signal = sigName
-
-          if(sig=='Speech') document.getElementById("sign_language_gif").src='./말소리';
-          else if(sig=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
-          else if(sig=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
-          else if(sig=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
-          else if(sig=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
-          else if(sig=='Bell') document.getElementById("sign_language_gif").src='./초인종.gif';
-          else if(sig=='Water') document.getElementById("sign_language_gif").src='./물.gif';
-    
-        }
-      }
-      setGIF(sig)
-
       console.log("check queue data after loading db");
       for (var j = 0; j < h.dataStore.length; j++) {
         console.log(h.dataStore[j][0]);
       }
 
-      
     })
     .catch(function (error) {
       // handle error
@@ -355,25 +334,6 @@ function loaddatabase() {
     .then(function () {
       // always executed
     });
-
-
-  axios.get('/api/robot')
-  .then(function (response) {
-    robotX = response.data.x
-    robotY = response.data.y
-    theta = response.data.dir
-
-    console.log('robot pose!')
-    console.info(response.data)
-    console.info(robotX, robotY, theta)
-  })
-  .catch(function (error) {
-    // handle error
-    console.error(error);
-  })
-  .then(function () {
-    // always executed
-  });
 
 
 }
@@ -445,33 +405,26 @@ w_remove = setInterval(function () {
 //     sig_name=dic1[m.data];
 // var water = new Queue();
 
+
+
+
 function init() {
   canvas = document.getElementById('canvas');
-  fitToContainer(canvas);
-
-  function fitToContainer(canvas){
-    // Make it visually fill the positioned parent
-    canvas.style.width ='100%';
-    canvas.style.height='100%';
-    // ...then set the internal size to match
-    canvas.width  = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-  }
   //console.log('initializing canvas and websocket');
   //console.log(canvas);
   ctx = canvas.getContext('2d');
-  ctx.canvas.width = window.innerWidth;
-
-  ctx.canvas.height = 3*window.innerWidth/4;
-
   loaddatabase();
 
   // Start the first frame request
   window.requestAnimationFrame(loop);
-  // tryConnectWebsocket();
+  tryConnectWebsocket();
 }
 
+
 function loop(timeStamp) {
+
+  
+
 
   // Keep requesting new frames
   if (timeStamp - lastFrameTime < FRAME_MIN_TIME) { //skip the frame if the call is too early
@@ -482,92 +435,87 @@ function loop(timeStamp) {
   frameCount += 1;
 
   if(frameCount % 20 == 0){
-    console.info('connectState: ', connectState)
-    loaddatabase()
-    // if(connectState==-1){
+    if(connectState==-1){
 
-    //   console.log('get robot');
+      console.log('get robot');
 
-    //   axios.get('/api/alarm/one')
-    //     .then(function(response){
-    //       if(!response) return;
-    //       console.log('get alarm');
-    //       console.log(response);
+      axios.get('/alarm')
+        .then(function(response){
+          console.log('get alarm');
+          console.log(response);
           
-    //       const sig=response.data.signal;
-    //       sig_name = dic1[sig];
-    //       console.log("NOW SIGNAL : " + sig_name);
+          const sig=response.data.signal;
+          sig_name = dic1[sig];
+          console.log("NOW SIGNAL : " + sig_name);
 
-    //       time = today.getTime();
-    //       var a= new Date();
-    //       viewtime = printNow(a);
+          time = today.getTime();
+          var a= new Date();
+          viewtime = printNow(a);
 
-    //       if (h.dataStore.length >= 17) {
-    //         h.dequeue();
-    //       }
+          if (h.dataStore.length >= 17) {
+            h.dequeue();
+          }
 
-    //       if (sig_name == dic1['Water']) {
-    //         //먼저 검색해 
-    //         if (water.search()) {
-    //           //총 3번 이상 발생했다면
-    //           for (var i = 1; i <= 3; i++) {
-    //             water.dequeue();
-    //           }
-    //           cnt = 0;
-    //           // shareKakaotalk(sig);
-    //           h.enqueue([sig_name, viewtime]);
-    //           hidx = hidx + 1;
-    //           PrintHistory = h.toString();
-    //         }
-    //         else {
-    //           //발생한적없다면
-    //           water.enqueue(time);
-    //         }
-    //       }
-    //       else if (sig_name != dic1["Silence"]) {
-    //         console.log('signame!!::', sig_name);
-    //         // shareKakaotalk(sig);
-    //         h.enqueue([sig_name, viewtime]);
-    //         hidx = hidx + 1;
-    //         PrintHistory = h.toString();
-    //       }
-    //       document.getElementById("history").innerHTML = PrintHistory;
-    //       document.getElementById("alarm").innerHTML = sig_name;
+          if (sig_name == dic1['Water']) {
+            //먼저 검색해 
+            if (water.search()) {
+              //총 3번 이상 발생했다면
+              for (var i = 1; i <= 3; i++) {
+                water.dequeue();
+              }
+              cnt = 0;
+              shareKakaotalk(sig);
+              h.enqueue([sig_name, viewtime]);
+              hidx = hidx + 1;
+              PrintHistory = h.toString();
+            }
+            else {
+              //발생한적없다면
+              water.enqueue(time);
+            }
+          }
+          else if (sig_name != dic1["Silence"]) {
+            console.log('signame!!::', sig_name);
+            shareKakaotalk(sig);
+            h.enqueue([sig_name, viewtime]);
+            hidx = hidx + 1;
+            PrintHistory = h.toString();
+          }
+          document.getElementById("history").innerHTML = PrintHistory;
+          document.getElementById("alarm").innerHTML = sig_name;
 
-    //       if(sig=='Speech') document.getElementById("sign_language_gif").src='./말소리';
-    //       else if(sig=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
-    //       else if(sig=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
-    //       else if(sig=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
-    //       else if(sig=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
-    //       else if(sig=='Bell') document.getElementById("sign_language_gif").src='./초인종.gif';
-    //       else if(sig=='Water') document.getElementById("sign_language_gif").src='./물.gif';
+          if(sig=='Speech') document.getElementById("sign_language_gif").src='./말소리';
+          else if(sig=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
+          else if(sig=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
+          else if(sig=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
+          else if(sig=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
+          else if(sig=='Bell') document.getElementById("sign_language_gif").src='./초인종.gif';
+          else if(sig=='Water') document.getElementById("sign_language_gif").src='./물.gif';
 
-    //     })
-    //     .catch(function(err){
-    //       console.error(err);
-    //     })
+        })
+        .catch(function(err){
+          console.error(err);
+        })
       
-    //   axios.get('/api/robot')
-    //   .then(function( response){
-    //       console.log('polling robot state');
-    //       console.log(response);
-    //       if(response.data==null){
-    //         return;
-    //       }
-    //       const {rx, ry, rd} = response.data;
-    //       robotX=rx;
-    //       robotY=ry;
-    //       theta=rd;
+      axios.get('/robot')
+      .then(function( response){
+          console.log('polling robot state');
+          console.log(response);
 
-    //     })
-    //   .catch(function(err){
-    //     console.error(err);
-    //   })
-    // } else {
-    //   console.log('put robot');
+          const {rx, ry, rd} = response.data;
+          x=rx;
+          y=ry;
+          theta=rd;
+
+        })
+      .catch(function(err){
+        console.error(err);
+      })
+    } else {
+      console.log('put robot');
 
       
-    // }
+    }
     
 
   }
@@ -608,14 +556,14 @@ function draw(timestamp) {
   ctx.fillStyle = 'rgba(255,100,50,0.3)';
 
   ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
-  ctx.moveTo(robotX, robotY);
-  ctx.arc(robotX, robotY, radius, startangle, endangle);
-  ctx.lineTo(robotX, robotY);
+  ctx.moveTo(x, y);
+  ctx.arc(x, y, radius, startangle, endangle);
+  ctx.lineTo(x, y);
   ctx.fill(); // or context.fill()
 
   ctx.beginPath();//ADD THIS 
   ctx.fillStyle = 'red';//#DC143C
-  ctx.arc(robotX, robotY, 5, 0, 2 * Math.PI);
+  ctx.arc(x, y, 5, 0, 2 * Math.PI);
   ctx.fill(); // or context.fill()
 }
 
@@ -623,157 +571,157 @@ function draw(timestamp) {
 
 //Kakao.init("b886eede39b9d47bc9d3cb6e91483799");   // 사용할 앱의 JavaScript 키를 설정
 
-// function tryConnectWebsocket() {
+function tryConnectWebsocket() {
 
-//   // Connecting to ROS
-//   // -----------------
-//   var ros = new ROSLIB.Ros();
+  // Connecting to ROS
+  // -----------------
+  var ros = new ROSLIB.Ros();
 
-//   // If there is an error on the backend, an 'error' emit will be emitted.
-//   ros.on('error', function (error) {
-//     connectState = -1;
-//     // document.getElementById('connecting').style.display = 'none';
-//     // document.getElementById('connected').style.display = 'none';
-//     // document.getElementById('closed').style.display = 'none';
-//     // document.getElementById('error').style.display = 'inline';
-//     console.log(error);
-//   });
+  // If there is an error on the backend, an 'error' emit will be emitted.
+  ros.on('error', function (error) {
+    connectState = -1;
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('connected').style.display = 'none';
+    // document.getElementById('closed').style.display = 'none';
+    // document.getElementById('error').style.display = 'inline';
+    console.log(error);
+  });
 
-//   // Find out exactly when we made a connection.
-//   ros.on('connection', function () {
-//     console.log('Connection made!');
-//     connectState=1
-//     // document.getElementById('connecting').style.display = 'none';
-//     // document.getElementById('error').style.display = 'none';
-//     // document.getElementById('closed').style.display = 'none';
-//     // document.getElementById('connected').style.display = 'inline';
-//   });
+  // Find out exactly when we made a connection.
+  ros.on('connection', function () {
+    console.log('Connection made!');
+    connectState=1
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('error').style.display = 'none';
+    // document.getElementById('closed').style.display = 'none';
+    // document.getElementById('connected').style.display = 'inline';
+  });
 
-//   ros.on('close', function () {
-//     console.log('Connection closed.');
-//     connectState = -1
-//     // document.getElementById('connecting').style.display = 'none';
-//     // document.getElementById('connected').style.display = 'none';
-//     // document.getElementById('closed').style.display = 'inline';
-//   });
+  ros.on('close', function () {
+    console.log('Connection closed.');
+    connectState = -1
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('connected').style.display = 'none';
+    // document.getElementById('closed').style.display = 'inline';
+  });
 
-//   // Create a connection to the rosbridge WebSocket server.
-//   ros.connect('ws://socket.bada.epikem.com:80');
+  // Create a connection to the rosbridge WebSocket server.
+  ros.connect('ws://socket.bada.epikem.com:80');
 
-//   // Like when publishing a topic, we first create a Topic object with details of the topic's name
-//   // and message type. Note that we can call publish or subscribe on the same topic object.
-//   var listener = new ROSLIB.Topic({
-//     ros: ros,
-//     name: '/listener',
-//     messageType: 'std_msgs/String'
-//   });
+  // Like when publishing a topic, we first create a Topic object with details of the topic's name
+  // and message type. Note that we can call publish or subscribe on the same topic object.
+  var listener = new ROSLIB.Topic({
+    ros: ros,
+    name: '/listener',
+    messageType: 'std_msgs/String'
+  });
 
-//   listener.subscribe(function (message) {
-//     listener.unsubscribe();
-//   });
-
-
-//   odom = new ROSLIB.Topic({
-//     ros: ros,
-//     name: '/bada/filtered_odom',
-//     messageType: 'nav_msgs/Odometry'
-//   });
+  listener.subscribe(function (message) {
+    listener.unsubscribe();
+  });
 
 
+  odom = new ROSLIB.Topic({
+    ros: ros,
+    name: '/bada/filtered_odom',
+    messageType: 'nav_msgs/Odometry'
+  });
 
-//   odom.subscribe(function (message) {
-//     // if (count) {
-//     //   console.log(message);
-//     // }
-//     robotX = message.pose.pose.position.robotX
-//     robotY = message.pose.pose.position.robotY
-//     // console.log(message.pose.pose.position);
-//     console.log(robotX, robotY);
-//     robotX = (robotX * 2) + 230;
-//     robotY = ((robotY * 2) + 180);
 
-//     // X=(robotX*150) +280THREE
-//     // 280, 230 = X*590
-//     //robotX=robotX*400;
-//     //robotY=robotY*400; 
 
-//     var quaternion = new THREE.Quaternion(message.pose.pose.orientation.robotX, message.pose.pose.orientation.robotY, message.pose.pose.orientation.z, message.pose.pose.orientation.w);
-//     var euler = new THREE.Euler();
-//     euler.setFromQuaternion(quaternion, 'XYZ');
-//     theta = euler.z;
+  odom.subscribe(function (message) {
+    // if (count) {
+    //   console.log(message);
+    // }
+    x = message.pose.pose.position.x
+    y = message.pose.pose.position.y
+    // console.log(message.pose.pose.position);
+    console.log(x, y);
+    x = (x * 2) + 230;
+    y = ((y * 2) + 180);
 
-//     // if(frameCount % 20 == 0){
-//     //   axios.put('/robot', {robotX,robotY,dir:theta})
-//     //   .then(function(response){
-//     //     console.log('put robot position');
-//     //   })
-//     //   .catch(function(err){
-//     //     console.error(err);
-//     //   })
-//     // }
-//     //   console.log(theta);
-//   });
+    // X=(x*150) +280THREE
+    // 280, 230 = X*590
+    //x=x*400;
+    //y=y*400; 
 
-//   hsignal = new ROSLIB.Topic({
-//     ros: ros,
-//     name: '/bada/audio/signal',
-//     //name : '/bada_audio/signal',
-//     messageType: 'std_msgs/String'
-//   });
+    var quaternion = new THREE.Quaternion(message.pose.pose.orientation.x, message.pose.pose.orientation.y, message.pose.pose.orientation.z, message.pose.pose.orientation.w);
+    var euler = new THREE.Euler();
+    euler.setFromQuaternion(quaternion, 'XYZ');
+    theta = euler.z;
 
-//   hsignal.subscribe(function (m) {
+    if(frameCount % 20 == 0){
+      axios.put('/robot', {x,y,dir:theta})
+      .then(function(response){
+        console.log('put robot position');
+      })
+      .catch(function(err){
+        console.error(err);
+      })
+    }
+    //   console.log(theta);
+  });
 
-//     sig_name = dic1[m.data];
-//     console.log("NOW SIGNAL : " + sig_name);
+  hsignal = new ROSLIB.Topic({
+    ros: ros,
+    name: '/bada/audio/signal',
+    //name : '/bada_audio/signal',
+    messageType: 'std_msgs/String'
+  });
+
+  hsignal.subscribe(function (m) {
+
+    sig_name = dic1[m.data];
+    console.log("NOW SIGNAL : " + sig_name);
 
 
   
-//     time = today.getTime();
-//     var a= new Date();
-//     viewtime = printNow(a);
+    time = today.getTime();
+    var a= new Date();
+    viewtime = printNow(a);
 
-//     if (h.dataStore.length >= 17) {
-//       h.dequeue();
-//     }
+    if (h.dataStore.length >= 17) {
+      h.dequeue();
+    }
 
-//     if (sig_name == dic1['Water']) {
-//       //먼저 검색해 
-//       if (water.search()) {
-//         //총 3번 이상 발생했다면
-//         for (var i = 1; i <= 3; i++) {
-//           water.dequeue();
-//         }
-//         cnt = 0;
-//         // shareKakaotalk(m.data);
-//         h.enqueue([sig_name, viewtime]);
-//         hidx = hidx + 1;
-//         PrintHistory = h.toString();
-//       }
-//       else {
-//         //발생한적없다면
-//         water.enqueue(time);
-//       }
-//     }
-//     else if (sig_name != dic1["Silence"]) {
-//       console.log('signame!!::', sig_name);
-//       // shareKakaotalk(m.data);
-//       h.enqueue([sig_name, viewtime]);
-//       hidx = hidx + 1;
-//       PrintHistory = h.toString();
-//     }
-//     document.getElementById("history").innerHTML = PrintHistory;
-//     document.getElementById("alarm").innerHTML = sig_name;
+    if (sig_name == dic1['Water']) {
+      //먼저 검색해 
+      if (water.search()) {
+        //총 3번 이상 발생했다면
+        for (var i = 1; i <= 3; i++) {
+          water.dequeue();
+        }
+        cnt = 0;
+        shareKakaotalk(m.data);
+        h.enqueue([sig_name, viewtime]);
+        hidx = hidx + 1;
+        PrintHistory = h.toString();
+      }
+      else {
+        //발생한적없다면
+        water.enqueue(time);
+      }
+    }
+    else if (sig_name != dic1["Silence"]) {
+      console.log('signame!!::', sig_name);
+      shareKakaotalk(m.data);
+      h.enqueue([sig_name, viewtime]);
+      hidx = hidx + 1;
+      PrintHistory = h.toString();
+    }
+    document.getElementById("history").innerHTML = PrintHistory;
+    document.getElementById("alarm").innerHTML = sig_name;
 
-//     if(m.data=='Speech') document.getElementById("sign_language_gif").src='./말소리';
-//     else if(m.data=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
-//     else if(m.data=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
-//     else if(m.data=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
-//     else if(m.data=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
-//     else if(m.data=='Bell') document.getElementById("sign_language_gif").src='./초인종.gif';
-//     else if(m.data=='Water') document.getElementById("sign_language_gif").src='./물.gif';
+    if(m.data=='Speech') document.getElementById("sign_language_gif").src='./말소리';
+    else if(m.data=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
+    else if(m.data=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
+    else if(m.data=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
+    else if(m.data=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
+    else if(m.data=='Bell') document.getElementById("sign_language_gif").src='./초인종.gif';
+    else if(m.data=='Water') document.getElementById("sign_language_gif").src='./물.gif';
 
-//   });
-// }
+  });
+}
   // signal = new ROSLIB.Topic({
   //   ros: ros,
   //   name: '/signal',
@@ -893,7 +841,7 @@ function draw(timestamp) {
   //   console.log('writing data to db...');
 
   //   // Make a request for a user with a given ID
-  //   axios.put('/api/alarm', { alarmType: 'knock', alarmTime: Date.now() })
+  //   axios.put('/alarm', { alarmType: 'knock', alarmTime: Date.now() })
   //     .then(function (response) {
   //       // handle success
   //       // console.log(response);
@@ -917,22 +865,24 @@ function draw(timestamp) {
     // var progress = timestamp - start;
 
     //Draw number to the screen
+
+
     const radius = 1500;
     const startangle = theta - 1 / 16 * Math.PI;
     const endangle = theta + 1 / 16 * Math.PI;
     ctx.fillStyle = 'rgba(248,206,105,0.7)';
 
     ctx.beginPath();//ADD THIS LINE!<<<<<<<<<<<<<
-    ctx.moveTo(robotX, robotY);
-    ctx.arc(robotX, robotY, radius, startangle, endangle);
-    ctx.lineTo(robotX, robotY);
+    ctx.moveTo(x, y);
+    ctx.arc(x, y, radius, startangle, endangle);
+    ctx.lineTo(x, y);
     ctx.fill(); // or context.fill()
 
     ctx.beginPath();//ADD THIS 
     ctx.fillStyle = '#d45d54';//#DC143C
     ctx.strokeStyle = "#black";
     ctx.lineWidth = "10";
-    ctx.arc(robotX, robotY, 50, 0, 2 * Math.PI);
+    ctx.arc(x, y, 7, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.fill(); // or context.fill()*/
   }
@@ -943,7 +893,7 @@ function draw(timestamp) {
 //   console.log('reading data from db...');
 
 //   // Make a request for a user with a given ID
-//   axios.get('/api/alarm', { data: 'what' })
+//   axios.get('/alarm', { data: 'what' })
 //     .then(function (response) {
 //       // handle success
 //       // console.log(response);
@@ -965,7 +915,7 @@ function draw(timestamp) {
 //   console.log('writing data to db...');
 
 //   // Make a request for a user with a given ID
-//   axios.put('/api/alarm', {alarmType:'Door', alarmTime: Date.now()} )
+//   axios.put('/alarm', {alarmType:'Door', alarmTime: Date.now()} )
 //   .then(function (response) {
 //     // handle success
 //     console.log(response);  // should be 200 (succes
@@ -985,7 +935,7 @@ function draw(timestamp) {
 //   console.log('getting data from db...');
 
 //   // Make a request for a user with a given ID
-//   axios.get('/api/alarm')
+//   axios.get('/alarm')
 //   .then(function (response) {
 //     // handle success
 //     console.log(response);
@@ -1009,7 +959,7 @@ function draw(timestamp) {
 //   console.log('reading data from db...');
 
 //   // Make a request for a user with a given ID
-//   axios.get('/api/alarm', {data:'what'} )
+//   axios.get('/alarm', {data:'what'} )
 //   .then(function (response) {
 //     // handle success
 //     // console.log(response);

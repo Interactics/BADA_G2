@@ -5,6 +5,8 @@ const axios = require('axios').default
 const querystring = require('querystring')
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
+const models = require('../models');
+const util = require('../util');
 
 const BASE_URL=`https://kauth.kakao.com/oauth`
 
@@ -20,7 +22,7 @@ auth.get('/', async function(req, res){
 auth.get('/callback', async function(req, res){
   console.log('kakao login wip')
   // res.render('index');
-  console.log(req.query)
+  // console.log(req.query)
   const { code } = req.query
 
   const data = querystring.stringify({
@@ -38,18 +40,25 @@ auth.get('/callback', async function(req, res){
   
     )
   
-    console.log(response)
+    // console.log(response)
 
     const { access_token, refresh_token, token_type, scope } = response.data
 
     res.cookie('access_token',access_token, { httpOnly: true, secure: true, maxAge: 3600000 })
     res.cookie('refresh_token',refresh_token, { httpOnly: true, secure: true, maxAge: 3600000 })
+
+    util.saveToken(access_token, refresh_token)
+
     res.sendStatus(200)
   } catch (error) {
     console.error(error)
     throw error
   }
 });
+
+
+
+
 
 auth.get('/sendme', async function(req, res){
   console.log('sending msg to me')
@@ -61,7 +70,7 @@ auth.get('/sendme', async function(req, res){
     console.log('access_token: ', access_token)
   } catch (error) {
     console.warn('no access token. please login first')
-    res.redirect('/-/')
+    res.redirect('/api/auth')
   }
 
   try {

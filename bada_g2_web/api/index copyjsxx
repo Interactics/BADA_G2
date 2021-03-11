@@ -1,0 +1,368 @@
+var express    = require('express');
+var router = express.Router();
+var Ros = require('roslib').Ros;
+const env = process.env.NODE_ENV || 'development';
+
+const config = require(__dirname + '/../config/config.json')[env];
+
+// require('../kakao')
+
+// Kakao.init(KAKAO_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
+// /*  Kakao.Auth.createLoginButton({
+//     container: '#kakao-login-btn',
+//     size : 'small',
+//     success: function (authObj) {
+//       alert(JSON.stringify(authObj));
+//     },
+//     fail: function (err) {
+//       alert(JSON.stringify(err));
+//     }
+//   });*/
+
+
+
+// console.log("a4365158deb211d98898dba793c60acb");
+
+// function setAuth() {
+//   Kakao.Auth.login({
+//     scope: 'talk_message,friends,profile',
+//     success: function (response) {
+//       console.log("kakao_auth_success");
+//     },
+//     fail: function (error) {
+//       console.log(error);
+//     }
+//   });
+// }
+// setAuth();
+
+// // Kakao.init(KAKAO_REST_API_TOKEN);   // 사용할 앱의 JavaScript 키를 설정
+
+
+// function Queue() {
+
+//   this.dataStore = [];
+//   this.enqueue = enqueue;
+//   this.dequeue = dequeue;
+//   this.search = search;
+//   this.toString = toString;
+// }
+
+// function enqueue(element) {
+//   this.dataStore.push(element);
+// }
+
+// function dequeue() {
+//   return this.dataStore.shift();
+// }
+
+// function loadfriendlist() {
+//   Kakao.API.request({
+//     url: '/v1/api/talk/friends',
+//     success: function (response) {
+//       console.log("this is kakao friends token");
+//       console.log(response);
+//     },
+//     fail: function (error) {
+//       console.log(error);
+//     }
+//   });
+// }
+// loadfriendlist();
+
+
+// function auth_shareKakaotalk() {
+//   Kakao.API.request({
+//     url: '/v2/api/talk/memo/default/send',
+//     data: {
+//       template_object: {
+//         object_type: 'text',
+//         text: "BADA 로그인 성공",
+//         link: {
+//           web_url: 'http://bada.epikem.com/static',
+//           mobile_web_url: 'http://bada.epikem.com/static',
+//         },
+//         button_title: "BADA에서 확인하기"
+//       },
+//     },
+//     success: function (response) {
+//       //console.log(response);
+//     },
+//     fail: function (error) {
+//       //console.log(error);
+//     },
+//   });
+// }
+
+
+// /*function auth_shareKakaotalk() 
+// {
+//     Kakao.API.request({
+//       url: '/v1/api/talk/friends/message/default/send',
+//       data: {
+//         receiver_uuids: ['7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+//         // 팀원 UUID 목록
+//         //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
+//         //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
+
+//         template_object: {
+//           object_type: 'text',
+//           text: "BADA 로그인이 성공했어요",
+//           link: {
+//               web_url: 'http://172.17.225.74',
+//               mobile_web_url: 'http://172.17.225.74',
+//             },
+//             button_title : "BADA에서 확인하기"
+//         },
+//         button_title: "BADA에서 확인하기"
+//       },
+//       success: function(response) {
+//         console.log(response);
+//       },
+//       fail: function(error) {
+//         console.log(error);
+//       },
+//     });
+//   }*/
+// auth_shareKakaotalk();
+
+// function shareKakaotalk(sig_name) {
+//   var q=new Date();
+//   axios.put('/alarm', { alarmType: sig_name, alarmTime: q })
+//     .then(function (response) {
+//       console.log('writing data to db...');
+
+//       Kakao.API.request({
+//         url: '/v2/api/talk/memo/default/send',
+//         data: {
+//           template_object: {
+//             object_type: 'text',
+//             text: dic1[sig_name] + "가 발생한 것 같아요!",
+//             link: {
+//               web_url: 'http://bada.epikem.com/static',
+//               mobile_web_url: 'http://bada.epikem.com/static',
+//             },
+//             button_title: "BADA에서 확인하기"
+//           },
+//         },
+//         success: function (response) {
+//           console.log(response);
+//         },
+//         fail: function (error) {
+//           console.log(error);
+//         },
+//       });
+//       // handle success
+//     })
+//     .catch(function (error) {
+//       // handle error
+//       console.error(error);
+//     })
+//     .then(function () {
+//       // always executed
+//     });
+// }
+// // function shareKakaotalk(sig_name)
+// // {
+// //     Kakao.API.request({
+// //       url: '/v1/api/talk/friends/message/default/send',
+// //       data: {
+// //         receiver_uuids: ['7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0'],//이부분을 매번 확인해야 함!! UUID는 loadfriendlist()통해서 확인가능
+// //         // 팀원 UUID 목록
+// //         //황지원 : 7djr3u_f6t_zwvfG9sf1x_7S5t7n0ObWVQ
+// //         //이현우 : 7djq2ujQ49P_zv3O_8n7yPjJ5dHp0OfR4Z0
+// //         template_object: {
+// //           object_type: 'text',
+// //           text: sig_name+"가 발생했어요",
+// //           link: {
+// //               web_url: 'http://172.17.225.74',
+// //               mobile_web_url: 'http://172.17.225.74',
+// //             },
+// //             button_title : "BADA에서 확인하기"
+// //         },
+// //       },
+// //       success: function(response) {
+// //         console.log(response);
+// //       },
+// //       fail: function(error) {
+// //         console.log(error);
+// //       },
+// //     });
+// //   }
+
+
+
+// function tryConnectWebsocket() {
+
+//   // Connecting to ROS
+//   // -----------------
+//   var ros = new Ros();
+
+//   // If there is an error on the backend, an 'error' emit will be emitted.
+//   ros.on('error', function (error) {
+//     connectState = -1;
+//     // document.getElementById('connecting').style.display = 'none';
+//     // document.getElementById('connected').style.display = 'none';
+//     // document.getElementById('closed').style.display = 'none';
+//     // document.getElementById('error').style.display = 'inline';
+//     console.log(error);
+//   });
+
+//   // Find out exactly when we made a connection.
+//   ros.on('connection', function () {
+//     console.log('Connection made!');
+//     connectState=1
+//     // document.getElementById('connecting').style.display = 'none';
+//     // document.getElementById('error').style.display = 'none';
+//     // document.getElementById('closed').style.display = 'none';
+//     // document.getElementById('connected').style.display = 'inline';
+//   });
+
+//   ros.on('close', function () {
+//     console.log('Connection closed.');
+//     connectState = -1
+//     // document.getElementById('connecting').style.display = 'none';
+//     // document.getElementById('connected').style.display = 'none';
+//     // document.getElementById('closed').style.display = 'inline';
+//   });
+
+//   // Create a connection to the rosbridge WebSocket server.
+//   ros.connect('ws://localhost:9090');
+
+//   // Like when publishing a topic, we first create a Topic object with details of the topic's name
+//   // and message type. Note that we can call publish or subscribe on the same topic object.
+//   var listener = new ROSLIB.Topic({
+//     ros: ros,
+//     name: '/listener',
+//     messageType: 'std_msgs/String'
+//   });
+
+//   listener.subscribe(function (message) {
+//     listener.unsubscribe();
+//   });
+
+
+//   odom = new ROSLIB.Topic({
+//     ros: ros,
+//     name: '/bada/filtered_odom',
+//     messageType: 'nav_msgs/Odometry'
+//   });
+
+
+
+//   odom.subscribe(function (message) {
+//     // if (count) {
+//     //   console.log(message);
+//     // }
+//     x = message.pose.pose.position.x
+//     y = message.pose.pose.position.y
+//     // console.log(message.pose.pose.position);
+//     console.log(x, y);
+//     x = (x * 2) + 230;
+//     y = ((y * 2) + 180);
+
+//     // X=(x*150) +280THREE
+//     // 280, 230 = X*590
+//     //x=x*400;
+//     //y=y*400; 
+
+//     var quaternion = new THREE.Quaternion(message.pose.pose.orientation.x, message.pose.pose.orientation.y, message.pose.pose.orientation.z, message.pose.pose.orientation.w);
+//     var euler = new THREE.Euler();
+//     euler.setFromQuaternion(quaternion, 'XYZ');
+//     theta = euler.z;
+
+//     if(frameCount % 20 == 0){
+//       axios.put('/robot', {x,y,dir:theta})
+//       .then(function(response){
+//         console.log('put robot position');
+//       })
+//       .catch(function(err){
+//         console.error(err);
+//       })
+//     }
+//     //   console.log(theta);
+//   });
+
+//   hsignal = new ROSLIB.Topic({
+//     ros: ros,
+//     name: '/bada/audio/signal',
+//     //name : '/bada_audio/signal',
+//     messageType: 'std_msgs/String'
+//   });
+
+//   hsignal.subscribe(function (m) {
+
+//     sig_name = dic1[m.data];
+//     console.log("NOW SIGNAL : " + sig_name);
+
+
+  
+//     time = today.getTime();
+//     var a= new Date();
+//     viewtime = printNow(a);
+
+//     if (h.dataStore.length >= 17) {
+//       h.dequeue();
+//     }
+
+//     if (sig_name == dic1['Water']) {
+//       //먼저 검색해 
+//       if (water.search()) {
+//         //총 3번 이상 발생했다면
+//         for (var i = 1; i <= 3; i++) {
+//           water.dequeue();
+//         }
+//         cnt = 0;
+//         shareKakaotalk(m.data);
+//         h.enqueue([sig_name, viewtime]);
+//         hidx = hidx + 1;
+//         PrintHistory = h.toString();
+//       }
+//       else {
+//         //발생한적없다면
+//         water.enqueue(time);
+//       }
+//     }
+//     else if (sig_name != dic1["Silence"]) {
+//       console.log('signame!!::', sig_name);
+//       shareKakaotalk(m.data);
+//       h.enqueue([sig_name, viewtime]);
+//       hidx = hidx + 1;
+//       PrintHistory = h.toString();
+//     }
+//     // document.getElementById("history").innerHTML = PrintHistory;
+//     // document.getElementById("alarm").innerHTML = sig_name;
+
+//     // if(m.data=='Speech') document.getElementById("sign_language_gif").src='./말소리';
+//     // else if(m.data=='Alarm') document.getElementById("sign_language_gif").src='./화재경보기.gif';
+//     // else if(m.data=='Door') document.getElementById("sign_language_gif").src='./노크.gif';
+//     // else if(m.data=='Boiling') document.getElementById("sign_language_gif").src='./물+끓다.gif';
+//     // else if(m.data=='Cry') document.getElementById("sign_language_gif").src='./아기+울음소리.gif';
+//     // else if(m.data=='Bell') document.getElementById("sign_language_gif").src='./초인종.gif';
+//     // else if(m.data=='Water') document.getElementById("sign_language_gif").src='./물.gif';
+
+//   });
+// }
+
+// const { TalkClient, LoginError } = require('node-kakao')
+
+// let client = new TalkClient('TEST_CLIENT', 'THQr24MwbnDl3dSHohWELg==')
+
+// client.login('epikem@kakao.com', config.kakao_password)
+//   .then(()=>{
+//     console.log('login succeed')
+    
+//   })
+//   .catch((err)=>{
+//     console.error('login FAILED')
+//     console.error(err)
+//   })
+
+
+router.get('/', function(req, res){
+  console.log('someone connect your page');
+  // res.render('index');
+  res.sendStatus(200);
+});
+
+module.exports = router;

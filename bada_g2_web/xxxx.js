@@ -2,7 +2,6 @@ const express = require('express');
 const models = require('./models');
 const ROSLIB = require('roslib');
 const axios = require('axios').default;
-const sendAlarm = require('./util').sendAlarm
 
 const BASE_URL = `http://localhost:3000/api`
 
@@ -16,6 +15,10 @@ function tryConnectWebsocket() {
   // If there is an error on the backend, an 'error' emit will be emitted.
   ros.on('error', function (error) {
     connectState = -1;
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('connected').style.display = 'none';
+    // document.getElementById('closed').style.display = 'none';
+    // document.getElementById('error').style.display = 'inline';
     console.error(error);
   });
 
@@ -23,11 +26,18 @@ function tryConnectWebsocket() {
   ros.on('connection', function () {
     console.info('Connection made!');
     connectState=1
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('error').style.display = 'none';
+    // document.getElementById('closed').style.display = 'none';
+    // document.getElementById('connected').style.display = 'inline';
   });
 
   ros.on('close', function () {
     console.warn('Connection closed.');
     connectState = -1
+    // document.getElementById('connecting').style.display = 'none';
+    // document.getElementById('connected').style.display = 'none';
+    // document.getElementById('closed').style.display = 'inline';
   });
 
   // Create a connection to the rosbridge WebSocket server.
@@ -56,9 +66,7 @@ function tryConnectWebsocket() {
     console.info(m.data)
     
     try {
-      // axios.get(`${BASE_URL}/alarm/sendAlarm?alarmType=${m.data}`)
-      sendAlarm(m.data)
-      
+      axios.get(`${BASE_URL}/alarm/sendAlarm?alarmType=${m.data}`)
     } catch (error) {
       console.error(error)
     }
