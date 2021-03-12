@@ -3,7 +3,7 @@
 ## Project Team : [사과가 쿵!(Dropped Apple)]
 
 ### Member :
-유호연(Hoyeon Yu), 김민우(Minwoo Kim), 배종학(Jonghak Hae), 이현우(Hyunwoo Lee), 최수진(Soojin Choi), 황지원(Jiwon Hwang)
+[유호연(Hoyeon Yu)](https://github.com/Interactics), 김민우(Minwoo Kim), 배종학(Jonghak Hae), 이현우(Hyunwoo Lee), 최수진(Soojin Choi), 황지원(Jiwon Hwang)
 
 ### Advisor : 
 Prof. 한재권(Jeakweon Han)
