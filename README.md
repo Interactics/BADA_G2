@@ -1,6 +1,7 @@
 # BADA G2 : The social Robot Accessible to the Deaf
 
-## Project Team : [사과가 쿵!(Dropped Apple)]
+
+## Project Team : [사과가 쿵!(Dropped Apple!)]
 
 ### Member :
 [유호연(Hoyeon Yu)](https://github.com/Interactics), [김민우(Minwoo Kim)](https://github.com/KKminwoo), [배종학(Jonghak Hae)](https://github.com/jhbae159), [이현우(Hyunwoo Lee)](https://github.com/Epikem), [최수진(Soojin Choi)](https://github.com/heeyori), [황지원(Jiwon Hwang)](https://github.com/Jiwon-h)
@@ -10,6 +11,10 @@ Prof. 한재권(Jeakweon Han)
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/8192081/110204961-4a910680-7eb9-11eb-8ca4-7737fa386115.png">
 
+[The Development of a Social Robot Accessible to the Deaf](https://doi.org/10.1145/3434074.3446948)
+
+HRI'21: ACM/IEEE International Conference on Human-Robot Interaction  
+Session: Student Design Competition
 
 ## Abstract 
 
@@ -95,6 +100,7 @@ rosrun rosbridge_server rosbridge_websocket
 
 
 ## Additional Resources
+- [ACM Digital Library](https://doi.org/10.1145/3434074.3446948)
 - [Youtube](https://www.youtube.com/watch?v=hOspjk3Z8Bo)
 - [HRI'21 Presentaion ](https://docs.google.com/presentation/d/e/2PACX-1vSqkJXQnc2isAcKdmD33s_p_R0tKbhyaBJKZklqBho-NIgaPxk8_MOHUTbO4qfFEdGSCLjGlQ53WHbO/pub?start=false&loop=false&delayms=3000)
 
